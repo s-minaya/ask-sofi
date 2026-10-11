@@ -72,7 +72,7 @@ Draft
 - [x] T044 — Fijar los objetivos táctiles en 44 CSS px como mínimo con altura adaptable al contenido y documentar la excepción de unidades.
 - [x] T045 — Evitar el desbordamiento del titular de la portada a 320 px con el texto al 200 % sin ocultar contenido ni alterar el diseño normal.
 - [x] T046 — Sustituir el aviso provisional de la consulta por el texto de demostración aprobado.
-- [ ] T047 — Integrar las comprobaciones de Playwright y axe en GitHub Actions. Integrado en `ci.yml`; pendiente de su primera ejecución en GitHub.
+- [x] T047 — Integrar las comprobaciones de Playwright y axe en GitHub Actions.
 - [x] T048 — Recuperar `--color-border` como alias semántico y usarlo en los contornos de estructura.
 - [x] T049 — Verificar que el Design Lab es un playground de los componentes reales de producción, con ejemplos individuales, variantes, estados y props explorables.
 
