@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Complete
 
 ## Objective
 
@@ -35,14 +35,14 @@ Al finalizar esta feature:
 - [x] Un bloqueo de reproducción de audio no impide utilizar la aplicación.
 - [x] `SofiSpeech` muestra progresivamente el texto y permite revelarlo inmediatamente.
 - [x] El sonido de `SofiSpeech` puede activarse y desactivarse sin afectar a la presentación del texto.
-- [ ] `SofiSpeech` respeta el movimiento reducido y proporciona una lectura coherente para tecnologías de asistencia.
+- [x] `SofiSpeech` respeta el movimiento reducido y proporciona una lectura coherente para tecnologías de asistencia.
 - [x] El Design Lab permite comprobar los temas Light, Dark y System.
 - [x] El Design Lab incluye controles para explorar distintos tamaños de visualización y estados de los componentes.
-- [ ] Motion & Sound permite probar el comportamiento visual y sonoro de `SofiSpeech`.
+- [x] Motion & Sound permite probar el comportamiento visual y sonoro de `SofiSpeech`.
 - [x] La Experience Preview permite recorrer el flujo visual completo y alternar entre los escenarios simulados.
 - [x] Los resultados simulados distinguen claramente las interpretaciones de las certezas.
 - [x] El Design Lab no está disponible en la aplicación pública de producción.
-- [ ] La landing, los componentes, el Design Lab y la Experience Preview han superado las verificaciones de accesibilidad aplicables, tanto automáticas como manuales, conforme a `tech-stack.md`.
+- [x] La landing, los componentes, el Design Lab y la Experience Preview han superado las verificaciones de accesibilidad aplicables, tanto automáticas como manuales, conforme a `tech-stack.md`.
 
 ## Out of Scope
 

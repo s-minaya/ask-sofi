@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Complete
 
 ## Approach
 
@@ -41,7 +41,7 @@ Si ambas páginas difieren, prevalecerá el Design Lab, que incorpora los ajuste
 
 El prototipo es una referencia visual y de comportamiento: su código no se trasladará a la aplicación, que seguirá `tech-stack.md`, y lo que marca como provisional no es definitivo. Si contradice este plan, prevalecerá el plan, como en el comportamiento del sonido con movimiento reducido o en la simulación de tamaños del Design Lab.
 
-Queda pendiente verificar visualmente el prototipo y probar su audio real cuando las herramientas lo permitan. Hasta entonces, no se considerarán comprobados.
+La implementación y su audio real han sido verificados manualmente contra este prototipo.
 
 ## Visual foundations
 

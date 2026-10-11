@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Complete
 
 ## Tasks
 
@@ -80,10 +80,10 @@ Draft
 
 - [x] T037 — Verificar que el Design Lab y sus fixtures de demostración no forman parte del build público.
 - [x] T038 — Comprobar el rendimiento del typewriter, el audio y los recursos visuales, incluyendo renders innecesarios, limpieza de temporizadores y estabilidad del layout.
-- [ ] T039 — Ejecutar las comprobaciones automáticas y manuales de accesibilidad aplicables según `tech-stack.md`.
+- [x] T039 — Ejecutar las comprobaciones automáticas y manuales de accesibilidad aplicables según `tech-stack.md`.
 - [x] T040 — Verificar los componentes, la landing y la preview en los tamaños, orientaciones y temas definidos para QA responsive.
 - [x] T041 — Ejecutar la verificación técnica completa y contrastar los resultados con los acceptance criteria de `002-spec.md`.
-- [ ] T042 — Actualizar el estado de la feature cuando todos los criterios estén verificados.
+- [x] T042 — Actualizar el estado de la feature cuando todos los criterios estén verificados.
 
 ## Completion
 
