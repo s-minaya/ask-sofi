@@ -37,6 +37,8 @@ La referencia visual definitiva es la dirección C «Exclusiva», aprobada el 20
 - la página «Design Lab · C Exclusiva» recorre Foundations, UI Components, Sofi Components, Motion & Sound y Experience Preview;
 - la página «Direcciones artísticas» contiene las pantallas C de escritorio y móvil.
 
+Copias locales de ambas páginas y el logotipo original: `spec/constitution/art-direction/`.
+
 Si ambas páginas difieren, prevalecerá el Design Lab, que incorpora los ajustes aprobados después de las pantallas: el selector de tema compacto con System, el tamaño del logotipo de portada, el antetítulo «En directo» solo en pantallas anchas, los botones de 44 px en los selectores y el enlace para saltar al contenido.
 
 El prototipo es una referencia visual y de comportamiento: su código no se trasladará a la aplicación, que seguirá `tech-stack.md`, y lo que marca como provisional no es definitivo. Si contradice este plan, prevalecerá el plan, como en el comportamiento del sonido con movimiento reducido o en la simulación de tamaños del Design Lab.
@@ -139,7 +141,7 @@ Los recursos visuales y sonoros se cargarán cuando sean necesarios, siguiendo l
 
 ## Audio
 
-El sonido utilizará el asset proporcionado para Sofi. Se encuentra en `features\002-design-system-&-visual-identity\talking-sound.mp3`
+El sonido utilizará el asset proporcionado para Sofi, que se sirve desde `src/assets/sofi/talking-sound.mp3`.
 
 Se implementará un controlador pequeño y reutilizable, separado de la lógica del typewriter.
 

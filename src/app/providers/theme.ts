@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import type { ThemePreference } from '../../infrastructure/storage/themePreferenceStorage'
+import type { ThemePreference } from '../../infrastructure/storage/preferencesStorage'
 
 export type { ThemePreference }
 export type ResolvedTheme = 'light' | 'dark'

@@ -1,6 +1,9 @@
-import { useState, type Ref } from 'react'
+import { useRef, useState, type Ref } from 'react'
 import { Notice, NoticeText } from '../../components/ui/Notice/Notice'
+import { useScrollIntoViewOnRequest } from '../../hooks/useScrollIntoViewOnRequest'
+import styles from './ProvisionalConsultation.module.scss'
 import { ConsultationScreen } from './screens/ConsultationScreen'
+import { useConsultationDraft } from './useConsultationDraft'
 
 type ProvisionalConsultationProps = {
   headingRef?: Ref<HTMLHeadingElement>
@@ -11,10 +14,18 @@ type ProvisionalConsultationProps = {
 export function ProvisionalConsultation({
   headingRef,
 }: ProvisionalConsultationProps) {
-  const [message, setMessage] = useState('')
-  const [context, setContext] = useState('')
+  const { message, context, setMessage, setContext, clear } =
+    useConsultationDraft()
   const [messageError, setMessageError] = useState(false)
   const [notice, setNotice] = useState(false)
+  // Cada pulsación válida de «Leer entre líneas» es una petición de lectura.
+  const [readRequest, setReadRequest] = useState(0)
+  const noticeRef = useRef<HTMLDivElement>(null)
+
+  useScrollIntoViewOnRequest(noticeRef, {
+    request: readRequest,
+    available: notice,
+  })
 
   const submit = () => {
     if (!message.trim()) {
@@ -23,6 +34,7 @@ export function ProvisionalConsultation({
       return
     }
     setNotice(true)
+    setReadRequest((request) => request + 1)
   }
 
   return (
@@ -36,8 +48,7 @@ export function ProvisionalConsultation({
       onContextChange={setContext}
       onSubmit={submit}
       onClear={() => {
-        setMessage('')
-        setContext('')
+        clear()
         setMessageError(false)
         setNotice(false)
       }}
@@ -45,17 +56,19 @@ export function ProvisionalConsultation({
       headingRef={headingRef}
       after={
         notice && (
-          <Notice
-            tone="info"
-            kicker="Vista previa"
-            title="Sofi todavía está calentando motores"
-            role="status"
-          >
-            <NoticeText>
-              Esta es una demostración. Tu mensaje no se ha enviado ni
-              analizado.
-            </NoticeText>
-          </Notice>
+          <div ref={noticeRef} className={styles.notice}>
+            <Notice
+              tone="info"
+              kicker="Vista previa"
+              title="Sofi todavía está calentando motores"
+              role="status"
+            >
+              <NoticeText>
+                Esta es una demostración. Tu mensaje no se ha enviado ni
+                analizado.
+              </NoticeText>
+            </Notice>
+          </div>
         )
       }
     />

@@ -5,16 +5,20 @@ import { SkipLink } from '../components/ui/SkipLink/SkipLink'
 import { ProvisionalConsultation } from '../features/consultation/ProvisionalConsultation'
 import { Landing } from '../features/landing/Landing'
 import { useSound } from '../hooks/useSound'
+import {
+  readSessionScreen,
+  saveSessionScreen,
+  type SessionScreen,
+} from '../infrastructure/storage/sessionScreenStorage'
+import { subscribeToUserDataCleared } from '../infrastructure/storage/userData'
 import styles from './AppShell.module.scss'
-
-type Screen = 'landing' | 'consultation'
 
 const MAIN_ID = 'contenido'
 
 // Dos vistas, sin router: la portada da acceso a la consulta y el logo vuelve a la portada.
 export function AppShell() {
   const sound = useSound()
-  const [screen, setScreen] = useState<Screen>('landing')
+  const [screen, setScreen] = useState<SessionScreen>(readSessionScreen)
   // Cada cambio de pantalla pide llevar el foco a su titular; la carga inicial no.
   const [focusRequest, setFocusRequest] = useState(0)
   const landingHeading = useRef<HTMLHeadingElement>(null)
@@ -30,8 +34,12 @@ export function AppShell() {
     window.scrollTo(0, 0)
   }, [focusRequest, screen])
 
-  const go = (next: Screen) => {
+  // Borrar todos los datos devuelve la aplicación a su estado inicial.
+  useEffect(() => subscribeToUserDataCleared(() => setScreen('landing')), [])
+
+  const go = (next: SessionScreen) => {
     setScreen(next)
+    saveSessionScreen(next)
     setFocusRequest((request) => request + 1)
   }
 
@@ -46,7 +54,12 @@ export function AppShell() {
     <div className={styles.app}>
       <SkipLink href={`#${MAIN_ID}`} />
       {screen === 'landing' ? (
-        <Landing onStart={start} headingRef={landingHeading} mainId={MAIN_ID} />
+        <Landing
+          onStart={start}
+          initialSound={sound.preference}
+          headingRef={landingHeading}
+          mainId={MAIN_ID}
+        />
       ) : (
         <>
           <SiteHeader

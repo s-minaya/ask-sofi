@@ -1,5 +1,6 @@
 import { createContext } from 'react'
 import type { SpeechAudioStatus } from '../../infrastructure/audio/speechAudio'
+import type { SoundPreference } from '../../infrastructure/storage/preferencesStorage'
 
 export type SpeechVoice = {
   start: () => void
@@ -8,8 +9,11 @@ export type SpeechVoice = {
 }
 
 export type SoundContextValue = {
-  // Preferencia de la persona: empieza en silencio. Su persistencia llegará con 003.
+  // Estado actual: empieza en silencio en cada visita, porque el audio solo
+  // puede prepararse dentro de un gesto.
   enabled: boolean
+  // Lo que la persona eligió la última vez («off» si no se recuerda nada).
+  preference: SoundPreference
   status: SpeechAudioStatus
   // Las tres acciones que preparan el audio deben llamarse desde un gesto.
   enable: () => void

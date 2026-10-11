@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll } from 'vitest'
+import { localArea, sessionArea } from '../infrastructure/storage/storageAreas'
 import { installMatchMedia, resetMediaQueries } from './matchMedia'
 import { server } from './msw'
 
@@ -15,6 +16,10 @@ afterEach(() => {
   cleanup()
   resetMediaQueries()
   window.localStorage.clear()
+  window.sessionStorage.clear()
+  // La copia en memoria del almacenamiento no debe pasar de un test a otro.
+  localArea.resetMemory()
+  sessionArea.resetMemory()
   delete document.documentElement.dataset.theme
 })
 

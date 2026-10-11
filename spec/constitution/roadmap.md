@@ -857,6 +857,7 @@ El deployment deberá incluir:
 - monitoring mínimo;
 - protection limits;
 - deployment documentation;
+- exclusión del material de trabajo (`spec/`, `evals/`) de las subidas por CLI, por ejemplo con `.vercelignore`;
 - CI checks before release.
 
 El coste operativo previsto continuará siendo:

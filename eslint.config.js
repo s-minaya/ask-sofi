@@ -28,6 +28,34 @@ export default tseslint.config(
     ...jsxA11y.flatConfigs.recommended,
     files: ['**/*.{jsx,tsx}'],
   },
+  // Web Storage solo se toca desde la capa de persistencia (tech-stack §37).
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      'src/infrastructure/storage/**',
+      'src/**/*.test.{ts,tsx}',
+      'src/test/**',
+    ],
+    rules: {
+      'no-restricted-globals': [
+        'error',
+        ...['localStorage', 'sessionStorage'].map((name) => ({
+          name,
+          message: 'Usa la capa infrastructure/storage.',
+        })),
+      ],
+      'no-restricted-properties': [
+        'error',
+        ...['window', 'globalThis'].flatMap((object) =>
+          ['localStorage', 'sessionStorage'].map((property) => ({
+            object,
+            property,
+            message: 'Usa la capa infrastructure/storage.',
+          })),
+        ),
+      ],
+    },
+  },
   {
     files: [
       'vite.config.ts',

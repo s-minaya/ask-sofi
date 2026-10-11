@@ -11,7 +11,15 @@ import { LockIcon } from '../../../components/ui/icons/icons'
 import { LiveIndicator } from '../../../components/ui/Indicators/Indicators'
 import { StepTag } from '../../../components/ui/Tag/Tag'
 import { TextLink } from '../../../components/ui/TextLink/TextLink'
+import { useStackedLayout } from '../../../hooks/useStackedLayout'
 import styles from './ConsultationScreen.module.scss'
+
+// En una columna el diálogo es compacto (junto a la insignia) y usa la variante
+// corta del Design Lab; a dos columnas, el texto completo.
+const LISTEN_TEXT =
+  'A ver, cuéntamelo todo. ¿Qué te ha escrito exactamente? Pégalo tal cual, que aquí cada punto cuenta.'
+const LISTEN_TEXT_SHORT =
+  'A ver, cuéntamelo todo. ¿Qué te ha escrito exactamente?'
 
 type ConsultationScreenProps = {
   message: string
@@ -43,6 +51,7 @@ export function ConsultationScreen({
   submitRef,
   after,
 }: ConsultationScreenProps) {
+  const stacked = useStackedLayout()
   return (
     <div className={styles.work}>
       <aside className={styles.listen} aria-label="Sofi te escucha">
@@ -72,8 +81,7 @@ export function ConsultationScreen({
         />
         <SofiDialog more className={styles.listenDialog}>
           <SofiDialogText as="blockquote">
-            A ver, cuéntamelo todo. ¿Qué te ha escrito exactamente? Pégalo tal
-            cual, que aquí cada punto cuenta.
+            {stacked ? LISTEN_TEXT_SHORT : LISTEN_TEXT}
           </SofiDialogText>
         </SofiDialog>
       </aside>

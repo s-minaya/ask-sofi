@@ -1,10 +1,10 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import {
-  readThemePreference,
-  saveThemePreference,
-  subscribeToThemePreference,
-} from '../../infrastructure/storage/themePreferenceStorage'
+  readPreferences,
+  subscribeToPreferences,
+  updatePreferences,
+} from '../../infrastructure/storage/preferencesStorage'
 import {
   applyThemePreference,
   ThemeContext,
@@ -12,8 +12,9 @@ import {
 } from './theme'
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreferenceState] =
-    useState<ThemePreference>(readThemePreference)
+  const [preference, setPreferenceState] = useState<ThemePreference>(
+    () => readPreferences().theme,
+  )
   const systemTheme = useMediaQuery('(prefers-color-scheme: dark)')
     ? 'dark'
     : 'light'
@@ -23,11 +24,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     applyThemePreference(preference)
   }, [preference])
 
-  useEffect(() => subscribeToThemePreference(setPreferenceState), [])
+  // Cambios de otro documento y borrados de datos: el estado de React no
+  // debe quedarse con un valor que el almacenamiento ya no tiene.
+  useEffect(
+    () => subscribeToPreferences(({ theme }) => setPreferenceState(theme)),
+    [],
+  )
 
   const setPreference = (next: ThemePreference) => {
     setPreferenceState(next)
-    saveThemePreference(next)
+    updatePreferences({ theme: next })
   }
 
   return (

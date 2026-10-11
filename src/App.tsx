@@ -5,7 +5,7 @@ import { ThemeProvider } from './app/providers/ThemeProvider'
 function App() {
   return (
     <ThemeProvider>
-      <SoundProvider>
+      <SoundProvider persist deferAudio>
         <AppShell />
       </SoundProvider>
     </ThemeProvider>

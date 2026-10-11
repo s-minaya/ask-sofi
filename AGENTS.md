@@ -24,13 +24,16 @@ Use the following documents according to the task:
   `spec/constitution/tech-stack.md`
 
 - Feature requirements:
-  `spec/features/<feature>/spec.md`
+  `spec/features/<NNN-feature>/<NNN>-spec.md`
 
 - Feature implementation decisions:
-  `spec/features/<feature>/plan.md`
+  `spec/features/<NNN-feature>/<NNN>-plan.md`
 
 - Feature implementation work:
-  `spec/features/<feature>/tasks.md`
+  `spec/features/<NNN-feature>/<NNN>-tasks.md`
+
+- Visual identity, approved screens and layout decisions:
+  `spec/constitution/art-direction/`
 
 Do not repeat information already defined in another source-of-truth document.
 
@@ -42,9 +45,9 @@ Prefer references over duplication.
 
 Before working on a feature:
 
-1. Read the active feature's `spec.md`.
-2. Read its `plan.md` if it already exists.
-3. Read its `tasks.md` to identify the current task.
+1. Read the active feature's `<NNN>-spec.md`.
+2. Read its `<NNN>-plan.md` if it already exists.
+3. Read its `<NNN>-tasks.md` to identify the current task.
 4. Read only the relevant parts of the constitution required for that task.
 
 Do not load unrelated feature specifications unless they are required to understand a dependency.
@@ -179,6 +182,20 @@ A new component must be shown in the Design Lab and covered by tests, so the Des
 
 ---
 
+## Visual and layout decisions
+
+Where an element goes, how it looks and how it behaves visually has already been decided in the approved art direction: `spec/constitution/art-direction/`.
+
+- Consult it before deciding placement, composition, copy or visual behaviour. Do not invent them.
+- The Design Lab prevails over the exported approved screens in visual decisions. It never prevails over functional requirements, accessibility or privacy.
+- Design Lab previews and provisional content are not implementation requirements.
+- If the art direction does not cover the case, or its decisions contradict each other, stop and ask. Do not settle it by choosing.
+- Record each decision in its own source of truth: global visual decisions in `spec/constitution/art-direction/README.md`, feature behaviour in the feature's `<NNN>-spec.md` or `<NNN>-plan.md`.
+- It is a visual and behavioural reference, not code to copy: implementation follows `tech-stack.md`.
+- Nothing in that folder is part of the production build.
+
+---
+
 ## Responsive and accessibility
 
 Ask Sofi is:
@@ -280,13 +297,13 @@ HOW globally
 → tech-stack.md
 
 WHAT this feature must do
-→ feature spec.md
+→ feature <NNN>-spec.md
 
 HOW this feature will do it
-→ feature plan.md
+→ feature <NNN>-plan.md
 
 WHAT to implement now
-→ feature tasks.md
+→ feature <NNN>-tasks.md
 
 HOW agents should navigate the project
 → AGENTS.md

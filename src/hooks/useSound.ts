@@ -3,6 +3,7 @@ import { SoundContext, type SoundContextValue } from '../app/providers/sound'
 
 const SILENT: SoundContextValue = {
   enabled: false,
+  preference: 'off',
   status: 'off',
   enable: () => {},
   unlock: () => {},

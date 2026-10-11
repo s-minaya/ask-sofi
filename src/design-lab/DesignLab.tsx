@@ -8,7 +8,7 @@ import { Logo } from '../components/ui/Logo/Logo'
 import { SegmentedControl } from '../components/ui/SegmentedControl/SegmentedControl'
 import { SkipLink } from '../components/ui/SkipLink/SkipLink'
 import { useTheme } from '../hooks/useTheme'
-import type { ThemePreference } from '../infrastructure/storage/themePreferenceStorage'
+import type { ThemePreference } from '../infrastructure/storage/preferencesStorage'
 import styles from './DesignLab.module.scss'
 import {
   LAB_SECTIONS,

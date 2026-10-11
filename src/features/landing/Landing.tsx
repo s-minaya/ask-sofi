@@ -25,12 +25,19 @@ const HEADLINES = [
 type LandingProps = {
   // «Empezar» es el gesto que prepara el audio si se ha elegido sonido.
   onStart: (sound: SoundChoiceValue) => void
+  // La elección recordada de otra visita: solo preselecciona, no prepara nada.
+  initialSound?: SoundChoiceValue
   headingRef?: Ref<HTMLHeadingElement>
   mainId?: string
 }
 
-export function Landing({ onStart, headingRef, mainId }: LandingProps) {
-  const [sound, setSound] = useState<SoundChoiceValue>('off')
+export function Landing({
+  onStart,
+  initialSound = 'off',
+  headingRef,
+  mainId,
+}: LandingProps) {
+  const [sound, setSound] = useState<SoundChoiceValue>(initialSound)
   const headlineId = useId()
 
   return (

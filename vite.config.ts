@@ -1,11 +1,29 @@
 import react from '@vitejs/plugin-react'
+import { rmSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import { configDefaults } from 'vitest/config'
+
+// public/ se copia entero al build: el worker de MSW solo sirve en desarrollo
+// (main.tsx lo arranca únicamente con import.meta.env.DEV) y no debe publicarse.
+function dropMswWorker(): Plugin {
+  let target = ''
+  return {
+    name: 'ask-sofi:drop-msw-worker',
+    apply: 'build',
+    configResolved(config) {
+      target = resolve(config.root, config.build.outDir, 'mockServiceWorker.js')
+    },
+    closeBundle() {
+      rmSync(target, { force: true })
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react({ compiler: true })],
+  plugins: [react({ compiler: true }), dropMswWorker()],
   css: {
     preprocessorOptions: {
       scss: {

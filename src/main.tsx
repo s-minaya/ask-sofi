@@ -3,11 +3,11 @@ import { createRoot } from 'react-dom/client'
 import './styles/globals/global.scss'
 import App from './App.tsx'
 import { applyThemePreference } from './app/providers/theme'
-import { readThemePreference } from './infrastructure/storage/themePreferenceStorage'
+import { readPreferences } from './infrastructure/storage/preferencesStorage'
 
 async function bootstrap() {
   // El tema guardado se aplica antes del primer render para no mostrar el contrario.
-  applyThemePreference(readThemePreference())
+  applyThemePreference(readPreferences().theme)
 
   // MSW sólo se activa en desarrollo; en producción el chunk no se carga.
   if (import.meta.env.DEV) {

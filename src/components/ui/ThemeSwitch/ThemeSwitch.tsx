@@ -1,5 +1,5 @@
 import { useTheme } from '../../../hooks/useTheme'
-import type { ThemePreference } from '../../../infrastructure/storage/themePreferenceStorage'
+import type { ThemePreference } from '../../../infrastructure/storage/preferencesStorage'
 import { MoonIcon, SunIcon, SystemIcon } from '../icons/icons'
 import {
   SegmentedControl,

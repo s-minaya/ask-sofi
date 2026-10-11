@@ -224,6 +224,9 @@
   @include u.bp-from(u.$bp-columns) {
     position: relative;
     z-index: var(--z-raised);
+    // La fila ocupa el resto de la columna de texto: sin esto el diálogo se
+    // estiraría con ella y taparía el pie de la foto.
+    align-self: start;
     width: min(100%, 20.625rem);
     // Solapa la tira del fotomatón, cuyos recortes miden px.
     margin: -150px 0 0;
