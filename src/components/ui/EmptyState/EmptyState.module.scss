@@ -1,0 +1,27 @@
+@use 'utilities' as u;
+
+.empty {
+  display: grid;
+  gap: 1.375rem;
+  justify-items: center;
+  padding: 2.5rem 1.5rem 2.75rem;
+  border: var(--stroke-structure) solid var(--color-border);
+  background: var(--color-bg);
+  text-align: center;
+}
+
+.copy {
+  display: grid;
+  gap: 0.625rem;
+  justify-items: center;
+}
+
+.title {
+  @include u.type-display-m;
+}
+
+.text {
+  @include u.type-small;
+  max-width: 40ch;
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,119 @@
+@use 'utilities' as u;
+
+// Cajas de revista a todo color. El color acompaña; el aviso lo cuentan
+// el antetítulo y el texto. Cada caja fija su foco para que siempre se vea.
+.notice {
+  position: relative;
+  padding: var(--notice-padding, 1.5rem clamp(1rem, 2.4vw, 2rem) 1.625rem);
+  border: var(--stroke-structure) solid
+    var(--notice-border, var(--color-border));
+}
+
+.attention,
+.info,
+.soft,
+.pink {
+  color: var(--tone-ink);
+  --color-focus: var(--tone-ink);
+  --color-ring: var(--tone-white);
+}
+
+.attention {
+  background: var(--tone-butter);
+}
+
+.info {
+  background: var(--tone-lilac);
+}
+
+.soft {
+  background: var(--tone-pink-soft);
+}
+
+.pink {
+  background: var(--tone-pink);
+}
+
+.ink {
+  background: var(--tone-ink);
+  color: var(--tone-cream);
+  --color-focus: var(--tone-butter);
+  --color-ring: var(--tone-cream);
+
+  .kicker {
+    color: var(--tone-butter);
+  }
+}
+
+// El único sitio con cereza.
+.danger {
+  background: var(--tone-cherry);
+  color: var(--tone-white);
+  --color-focus: var(--tone-white);
+  --color-ring: var(--tone-white);
+  --button-secondary-bg: var(--tone-white);
+  --button-secondary-fg: var(--tone-ink);
+  --button-secondary-border: var(--tone-ink);
+}
+
+.kicker {
+  @include u.type-kicker;
+}
+
+.title {
+  @include u.type-head;
+  margin-top: 0.5rem;
+}
+
+.text {
+  @include u.type-body;
+  margin-top: 0.75rem;
+}
+
+// Filas dentro de cajas tinta, como «Me falta un dato».
+.rows {
+  margin-top: 0.875rem;
+  font-size: 1rem;
+  line-height: 1.45;
+
+  > li {
+    padding: 0.5rem 0;
+    border-top: var(--stroke-hairline) solid rgb(255 245 232 / 25%);
+
+    &:last-child {
+      border-bottom: var(--stroke-hairline) solid rgb(255 245 232 / 25%);
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1.25rem;
+}
+
+// Avisos de una línea: sonido bloqueado o no disponible.
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+  border: var(--stroke-detail) solid var(--tone-ink);
+  font: 500 0.875rem/1.4 var(--font-ui);
+  --color-focus: var(--tone-ink);
+
+  > svg {
+    flex: none;
+  }
+}
+
+.inlinePlain {
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  border-color: var(--color-border);
+}

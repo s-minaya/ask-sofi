@@ -1,0 +1,72 @@
+@use 'utilities' as u;
+
+.field {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.label {
+  display: block;
+  font: 700 0.9375rem/1.3 var(--font-ui);
+}
+
+.help {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+// Papel, 2 px de tinta, 52 px de alto mínimo y 17 px de texto.
+.control {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  padding: 0.75rem 0.875rem;
+  border: var(--stroke-control) solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font: 500 1.0625rem/1.45 var(--font-ui);
+  outline: none;
+  resize: vertical;
+
+  &::placeholder {
+    color: var(--color-on-surface-subtle);
+    opacity: 1;
+  }
+
+  &:hover,
+  &[data-force-state='hover'] {
+    box-shadow: inset 0 0 0 1px var(--color-border);
+  }
+
+  &:focus,
+  &[data-force-state='focus'] {
+    @include u.focus-ring(3px);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger);
+    box-shadow: inset 0 0 0 1px var(--color-danger);
+  }
+
+  &:disabled {
+    border-style: dashed;
+    border-color: var(--color-text-subtle);
+    background: transparent;
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.count {
+  margin-left: auto;
+}

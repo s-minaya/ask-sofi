@@ -1,0 +1,58 @@
+@use 'utilities' as u;
+
+// Escenario de Sofi: apilado en estrecho; desde 960 px, Sofi de 384 px junto al diálogo.
+.stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  padding: 0 var(--gutter) 1.375rem;
+  border-bottom: var(--stroke-structure) solid var(--color-border);
+  background-color: var(--color-bg);
+  @include u.dots;
+
+  @include u.bp-from(u.$bp-stage) {
+    // Retrato y recorte miden lo del spritesheet, en px, y no crecen con el texto.
+    grid-template-columns: 384px minmax(0, 1fr);
+    gap: 3rem;
+    align-items: end;
+    justify-items: stretch;
+    padding-top: 1.75rem;
+    padding-bottom: 0;
+  }
+}
+
+// En estrecho se recorta a los hombros y ocupa todo el ancho.
+.sofi {
+  display: flex;
+  justify-content: center;
+  width: calc(100% + 2 * var(--gutter));
+  height: 236px;
+  margin: 0 calc(-1 * var(--gutter));
+  overflow: hidden;
+
+  > * {
+    margin-top: 4px;
+  }
+
+  @include u.bp-from(u.$bp-stage) {
+    width: auto;
+    height: auto;
+    margin: 0 0 calc(-1 * var(--stroke-structure));
+    overflow: visible;
+
+    > * {
+      margin-top: 0;
+    }
+  }
+}
+
+.dialog {
+  width: 100%;
+  // Solape sobre el recorte del retrato: va en px como él.
+  margin: -30px 0 0;
+
+  @include u.bp-from(u.$bp-stage) {
+    align-self: center;
+    margin: 0 0 2.25rem;
+  }
+}

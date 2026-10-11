@@ -1,0 +1,17 @@
+@use 'utilities' as u;
+
+// La raíz de la aplicación es el contenedor «app» de los componentes que se compactan.
+.app {
+  position: relative;
+  min-height: 100dvh;
+  overflow-x: clip;
+  @include u.bp-app-container;
+}
+
+.main:focus {
+  outline: none;
+}
+
+.srOnly {
+  @include u.visually-hidden;
+}

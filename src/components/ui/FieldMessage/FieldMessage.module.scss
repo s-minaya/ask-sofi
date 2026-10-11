@@ -1,0 +1,13 @@
+// Error de campo: icono pixel y texto cereza; nunca solo el color.
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font: 600 0.875rem/1.4 var(--font-ui);
+  color: var(--color-danger);
+
+  svg {
+    flex: none;
+    margin-top: 0.0625rem;
+  }
+}

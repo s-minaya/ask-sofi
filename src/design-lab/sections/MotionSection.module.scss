@@ -1,0 +1,375 @@
+@use 'utilities' as u;
+
+// --- 4.1 · SofiSpeech ---
+
+.play {
+  display: grid;
+  gap: 1.75rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 2.5rem;
+    align-items: start;
+  }
+}
+
+.stage {
+  padding: 1.75rem clamp(1rem, 3vw, 2.5rem) 2.25rem;
+}
+
+.stageInner {
+  display: grid;
+  gap: 1.375rem;
+  justify-items: center;
+}
+
+// El cuadro de diálogo se monta sobre el retrato, como en la lectura.
+.speech {
+  width: 100%;
+  margin-top: -3.5rem;
+}
+
+.panel {
+  display: grid;
+  gap: 1.375rem;
+  align-content: start;
+  padding: 1.5rem clamp(1rem, 2vw, 1.75rem) 1.75rem;
+  border: var(--stroke-structure) solid var(--color-border);
+}
+
+.sep {
+  margin: 0;
+  border: 0;
+  border-top: var(--stroke-detail) solid var(--color-rule-soft);
+}
+
+.simulate {
+  display: grid;
+}
+
+.row3 {
+  display: grid;
+  gap: var(--stroke-structure);
+  margin-top: 1.75rem;
+  background: var(--color-text);
+  border: var(--stroke-structure) solid var(--color-border);
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  > div {
+    min-width: 0;
+    padding: 1.375rem clamp(1rem, 2vw, 1.625rem) 1.5rem;
+    background: var(--color-bg);
+  }
+}
+
+.bar {
+  position: relative;
+  height: 1rem;
+  margin-top: 0.625rem;
+  @include u.cells(var(--color-cell-off));
+
+  > span {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background: var(--color-cell-on);
+  }
+}
+
+.log {
+  font: 500 0.8125rem/1.5 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+
+  li {
+    display: grid;
+    grid-template-columns: 3.875rem minmax(0, 1fr);
+    gap: 0.625rem;
+    padding: 0.375rem 0;
+    border-top: var(--stroke-detail) solid var(--color-rule-soft);
+  }
+}
+
+.reader {
+  margin-top: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: var(--stroke-detail) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+// --- 4.2 · Controlador de sonido ---
+
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem 0.5rem;
+}
+
+.flowFailures {
+  margin-top: 0.875rem;
+}
+
+.flowGap {
+  width: 1.5rem;
+}
+
+.node {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0 0.875rem;
+  border: var(--stroke-control) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font: 600 0.875rem/1.2 var(--font-ui);
+}
+
+// El estado activo, en tinta (crema en oscuro).
+.nodeOn {
+  border-color: var(--color-border);
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.nodeWarn {
+  border-color: var(--tone-ink);
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+}
+
+.arrow {
+  font: 700 1rem/1 var(--font-ui);
+  color: var(--color-text-muted);
+}
+
+.gesture {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.625rem;
+  padding: 0 0.5rem;
+  border: var(--stroke-detail) solid var(--tone-ink);
+  background: var(--tone-lilac);
+  color: var(--tone-ink);
+  font: 700 0.625rem/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cardText {
+  @include u.type-small;
+  margin-top: 0.5rem;
+}
+
+// --- 4.3 · Sincronía con sprites ---
+
+.sync {
+  display: grid;
+  gap: var(--stroke-structure);
+  background: var(--color-text);
+  border: var(--stroke-structure) solid var(--color-border);
+
+  @include u.bp-from(u.$bp-error-columns) {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  > div {
+    min-width: 0;
+    padding: 1.5rem clamp(1rem, 2.4vw, 1.875rem) 1.625rem;
+    background: var(--color-bg);
+  }
+}
+
+.sync > .slotCell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+// Hueco del futuro sprite «hablando»: se enciende con la escritura real de 4.1.
+.slot {
+  display: grid;
+  place-items: center;
+  width: 9.375rem;
+  height: 9.375rem;
+  padding: 0.625rem;
+  border: var(--stroke-structure) dashed var(--color-text-subtle);
+  color: var(--color-text-muted);
+  font: 600 0.8125rem/1.35 var(--font-ui);
+  text-align: center;
+}
+
+.slotOn {
+  border-style: solid;
+  border-color: var(--tone-ink);
+  background: var(--tone-pink);
+  color: var(--tone-ink);
+}
+
+.slotCopy {
+  display: grid;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.slotTitle {
+  @include u.type-title;
+  font-size: 1.375rem;
+}
+
+.contract {
+  display: grid;
+
+  li {
+    display: grid;
+    grid-template-columns: 6.875rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 0.625rem 0;
+    border-top: var(--stroke-detail) solid var(--color-rule-soft);
+    font-size: 0.875rem;
+
+    &:first-child {
+      border-top: var(--stroke-structure) solid var(--color-border);
+    }
+
+    &:last-child {
+      border-bottom: var(--stroke-detail) solid var(--color-rule-soft);
+    }
+  }
+}
+
+// --- 4.4 · Parpadeo ---
+
+.timelineWrap {
+  position: relative;
+  padding-bottom: 1.875rem;
+
+  @include u.bp-until(u.$bp-header - 1px) {
+    padding-bottom: 3rem;
+  }
+}
+
+.timeline {
+  display: flex;
+  height: 3.5rem;
+  border: var(--stroke-structure) solid var(--color-border);
+
+  > span {
+    display: flex;
+    align-items: flex-end;
+    padding: 0 0 0.375rem 0.375rem;
+    border-right: var(--stroke-detail) solid var(--tone-ink);
+    color: var(--tone-ink);
+    font: 700 0.6875rem/1 var(--font-ui);
+    white-space: nowrap;
+    overflow: hidden;
+
+    &:last-child {
+      border-right: 0;
+    }
+  }
+}
+
+.frame0 {
+  background: var(--lab-paper);
+}
+
+.frame1 {
+  background: var(--tone-butter);
+}
+
+.frame2 {
+  background: var(--tone-pink);
+}
+
+// Cabezal sincronizado con el sprite: misma duración y mismo arranque.
+.playhead {
+  position: absolute;
+  top: -0.375rem;
+  bottom: 1.375rem;
+  left: 0;
+  width: 0.1875rem;
+  background: var(--color-text);
+  animation: playhead var(--duration-blink) linear infinite;
+
+  @include u.bp-until(u.$bp-header - 1px) {
+    bottom: 2.5rem;
+  }
+
+  @include u.reduced-motion {
+    animation: none;
+  }
+}
+
+.blinkSlow .playhead,
+.blinkSlow .blinkSprite > span {
+  animation-duration: calc(var(--duration-blink) * 4);
+}
+
+.blinkPaused .playhead,
+.blinkPaused .blinkSprite > span {
+  animation-play-state: paused;
+}
+
+@keyframes playhead {
+  to {
+    left: calc(100% - 0.1875rem);
+  }
+}
+
+.ticks {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1.375rem;
+
+  span {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    font: 700 0.75rem/1 var(--font-ui);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // En estrecho, las marcas suben a una primera fila y la marca baja ocupa la segunda.
+  @include u.bp-until(u.$bp-header - 1px) {
+    span {
+      bottom: 1.125rem;
+    }
+
+    .tickLow {
+      bottom: 0;
+    }
+  }
+
+  .tickStart {
+    left: 0;
+    transform: none;
+  }
+
+  .tickEnd {
+    right: 0;
+    transform: none;
+  }
+}
+
+.blinkRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem 2.5rem;
+  margin-top: 1.75rem;
+}
+
+.blinkControls {
+  display: grid;
+  gap: 0.875rem;
+}

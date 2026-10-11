@@ -1,0 +1,35 @@
+body {
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.5;
+  // Con texto muy grande una palabra se parte antes que ensanchar la página.
+  overflow-wrap: anywhere;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+// Los controles parten el texto solo entre palabras: «Con sonido» no puede quedar
+// en «Co / n / son / ido»; si no caben, pasan a otra línea.
+:where(button, label, legend, input, select, textarea, summary) {
+  overflow-wrap: normal;
+}
+
+::selection {
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+}
+
+// Red de seguridad: cualquier elemento enfocable sin estilo propio conserva un foco visible.
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+// Titulares que reciben el foco por código al cambiar de pantalla: no son controles,
+// así que no dibujan anillo; el lector de pantalla los anuncia igual.
+:where(h1, h2, h3, h4)[tabindex='-1']:focus {
+  outline: none;
+}

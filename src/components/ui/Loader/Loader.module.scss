@@ -1,0 +1,34 @@
+@use 'utilities' as u;
+
+// Cuatro celdas recorren el medidor: no simula un progreso que no existe.
+.loader {
+  position: relative;
+  height: 14px;
+  overflow: hidden;
+  @include u.cells(var(--color-cell-off));
+
+  i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 20%;
+    @include u.cells(var(--color-cell-on), 25%);
+    animation: scan var(--duration-loader) steps(24) infinite;
+
+    // Con movimiento reducido desaparecen las celdas y queda el texto.
+    @include u.reduced-motion {
+      display: none;
+    }
+  }
+}
+
+@keyframes scan {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(500%);
+  }
+}

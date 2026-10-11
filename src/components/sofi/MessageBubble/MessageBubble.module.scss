@@ -1,0 +1,161 @@
+@use 'utilities' as u;
+
+// Burbuja de chat pixel: borde de 3 px con esquinas escalonadas y una cola.
+.wrap {
+  position: relative;
+}
+
+.edge {
+  padding: 0.1875rem;
+  background: var(--color-bubble-border);
+  @include u.pixel-corners;
+}
+
+.paper {
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  @include u.pixel-corners;
+}
+
+.tail {
+  position: absolute;
+  top: calc(100% - 0.1875rem);
+  left: var(--tail-left, 26px);
+  width: var(--tail-width, 30px);
+  height: var(--tail-height, 25px);
+
+  .tailEdge {
+    fill: var(--color-bubble-border);
+  }
+
+  .tailPaper {
+    fill: var(--color-surface);
+  }
+}
+
+// --- MessageInput ---
+
+.field {
+  display: grid;
+}
+
+.label {
+  @include u.type-display-m;
+  display: block;
+  margin-top: 0.75rem;
+}
+
+.help {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+.input {
+  margin: 1.125rem 0.5rem 0 0;
+  max-width: 38.75rem;
+  --tail-left: 20px;
+  --tail-width: 24px;
+  --tail-height: 20px;
+
+  &:focus-within,
+  &[data-force-state='focus'] {
+    @include u.focus-ring(5px);
+  }
+
+  .paper {
+    padding: 1.25rem 1.375rem 0.875rem;
+
+    @include u.bp-compact {
+      padding: 1rem 1rem 0.625rem;
+    }
+  }
+}
+
+.invalid {
+  .edge {
+    background: var(--color-danger);
+  }
+
+  .tailEdge {
+    fill: var(--color-danger);
+  }
+}
+
+.disabled {
+  .edge {
+    background: var(--color-text-subtle);
+  }
+
+  .tailEdge {
+    fill: var(--color-text-subtle);
+  }
+}
+
+.textarea {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  resize: none;
+  outline: none;
+
+  @include u.bp-from(u.$bp-columns) {
+    font-size: 1.75rem;
+  }
+
+  &::placeholder {
+    color: var(--color-on-surface-subtle);
+    opacity: 1;
+  }
+
+  &:disabled {
+    color: var(--color-on-surface-subtle);
+    -webkit-text-fill-color: var(--color-on-surface-subtle);
+    cursor: not-allowed;
+  }
+}
+
+.meta {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  --counter-color: var(--color-on-surface-subtle);
+}
+
+.error {
+  margin-top: 2rem;
+}
+
+// --- MessageBubble: cita de solo lectura ---
+
+.quote {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  --tail-left: 14px;
+  --tail-width: 20px;
+  --tail-height: 17px;
+
+  .paper {
+    padding: 0.625rem 1rem;
+    font-size: 1.1875rem;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+}
+
+.quoteLarge .paper {
+  padding: 0.75rem 1.125rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}

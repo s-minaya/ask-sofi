@@ -1,0 +1,99 @@
+@use 'utilities' as u;
+
+.group {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+
+.nowrap {
+  flex-wrap: nowrap;
+}
+
+.option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.25rem 0.75rem;
+  border: var(--stroke-control) solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  font: 700 0.6875rem/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+
+  & + & {
+    margin-left: calc(-1 * var(--stroke-control));
+  }
+
+  &:hover,
+  &[data-force-state='hover'] {
+    background: var(--tone-butter);
+    color: var(--tone-ink);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  &:focus-visible,
+  &[data-force-state='focus'] {
+    @include u.focus-ring(2px);
+    z-index: var(--z-raised);
+  }
+
+  &:disabled {
+    background: transparent;
+    color: var(--color-text-subtle);
+    border-style: dashed;
+    cursor: not-allowed;
+  }
+}
+
+// Solo icono: cuadrado de 44 px; el texto queda para lectores de pantalla.
+.iconOnly {
+  .option {
+    min-width: 44px;
+    padding: 0;
+  }
+
+  .text {
+    @include u.visually-hidden;
+  }
+}
+
+.textOnly .icon {
+  display: none;
+}
+
+// Iconos en cabeceras estrechas, texto desde la cabecera ancha.
+.responsive {
+  @include u.bp-until(u.$bp-header - 0.02px) {
+    flex-wrap: nowrap;
+
+    .option {
+      min-width: 44px;
+      padding: 0;
+    }
+
+    .text {
+      @include u.visually-hidden;
+    }
+  }
+
+  @include u.bp-from(u.$bp-header) {
+    .icon {
+      display: none;
+    }
+  }
+}
+
+.icon {
+  display: inline-flex;
+}

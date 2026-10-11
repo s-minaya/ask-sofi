@@ -1,0 +1,158 @@
+@use 'utilities' as u;
+
+// Cromo del laboratorio: solo existe en desarrollo.
+.lab {
+  position: relative;
+  min-height: 100dvh;
+  overflow-x: clip;
+  background: var(--color-bg);
+  color: var(--color-text);
+  // Papel de escenario del tema claro, fijo: esquemas y líneas de tiempo se leen igual en los dos temas.
+  --lab-paper: #fce6d6;
+}
+
+.wrap {
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  background: var(--tone-ink);
+  color: var(--tone-cream);
+  font: 500 0.8125rem/1.3 var(--font-ui);
+}
+
+// En oscuro, una línea separa la barra de un fondo del mismo color. Es geometría y
+// no cabe en un token, así que se repiten aquí las condiciones de los temas.
+@mixin bar-rule {
+  border-bottom: var(--stroke-detail) solid
+    color-mix(in srgb, var(--tone-cream) 30%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .bar {
+    @include bar-rule;
+  }
+}
+
+:global(:root[data-theme='dark']) .bar {
+  @include bar-rule;
+}
+
+.barLabel {
+  display: flex;
+  align-items: center;
+  padding: 0 0.875rem;
+  background: var(--tone-lilac);
+  color: var(--tone-ink);
+  font: 700 0.75rem/1 var(--font-ui);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.barText {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.barMeta {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  color: var(--tone-mist);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+  border-bottom: var(--stroke-structure) solid var(--color-border);
+}
+
+.brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.875rem 1.125rem;
+}
+
+.brandLogo {
+  display: block;
+  width: 8.25rem;
+  height: auto;
+}
+
+.brandName {
+  @include u.type-display;
+  font-size: 1.875rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.375rem;
+}
+
+.nav {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: var(--stroke-structure) solid var(--color-border);
+  scrollbar-width: thin;
+
+  a {
+    display: flex;
+    flex: none;
+    align-items: baseline;
+    gap: 0.625rem;
+    min-height: 52px;
+    padding: 0.875rem 1.375rem 0.75rem;
+    border-right: var(--stroke-structure) solid var(--color-border);
+    font: 600 0.9375rem/1.2 var(--font-ui);
+    text-decoration: none;
+
+    &:hover {
+      background: var(--tone-butter);
+      color: var(--tone-ink);
+    }
+
+    &[aria-current='page'] {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    &:focus-visible {
+      @include u.focus-ring(-6px);
+    }
+  }
+}
+
+.navNum {
+  @include u.type-display;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.75rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}

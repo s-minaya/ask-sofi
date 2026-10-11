@@ -1,0 +1,285 @@
+@use 'utilities' as u;
+
+// Portada: cabecera de revista, titular, sonido y «Empezar»; el fotomatón y el
+// diálogo se apilan en estrecho y pasan a la derecha desde 1080 px.
+.mast {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.75rem;
+  padding: 0.875rem var(--gutter) 0.75rem;
+  border-bottom: var(--stroke-structure) solid var(--color-border);
+
+  @include u.bp-from(u.$bp-header) {
+    padding-top: 1.5rem;
+    padding-bottom: 1.25rem;
+  }
+}
+
+.mastLogo {
+  line-height: 0;
+}
+
+.logo {
+  display: block;
+  width: clamp(12.5rem, 34vw, 33.75rem);
+  // Con texto muy grande el mínimo en rem superaría la pantalla; el tope usa el
+  // viewport (no un %) para no alterar el tamaño del logo cuando cabe.
+  max-width: calc(100vw - 2 * var(--gutter));
+  height: auto;
+  margin: -0.5rem 0 -0.25rem -0.375rem;
+
+  @include u.bp-from(u.$bp-header) {
+    margin: -1rem 0 -0.5rem -0.75rem;
+  }
+}
+
+.mastSide {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.75rem;
+  margin-left: auto;
+}
+
+.issue {
+  display: none;
+  text-align: right;
+
+  @include u.bp-from(u.$bp-columns) {
+    display: block;
+  }
+}
+
+.issueKicker {
+  @include u.type-kicker;
+}
+
+.issueLine {
+  @include u.type-serif;
+  margin-top: 0.25rem;
+  font-size: 1.125rem;
+  font-style: italic;
+}
+
+// Máximo un estallido por pantalla: en la cabecera ancha o junto al fotomatón.
+.mastSide .headBurst {
+  display: none;
+
+  @include u.bp-from(u.$bp-header) {
+    display: grid;
+  }
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'booth' 'copy' 'quote';
+  gap: 1.625rem;
+  padding: 1.375rem var(--gutter) 2.125rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas: 'copy booth' 'copy quote';
+    grid-template-rows: auto 1fr;
+    gap: 0 3rem;
+    padding-top: 2.25rem;
+    padding-bottom: 4rem;
+  }
+}
+
+.copy {
+  grid-area: copy;
+  min-width: 0;
+}
+
+.headline {
+  @include u.type-display-xl;
+  margin-top: 0.875rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    max-width: 8.6em;
+    margin-top: 1.375rem;
+  }
+}
+
+// El signo de cierre nunca se queda solo en una línea. Solo cede cuando la pantalla
+// es más estrecha que el mínimo soportado a tamaño de texto por defecto, es decir,
+// con el texto agrandado: ahí «vale» puede no caber ni solo y se parte antes que
+// salirse de la pantalla.
+.nowrap {
+  @include u.bp-from(u.$bp-large-text) {
+    white-space: nowrap;
+  }
+}
+
+.hit {
+  @include u.highlight;
+}
+
+.deck {
+  @include u.type-deck;
+  max-width: 40ch;
+  margin-top: 0.875rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    margin-top: 1.625rem;
+  }
+}
+
+.sound {
+  margin-top: 1.375rem;
+  --option-flex: 1 1 0;
+
+  @include u.bp-from(u.$bp-header) {
+    --option-flex: none;
+  }
+
+  @include u.bp-from(u.$bp-columns) {
+    margin-top: 2rem;
+  }
+}
+
+.cta {
+  display: grid;
+  // La pista no crece con el contenido: con texto muy grande el botón se queda en
+  // el ancho de la pantalla en lugar de empujar la página.
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.875rem;
+  justify-items: center;
+  margin-top: 1.5rem;
+  padding: 0 0.375rem;
+
+  > button {
+    width: 100%;
+  }
+
+  @include u.bp-from(u.$bp-header) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem 1.75rem;
+    margin-top: 2.125rem;
+    padding: 0;
+
+    > button {
+      width: auto;
+    }
+  }
+}
+
+.ctaNote {
+  font-size: 0.875rem;
+  color: var(--color-text-subtle);
+}
+
+.booth {
+  position: relative;
+  display: flex;
+  grid-area: booth;
+  justify-content: center;
+  padding: 0.875rem 0 0.375rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    justify-content: flex-end;
+    padding: 0 5% 0 0;
+  }
+}
+
+.boothDots {
+  position: absolute;
+  inset: 0 calc(-1 * var(--gutter)) 0 30%;
+  @include u.dots;
+
+  @include u.bp-from(u.$bp-columns) {
+    inset: 1.875rem 0 -2.5rem 8%;
+  }
+}
+
+.booth .boothBurst {
+  position: absolute;
+  top: -0.875rem;
+  right: -0.375rem;
+
+  @include u.bp-from(u.$bp-header) {
+    display: none;
+  }
+}
+
+.quote {
+  grid-area: quote;
+  margin: 0.375rem 0.375rem 0;
+  --dialog-name-size: 1.25rem;
+  --dialog-name-top: -1.125rem;
+  --dialog-name-left: 0.875rem;
+  --dialog-name-padding: 0.1875rem 0.75rem 0.375rem;
+  --dialog-text-size: 1.0625rem;
+  --dialog-text-leading: 1.45;
+
+  @include u.bp-from(u.$bp-header) {
+    max-width: 35rem;
+  }
+
+  @include u.bp-from(u.$bp-columns) {
+    position: relative;
+    z-index: var(--z-raised);
+    width: min(100%, 20.625rem);
+    // Solapa la tira del fotomatón, cuyos recortes miden px.
+    margin: -150px 0 0;
+  }
+}
+
+// Así trabaja Sofi: tres cajas a sangre.
+.boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--stroke-structure);
+  background: var(--color-text);
+  border-top: var(--stroke-structure) solid var(--color-border);
+
+  > div {
+    flex: 1 1 17.5rem;
+    min-width: 0;
+    padding: 1.5rem clamp(1rem, 2.4vw, 2.125rem) 1.75rem;
+  }
+}
+
+.boxPink {
+  background: var(--tone-pink);
+  color: var(--tone-ink);
+}
+
+.boxButter {
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+}
+
+.boxInk {
+  background: var(--tone-ink);
+  color: var(--tone-cream);
+
+  .boxKicker {
+    color: var(--tone-butter);
+  }
+
+  .boxText {
+    color: var(--tone-cream-muted);
+  }
+}
+
+.boxKicker {
+  @include u.type-kicker;
+}
+
+.boxTitle {
+  @include u.type-head;
+  margin-top: 0.625rem;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+}
+
+.boxText {
+  margin-top: 0.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}

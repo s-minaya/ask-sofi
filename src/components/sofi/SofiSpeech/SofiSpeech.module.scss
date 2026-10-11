@@ -1,0 +1,43 @@
+@use 'utilities' as u;
+
+.speech {
+  display: grid;
+  gap: 1.125rem;
+}
+
+// Copia invisible que reserva el alto final: nada salta mientras Sofi escribe.
+.type {
+  display: grid;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.ghost {
+  visibility: hidden;
+}
+
+.caret {
+  display: inline-block;
+  width: 10px;
+  height: 0.9em;
+  margin-left: 0.1875rem;
+  vertical-align: -0.1em;
+  background: currentColor;
+  animation: blink var(--duration-caret) steps(1) infinite;
+
+  @include u.reduced-motion {
+    animation: none;
+  }
+}
+
+.srOnly {
+  @include u.visually-hidden;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

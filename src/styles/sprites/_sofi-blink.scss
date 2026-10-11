@@ -1,0 +1,17 @@
+@use 'sprite';
+
+// Sofi pestañea: un parpadeo, una pausa y un parpadeo doble (bucle de 4,2 s).
+// Fotogramas de la tira: 0 abiertos · 1 entrecerrados · 2 cerrados.
+.sofi-blink {
+  @include sprite.animation(
+    $name: sofi-blink,
+    $image: url('sofi-blink.webp'),
+    $frames: 3,
+    $size: 384 384,
+    $timeline: (
+      0 1800, 1 100, 2 100, 1 100,
+      0 1400, 1 100, 2 100, 1 100,
+      0 100,  1 100, 2 100, 1 100,
+    ),
+  );
+}

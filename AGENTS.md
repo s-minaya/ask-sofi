@@ -167,6 +167,18 @@ Do not use Effects to derive state that can be calculated during render.
 
 ---
 
+## Component reuse
+
+Before creating interface code:
+
+1. look for an existing component in the Design System;
+2. reuse it, or extend it when it almost fits;
+3. create a new component only when the active specification needs something the Design System does not offer.
+
+A new component must be shown in the Design Lab and covered by tests, so the Design System stays the single catalogue of reusable interface.
+
+---
+
 ## Responsive and accessibility
 
 Ask Sofi is:

@@ -1,0 +1,42 @@
+@use 'utilities' as u;
+
+// Estallido de portada: texto real, no imagen. Máximo uno por pantalla.
+.burst {
+  display: grid;
+  place-items: center;
+  width: var(--burst-size, 7.375rem);
+  height: var(--burst-size, 7.375rem);
+  text-align: center;
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+  transform: rotate(var(--burst-rotate, 10deg));
+  @include u.burst-shape;
+}
+
+.pink {
+  background: var(--tone-pink);
+}
+
+.lilac {
+  background: var(--tone-lilac);
+}
+
+.content {
+  line-height: 1;
+}
+
+.kicker {
+  @include u.type-kicker;
+  display: block;
+  font-size: var(--burst-kicker-size, 0.625rem);
+}
+
+.main {
+  @include u.type-serif;
+  display: block;
+  margin-top: var(--burst-main-gap, 0);
+  font-style: italic;
+  font-weight: var(--burst-main-weight, 900);
+  font-size: var(--burst-main-size, 2.125rem);
+  line-height: 1;
+}

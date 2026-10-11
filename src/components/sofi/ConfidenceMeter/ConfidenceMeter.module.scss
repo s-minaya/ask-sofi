@@ -1,0 +1,15 @@
+@use 'utilities' as u;
+
+// Medidor de 20 celdas de 5 %. Las versiones reparten el apoyo entre ellas;
+// ninguna barra mide lo que siente nadie.
+.meter {
+  position: relative;
+  height: 14px;
+  @include u.cells(var(--color-cell-off));
+
+  span {
+    position: absolute;
+    inset: 0;
+    @include u.cells(var(--color-cell-on));
+  }
+}

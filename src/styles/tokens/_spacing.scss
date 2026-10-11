@@ -1,0 +1,17 @@
+// Once pasos: de 4 en 4 hasta 24 y luego más largos.
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
+  --space-9: 3rem;
+  --space-10: 4rem;
+  --space-11: 5rem;
+
+  // Margen lateral de página: crece con el ancho y se detiene en 64 px.
+  --gutter: clamp(1rem, 4.4vw, 4rem);
+}

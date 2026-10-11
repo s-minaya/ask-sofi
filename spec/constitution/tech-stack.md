@@ -264,6 +264,24 @@ SCSS no sustituirá a las variables CSS para propiedades que necesiten cambiar d
 
 ---
 
+## CSS units & styling conventions
+
+Se priorizarán unidades relativas y layouts intrínsecos frente a dimensiones absolutas.
+
+- `rem`: tipografía, espaciados y dimensiones generales.
+- `em`: medidas dependientes del tamaño de fuente del componente.
+- `%`, `fr`, `ch`, `minmax()` y `clamp()`: cuando respondan a necesidades reales de composición.
+- `px`: bordes, detalles gráficos y medidas que requieran precisión, especialmente spritesheets.
+- `px` en `min-height` y `min-width` de objetivos táctiles: el mínimo es de 44 CSS px y no escala con el texto. El alto real lo fija el contenido, de modo que un texto que pasa a varias líneas hace crecer el control en lugar de recortarse. Es una excepción deliberada a `rem` para las dimensiones.
+
+No se modificará el tamaño raíz del navegador para facilitar conversiones. `line-height` utilizará preferentemente valores sin unidades.
+
+Los valores reutilizables se centralizarán en design tokens. Se evitarán valores arbitrarios repetidos y dimensiones fijas que provoquen recortes al aumentar el texto.
+
+Los estilos SCSS utilizarán el sistema de módulos `@use` / `@forward`, evitando el `@import` obsoleto.
+
+La elección de unidades y las excepciones se validarán mediante las comprobaciones de responsive, zoom y accesibilidad establecidas en este documento.
+
 ## 7. Design tokens
 
 Se crearán tokens para evitar valores arbitrarios repetidos.
@@ -1923,7 +1941,7 @@ E2E
 accessibility checks
 ```
 
-cuando las correspondientes features existan.
+cuando las correspondientes features existan. Las comprobaciones de accesibilidad con Playwright y axe, y la de tamaño de texto, se ejecutan desde la feature `002` en un job aparte que sigue al pipeline inicial.
 
 Las evals de Jev no deberán ejecutarse automáticamente en cada commit.
 

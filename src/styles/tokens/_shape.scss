@@ -1,0 +1,16 @@
+// Línea de rotulador, esquinas rectas y pegatinas en lugar de sombras.
+:root {
+  // Estructura: reglas de sección, pegatinas, cajas y versiones.
+  --stroke-structure: 2.5px;
+  // Controles: botones de icono, segmentados, opciones y campos.
+  --stroke-control: 2px;
+  // Chips, pistas y reglas internas.
+  --stroke-detail: 1.5px;
+  --stroke-hairline: 1px;
+
+  --radius: 0;
+
+  // Elevación de pegatina: anillo interior y contorno exterior, sin desenfoques.
+  --sticker-ring-width: 4px;
+  --sticker-edge-width: 5.5px;
+}

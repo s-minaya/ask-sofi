@@ -1,0 +1,67 @@
+@use 'utilities' as u;
+
+// Tira de fotomatón: los tres fotogramas en orden. Vertical a +3° en la portada
+// ancha; horizontal a −2° en la estrecha.
+.strip {
+  position: relative;
+  margin: 0;
+  background: var(--tone-white);
+  @include u.sticker;
+}
+
+// Separaciones en px: son el marco de la tira y acompañan a recortes de px.
+.vertical {
+  display: none;
+  gap: 10px;
+  padding: 10px;
+  transform: rotate(3deg);
+
+  @include u.bp-from(u.$bp-columns) {
+    display: grid;
+  }
+}
+
+.horizontal {
+  display: flex;
+  // Con el texto agrandado los márgenes de página crecen y la tira puede no caber:
+  // entonces se reparte en dos filas en lugar de salirse.
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+  width: max-content;
+  max-width: 100%;
+  padding: 7px;
+  transform: rotate(-2deg);
+
+  @include u.bp-from(u.$bp-columns) {
+    display: none;
+  }
+}
+
+.caption {
+  padding: 0.125rem 0 0.25rem;
+  color: var(--tone-ink);
+  @include u.type-serif;
+  font-size: 0.9375rem;
+  font-style: italic;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.hidden {
+  @include u.visually-hidden;
+}
+
+// En la cabecera más estrecha, la tira encoge para que quepa.
+.small {
+  @include u.bp-until(u.$bp-tiny) {
+    width: 78px !important;
+    height: 78px !important;
+
+    > * {
+      width: 156px !important;
+      height: 156px !important;
+      margin: -34px 0 0 -39px !important;
+    }
+  }
+}

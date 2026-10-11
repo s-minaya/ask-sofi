@@ -1,0 +1,16 @@
+// Tonos de marca. No cambian con el tema: las cajas y pegatinas de color fijo
+// los usan directamente, siempre con su propio color de texto encima.
+:root {
+  --tone-ink: #100819;
+  --tone-cream: #fff5e8;
+  --tone-white: #ffffff;
+  --tone-pink: #ff5c8d;
+  --tone-pink-soft: #fc99aa;
+  --tone-butter: #ffe36e;
+  --tone-lilac: #c9a7f5;
+  --tone-cherry: #c8173f;
+
+  // Texto secundario sobre cajas tinta, en cualquier tema.
+  --tone-cream-muted: #e8dce4;
+  --tone-mist: #dccbd6;
+}

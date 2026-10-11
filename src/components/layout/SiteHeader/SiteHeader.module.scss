@@ -1,0 +1,76 @@
+@use 'utilities' as u;
+
+// La misma cabecera en todos los anchos: se reorganiza, no se sustituye.
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.625rem 1.75rem;
+  padding: 0.5rem var(--gutter);
+  border-bottom: var(--stroke-structure) solid var(--color-border);
+
+  @include u.bp-from(u.$bp-header) {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  @include u.bp-until(u.$bp-tiny) {
+    column-gap: 0.5rem;
+  }
+
+  // Con el texto muy agrandado los controles bajan a otra fila en lugar de salirse.
+  @include u.bp-until(u.$bp-large-text) {
+    flex-wrap: wrap;
+  }
+}
+
+.home {
+  display: block;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 0;
+  cursor: pointer;
+
+  &:focus-visible {
+    @include u.focus-ring(4px);
+  }
+}
+
+.logo {
+  display: block;
+  width: 8.25rem;
+  height: auto;
+
+  @include u.bp-from(u.$bp-header) {
+    width: 10.5rem;
+  }
+
+  @include u.bp-until(u.$bp-tiny) {
+    width: 6.25rem;
+  }
+}
+
+// Se quita el antetítulo, nunca un control.
+.kickers {
+  display: none;
+
+  @include u.bp-from(u.$bp-columns) {
+    display: flex;
+  }
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+
+  @include u.bp-until(u.$bp-large-text) {
+    flex-wrap: wrap;
+  }
+
+  @include u.bp-until(u.$bp-tiny) {
+    gap: 0.375rem;
+  }
+}

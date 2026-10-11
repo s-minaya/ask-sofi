@@ -1,0 +1,75 @@
+@use 'utilities' as u;
+
+.legend {
+  @include u.type-kicker;
+  margin-bottom: 0.625rem;
+  color: var(--color-text-muted);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--option-gap, 0.5rem);
+}
+
+// Opción tipo píldora sobre un radio nativo.
+.option {
+  position: relative;
+  display: inline-flex;
+  flex: var(--option-flex, none);
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  min-height: var(--option-height, 48px);
+  padding: 0 1.125rem 0 0.875rem;
+  border: var(--stroke-control) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font: 600 0.9375rem/1 var(--font-ui);
+  cursor: pointer;
+  transition: transform var(--duration-ui);
+
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+  }
+
+  &:hover,
+  &[data-force-state='hover'] {
+    background: var(--tone-butter);
+    color: var(--tone-ink);
+    transform: translateY(-1px);
+  }
+
+  &:has(input:checked) {
+    background: var(--color-text);
+    color: var(--color-bg);
+    transform: none;
+  }
+
+  &:has(input:focus-visible),
+  &[data-force-state='focus'] {
+    @include u.focus-ring(3px);
+  }
+
+  &:has(input:disabled) {
+    border-style: dashed;
+    color: var(--color-text-subtle);
+    cursor: not-allowed;
+  }
+
+  @include u.reduced-motion {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.fill .option {
+  flex: 1 1 0;
+}

@@ -1,0 +1,38 @@
+@use 'utilities' as u;
+
+// Tres píxeles en secuencia. Solo junto a un texto que diga qué está pasando.
+.spinner {
+  display: inline-flex;
+  gap: 0.1875rem;
+
+  i {
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    animation: step var(--duration-spin) linear infinite;
+
+    &:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+
+    @include u.reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+@keyframes step {
+  0%,
+  32% {
+    opacity: 1;
+  }
+
+  33%,
+  100% {
+    opacity: 0.25;
+  }
+}

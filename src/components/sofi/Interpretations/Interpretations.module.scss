@@ -1,0 +1,147 @@
+@use 'utilities' as u;
+
+// --- InterpretationLead: la versión con más apoyo, en portada ---
+
+.lead {
+  position: relative;
+  padding: 1.875rem clamp(1.25rem, 2.8vw, 2.5rem) 2.125rem;
+  border: var(--stroke-structure) solid var(--tone-ink);
+  box-shadow:
+    0 0 0 var(--sticker-ring-width) var(--color-ring),
+    0 0 0 var(--sticker-edge-width) var(--tone-ink);
+}
+
+.clear {
+  background: var(--tone-pink);
+  color: var(--tone-ink);
+  --color-cell-on: var(--tone-ink);
+  --color-cell-off: rgb(16 8 25 / 20%);
+  --color-focus: var(--tone-ink);
+}
+
+// Reñido: no hay portada para nadie, así que pierde el rosa.
+.close {
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+}
+
+.leadBurst {
+  position: absolute;
+  top: -1.875rem;
+  right: -1.125rem;
+  --burst-size: 9.375rem;
+  --burst-rotate: 12deg;
+  --burst-kicker-size: 0.6875rem;
+  --burst-main-size: 0.9375rem;
+  --burst-main-weight: 700;
+  --burst-main-gap: 0.25rem;
+
+  p {
+    line-height: 1.05;
+  }
+
+  @include u.bp-compact {
+    top: -1.625rem;
+    right: -0.75rem;
+    --burst-size: 6.5rem;
+  }
+}
+
+.kicker {
+  @include u.type-kicker;
+}
+
+.figure {
+  @include u.type-figure;
+  margin-top: 0.5rem;
+}
+
+.unit {
+  @include u.type-figure-unit;
+}
+
+.leadTitle {
+  @include u.type-display-m;
+  margin-top: 1.125rem;
+  font-size: clamp(2.125rem, 3.6vw, 3.375rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+
+  @include u.bp-compact {
+    font-size: 2.125rem;
+  }
+}
+
+.leadText {
+  max-width: 46ch;
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  line-height: 1.55;
+
+  @include u.bp-compact {
+    font-size: 1rem;
+  }
+}
+
+.leadMeter {
+  margin-top: 1.5rem;
+}
+
+.clues {
+  margin-top: 1.125rem;
+}
+
+// --- InterpretationList: el resto, en columna de revista ---
+
+.version {
+  padding: 1.375rem 0 1.625rem;
+  border-top: var(--stroke-structure) solid var(--color-border);
+
+  &:last-child {
+    border-bottom: var(--stroke-structure) solid var(--color-border);
+  }
+}
+
+.versionTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.versionFigure {
+  @include u.type-figure-s;
+
+  @include u.bp-compact {
+    font-size: 2.75rem;
+  }
+}
+
+.versionTitle {
+  @include u.type-head;
+  margin-top: 0.5rem;
+
+  @include u.bp-compact {
+    font-size: 1.5625rem;
+  }
+}
+
+.versionText {
+  margin-top: 0.625rem;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+.versionMeter {
+  margin-top: 1rem;
+}
+
+// --- ReliabilityBadges ---
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}

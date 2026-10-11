@@ -1,0 +1,197 @@
+@use 'utilities' as u;
+
+.stageRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.75rem 2.25rem;
+  min-height: 8.75rem;
+  padding: 0.75rem;
+}
+
+.matrix > * {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  padding: 1.375rem 1.5rem 1.875rem;
+}
+
+.matrixStretch > * {
+  justify-items: stretch;
+}
+
+// En la matriz de estados solo se enseña el control, como en el diseño aprobado:
+// la etiqueta sigue ahí (y la rejilla es inerte), pero no ocupa sitio.
+.fieldStates label {
+  @include u.visually-hidden;
+}
+
+.inkBox {
+  display: block;
+  padding: 0.375rem 0.875rem;
+  background: var(--tone-ink);
+  color: var(--tone-cream);
+  --color-focus: var(--tone-butter);
+}
+
+.anatomy {
+  display: grid;
+  gap: 1.75rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: start;
+  }
+}
+
+@mixin pin {
+  display: inline-grid;
+  place-items: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  background: var(--tone-pink);
+  color: var(--tone-ink);
+  border: var(--stroke-detail) solid var(--tone-ink);
+  font: 700 0.6875rem/1 var(--font-ui);
+}
+
+// Marcas numeradas de la anatomía, colocadas sobre las piezas reales del campo.
+.anatomyField {
+  padding-left: 2rem;
+
+  label,
+  label + p {
+    position: relative;
+  }
+
+  label::before,
+  label + p::before,
+  label + p::after {
+    @include pin;
+    position: absolute;
+    top: 0;
+    left: -2rem;
+  }
+
+  label::before {
+    content: '1';
+  }
+
+  label + p::before {
+    content: '2';
+  }
+
+  // El control sigue a la ayuda con 10 px de hueco: la marca 3 cae a su altura.
+  label + p::after {
+    content: '3';
+    top: calc(100% + 1.5rem);
+  }
+
+  p[id$='-error']::before {
+    @include pin;
+    content: '5';
+  }
+
+  span:last-child::before {
+    @include pin;
+    content: '4';
+    margin-right: 0.625rem;
+    vertical-align: middle;
+  }
+}
+
+.pin {
+  @include pin;
+  flex: none;
+}
+
+.legend li {
+  display: grid;
+  grid-template-columns: 1.375rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.625rem 0;
+  border-top: var(--stroke-detail) solid var(--color-rule-soft);
+  font-size: 0.875rem;
+  line-height: 1.45;
+
+  &:first-child {
+    border-top: var(--stroke-structure) solid var(--color-border);
+  }
+}
+
+.frame {
+  border: var(--stroke-structure) solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.frameNarrow {
+  display: block;
+  width: min(100%, 24.375rem);
+  // La cabecera cambia de disposición por debajo de 320 px (texto agrandado): el
+  // ejemplar no baja de ahí aunque la celda sea más estrecha.
+  min-width: 320px;
+  height: 4rem;
+}
+
+.skipFrame {
+  position: relative;
+  height: 7.375rem;
+  overflow: hidden;
+}
+
+.skipGhost {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  opacity: 0.45;
+
+  span:first-child {
+    width: 8.25rem;
+    height: 2.5rem;
+    background: var(--color-text-subtle);
+  }
+
+  span:last-child {
+    width: 6rem;
+    height: 2.5rem;
+    border: var(--stroke-control) solid var(--color-border);
+  }
+}
+
+.cells > * {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.875rem;
+}
+
+.notices {
+  display: grid;
+  gap: 1.75rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+.inlineNotices {
+  display: grid;
+  gap: 0.875rem;
+  max-width: 47.5rem;
+}
+
+.bigNote {
+  @include u.type-head;
+  font-size: 1.5rem;
+}
+
+.pauseAlone {
+  border-left: 0;
+}

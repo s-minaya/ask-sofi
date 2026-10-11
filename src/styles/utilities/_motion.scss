@@ -1,0 +1,12 @@
+// Alternativa reducida de una animación. Responde a la preferencia del sistema y a
+// data-motion="reduce" en un ancestro, que permite simularla (Design Lab) o, en el
+// futuro, aplicar una preferencia propia del usuario. Solo para CSS Modules.
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+
+  :global([data-motion='reduce']) & {
+    @content;
+  }
+}

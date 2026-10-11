@@ -1,0 +1,110 @@
+@use 'utilities' as u;
+
+.live {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  flex-wrap: wrap;
+}
+
+.blink {
+  animation: blink var(--duration-caret) steps(1) infinite;
+
+  @include u.reduced-motion {
+    animation: none;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+// Pistas para pensar qué contar: una lista, no botones.
+.hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hint {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 0.625rem;
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+  border: var(--stroke-detail) solid var(--tone-ink);
+  font: 500 0.8125rem/1.2 var(--font-ui);
+}
+
+// Pistas de una versión: toman el color del texto que las rodea.
+.clues {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cluesLabel {
+  @include u.type-kicker;
+  margin-right: 0.25rem;
+}
+
+.clue {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.875rem;
+  padding: 0 0.625rem;
+  border: var(--stroke-detail) solid currentColor;
+  font: 600 0.8125rem/1 var(--font-ui);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.875rem;
+  border: var(--stroke-control) solid var(--color-border);
+  font: 600 0.875rem/1 var(--font-ui);
+  white-space: nowrap;
+
+  @include u.bp-until(u.$bp-large-text) {
+    padding-block: 0.25rem;
+    white-space: normal;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+.badgeFill {
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+  border-color: var(--tone-ink);
+}
+
+.badgeWarn {
+  background: var(--tone-ink);
+  color: var(--tone-cream);
+  border-color: var(--color-badge-warn-border);
+}
+
+.pips {
+  display: inline-flex;
+  gap: 0.1875rem;
+
+  i {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border: var(--stroke-detail) solid currentColor;
+  }
+
+  .pipOn {
+    background: currentColor;
+  }
+}

@@ -1,0 +1,33 @@
+@use 'utilities' as u;
+
+// Cuadrado de 44 px con borde de 2 px. Si es un interruptor, se rellena de rosa.
+.button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: var(--stroke-control) solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+
+  &:hover,
+  &[data-force-state='hover'] {
+    background: var(--tone-butter);
+    color: var(--tone-ink);
+    border-color: var(--tone-ink);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--tone-pink);
+    color: var(--tone-ink);
+    border-color: var(--tone-ink);
+  }
+
+  &:focus-visible,
+  &[data-force-state='focus'] {
+    @include u.focus-ring(3px);
+  }
+}

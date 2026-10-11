@@ -1,0 +1,36 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+// :where() deja el reset sin especificidad para que cualquier clase de componente lo sobrescriba.
+:where(body, p, h1, h2, h3, h4, figure, blockquote, dl, dd, ul, ol) {
+  margin: 0;
+}
+
+:where(ul, ol) {
+  padding: 0;
+  list-style: none;
+}
+
+:where(fieldset) {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+:where(legend) {
+  padding: 0;
+}
+
+:where(button, input, textarea, select) {
+  font: inherit;
+  color: inherit;
+  border-radius: var(--radius);
+}
+
+:where(a) {
+  color: inherit;
+}

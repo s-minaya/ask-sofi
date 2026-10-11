@@ -1,0 +1,47 @@
+@use 'utilities' as u;
+// Animación generada con el spritesheet provisional (3 fotogramas de 384 px).
+@use '../../../styles/sprites';
+
+.sprite {
+  display: block;
+  flex: none;
+
+  @include u.reduced-motion {
+    animation: none;
+  }
+}
+
+// Fotogramas fijos: 0 abiertos · 1 entrecerrados · 2 cerrados.
+.frame0,
+.frame1,
+.frame2 {
+  animation: none;
+}
+
+.frame1 {
+  background-position-x: 50%;
+}
+
+.frame2 {
+  background-position-x: 100%;
+}
+
+// En oscuro, contorno crema de 2 px; en claro el token vale none.
+.outline {
+  filter: var(--sofi-outline);
+}
+
+.crop {
+  position: relative;
+  display: block;
+  flex: none;
+  overflow: hidden;
+}
+
+.cropBorder {
+  border: var(--stroke-detail) solid var(--tone-ink);
+}
+
+.cropSticker {
+  @include u.sticker;
+}

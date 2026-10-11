@@ -42,3 +42,32 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  browser:
+    # Playwright y axe contra el servidor de desarrollo: el Design Lab solo existe ahí.
+    # Se ejecuta tras las comprobaciones rápidas para no gastar navegador si fallan.
+    needs: foundation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      # Chromium completo: la prueba de tamaño de texto cambia su fuente por defecto,
+      # algo que el «headless shell» no respeta.
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Accessibility, keyboard and text size
+        run: npm run test:a11y

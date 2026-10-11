@@ -1,0 +1,29 @@
+@use 'utilities' as u;
+
+// Primer elemento enfocable de cada pantalla; aparece al recibir foco.
+.skip {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: var(--z-skip);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+  border: var(--stroke-structure) solid var(--tone-ink);
+  box-shadow: 0 0 0 3px var(--tone-white);
+  font: 700 0.8125rem/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(-220%);
+
+  &:focus,
+  &[data-force-state='focus'] {
+    transform: none;
+    outline: 3px solid var(--tone-ink);
+    outline-offset: 3px;
+  }
+}

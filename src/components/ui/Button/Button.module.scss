@@ -1,0 +1,127 @@
+@use 'utilities' as u;
+
+// La pegatina rosa es la acción que hace avanzar la historia.
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 58px;
+  // El alto es un mínimo táctil: si el texto pasa a varias líneas, el botón crece.
+  padding: 0.5rem 1.75rem;
+  background: var(--color-accent);
+  color: var(--tone-ink);
+  @include u.sticker;
+  font: 700 1rem/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform var(--duration-ui),
+    background-color var(--duration-ui);
+
+  &:hover,
+  &[data-force-state='hover'] {
+    background: var(--tone-butter);
+    transform: translateY(-2px) rotate(-1deg);
+  }
+
+  &:active,
+  &[data-force-state='active'] {
+    background: var(--tone-butter);
+    transform: translateY(1px);
+  }
+
+  // El foco queda fuera del anillo de la pegatina.
+  &:focus-visible,
+  &[data-force-state='focus'] {
+    @include u.focus-ring(10px);
+  }
+
+  @include u.bp-until(u.$bp-large-text) {
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  @include u.reduced-motion {
+    transition: none;
+
+    &:hover,
+    &[data-force-state='hover'] {
+      transform: none;
+    }
+  }
+}
+
+.lg {
+  min-height: 62px;
+  padding: 0.5rem 2.125rem;
+  font-size: 1.0625rem;
+}
+
+.sm {
+  min-height: 46px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.8125rem;
+  gap: 0.625rem;
+}
+
+.block {
+  display: flex;
+  width: 100%;
+}
+
+// Ocupa todo el ancho solo en la versión compacta de la interfaz.
+.fluid {
+  @include u.bp-compact {
+    display: flex;
+    width: 100%;
+  }
+}
+
+// El secundario acompaña, nunca compite. Sus colores se pueden fijar desde
+// una caja de color (por ejemplo, el aviso de error) con estas propiedades.
+.secondary {
+  background: var(--button-secondary-bg, var(--color-surface));
+  color: var(--button-secondary-fg, var(--color-on-surface));
+  border-color: var(--button-secondary-border, var(--color-border));
+  box-shadow: none;
+
+  &:hover,
+  &[data-force-state='hover'],
+  &:active,
+  &[data-force-state='active'] {
+    background: var(--tone-butter);
+    color: var(--tone-ink);
+    border-color: var(--tone-ink);
+  }
+
+  &:focus-visible,
+  &[data-force-state='focus'] {
+    outline-offset: 5px;
+  }
+}
+
+// Estados al final: mandan sobre hover y variantes.
+.button[aria-busy='true'] {
+  background: var(--tone-butter);
+  transform: none;
+  cursor: progress;
+}
+
+.button[aria-disabled='true'] {
+  background: transparent;
+  color: var(--color-text-subtle);
+  border: var(--stroke-structure) dashed var(--color-text-subtle);
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.arrow {
+  font-weight: 700;
+}

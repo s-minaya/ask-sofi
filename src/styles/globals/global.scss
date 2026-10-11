@@ -1,11 +1,6 @@
-// Estilos globales mínimos hasta que exista el sistema de diseño con tokens.
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-}
+// Punto de entrada global: tokens como custom properties, fuentes, reset y base.
+// Los estilos de cada componente viven en su propio CSS Module.
+@use '../tokens';
+@use 'fonts';
+@use 'reset';
+@use 'base';

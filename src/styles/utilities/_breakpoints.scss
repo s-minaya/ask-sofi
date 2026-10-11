@@ -1,0 +1,51 @@
+@use 'sass:math';
+
+// Umbrales del diseño aprobado: aparecen donde el contenido deja de caber,
+// no corresponden a ningún dispositivo.
+$header: 760px; // cabecera ancha, selector de tema con texto
+$stage: 960px; // Sofi junto al diálogo
+$columns: 1080px; // portada, consulta y versiones a dos columnas
+$error-columns: 900px; // retrato y aviso del error lado a lado
+$tiny: 360px; // cabecera muy estrecha
+$compact: 560px; // componentes que se compactan según su contenedor
+// Más estrecho que la pantalla más pequeña soportada (320 px) a tamaño de texto
+// por defecto: solo se da cuando el usuario agranda el texto. Ahí los textos de
+// una sola línea (botones, insignias) pasan a varias en lugar de salirse.
+$large-text: 319.84px;
+
+// Los umbrales se documentan en px, pero las consultas se emiten en em y rem
+// (1 = 16 px): así cambian de layout también cuando el usuario agranda el texto,
+// que es cuando el contenido deja de caber.
+@function to-em($px) {
+  @return math.div($px, 16px) * 1em;
+}
+
+@function to-rem($px) {
+  @return math.div($px, 16px) * 1rem;
+}
+
+@mixin from($min) {
+  @media (min-width: #{to-em($min)}) {
+    @content;
+  }
+}
+
+@mixin until($max) {
+  @media (max-width: #{to-em($max)}) {
+    @content;
+  }
+}
+
+// Versión compacta de los componentes que cambian de cuerpo según el espacio
+// que les deja la interfaz. El contenedor «app» es la raíz de la aplicación
+// (equivale a la pantalla) y, en el Design Lab, cada escenario de prueba.
+@mixin compact {
+  @container app (max-width: #{to-rem($compact)}) {
+    @content;
+  }
+}
+
+// Marca un elemento como el contenedor «app» de los componentes que lleva dentro.
+@mixin app-container {
+  container: app / inline-size;
+}

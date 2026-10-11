@@ -1,0 +1,59 @@
+// Animación de spritesheet horizontal en la que cada paso dura lo que quieras.
+// La tira guarda solo fotogramas únicos; la temporización vive aquí.
+@use 'sass:list';
+@use 'sass:math';
+@use 'sass:string';
+
+/// @param {String} $name      Nombre de los @keyframes.
+/// @param {Url}    $image     url('…') de la tira, relativa al parcial que la usa.
+/// @param {Number} $frames    Fotogramas únicos en la tira.
+/// @param {List}   $size      Ancho y alto de un fotograma en px, sin unidad (p. ej. 384 384).
+/// @param {List}   $timeline  Pasos (fotograma ms); los fotogramas se cuentan desde 0.
+@mixin animation($name, $image, $frames, $size, $timeline) {
+  $id: string.unquote('#{$name}');
+  $total: 0;
+  @each $step in $timeline {
+    @if list.nth($step, 1) >= $frames {
+      @error '#{$name}: el fotograma #{list.nth($step, 1)} no existe (la tira tiene #{$frames}).';
+    }
+    $total: $total + list.nth($step, 2);
+  }
+
+  --sprite-frames: #{$frames};
+  aspect-ratio: #{list.nth($size, 1)} / #{list.nth($size, 2)};
+  background-image: $image;
+  background-repeat: no-repeat;
+  background-size: ($frames * 100%) 100%;
+  background-position: 0 0;
+  animation: $id math.div($total, 1000) * 1s step-end infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  @at-root {
+    @keyframes #{$id} {
+      $t: 0;
+      @each $step in $timeline {
+        #{-percent($t, $total)} {
+          background-position-x: -position(list.nth($step, 1), $frames);
+        }
+        $t: $t + list.nth($step, 2);
+      }
+      100% {
+        background-position-x: -position(list.nth(list.nth($timeline, -1), 1), $frames);
+      }
+    }
+  }
+}
+
+@function -percent($ms, $total) {
+  @return math.div(math.round(math.div($ms * 100000, $total)), 1000) * 1%;
+}
+
+@function -position($frame, $frames) {
+  @if $frames == 1 {
+    @return 0%;
+  }
+  @return math.div($frame, $frames - 1) * 100%;
+}

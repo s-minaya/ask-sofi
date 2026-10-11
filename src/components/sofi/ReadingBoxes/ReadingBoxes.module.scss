@@ -1,0 +1,109 @@
+@use 'utilities' as u;
+
+// Flex y no grid: la última fila se reparte el ancho y nunca quedan huecos de tinta.
+.boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--stroke-structure);
+  background: var(--color-text);
+  border: var(--stroke-structure) solid var(--color-border);
+
+  > * {
+    flex: 1 1 17.5rem;
+    min-width: 0;
+    padding: 1.5rem clamp(1rem, 2.4vw, 2.125rem) 1.75rem;
+  }
+}
+
+.kicker {
+  @include u.type-kicker;
+}
+
+.title {
+  @include u.type-head;
+  margin-top: 0.5rem;
+}
+
+.aside {
+  font-weight: 600;
+}
+
+.text {
+  margin-top: 0.875rem;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+// La letra pequeña (que aquí no es pequeña).
+.finePrint {
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+  --color-focus: var(--tone-ink);
+}
+
+// Lo que falta, pedido con preguntas concretas.
+.missing {
+  background: var(--tone-ink);
+  color: var(--tone-cream);
+  --color-focus: var(--tone-butter);
+  --color-ring: var(--tone-cream);
+
+  .kicker {
+    color: var(--tone-butter);
+  }
+}
+
+.rows {
+  margin-top: 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+
+  > li {
+    padding: 0.5rem 0;
+    border-top: var(--stroke-hairline) solid rgb(255 245 232 / 25%);
+
+    &:last-child {
+      border-bottom: var(--stroke-hairline) solid rgb(255 245 232 / 25%);
+    }
+  }
+}
+
+.action {
+  margin-top: 1.375rem;
+}
+
+// El consejo siempre empuja a hablar.
+.advice {
+  background: var(--tone-pink-soft);
+  color: var(--tone-ink);
+  --color-focus: var(--tone-ink);
+}
+
+// --- Preguntas para pedir contexto («Cuéntame esto») ---
+
+.questions {
+  --notice-padding: 1.25rem 1rem 1.375rem;
+  --notice-border: var(--tone-ink);
+}
+
+.questions .questionsTitle {
+  margin-top: 0;
+  font-size: 1.75rem;
+}
+
+.questionList {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.4;
+
+  li {
+    display: grid;
+    grid-template-columns: 1.875rem minmax(0, 1fr);
+    padding: 0.5625rem 0;
+    border-top: var(--stroke-detail) solid var(--tone-ink);
+  }
+}
+
+.questionNum {
+  @include u.type-kicker;
+}

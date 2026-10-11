@@ -1,0 +1,73 @@
+// Tokens semánticos. Los componentes solo leen estos nombres; los dos temas
+// se diseñan a la vez (el oscuro aclara el rosa y pasa el foco a mantequilla).
+@mixin light {
+  color-scheme: light;
+  --color-bg: #fff5e8;
+  --color-bg-alt: #fce6d6;
+  --color-surface: #ffffff;
+  --color-text: #100819;
+  --color-text-muted: #47394a;
+  --color-text-subtle: #66576a;
+  // Alias del color de texto. Se declara en cada tema para que un contenedor con el
+  // tema forzado lo resuelva con su propio texto. Un contenedor que redefina el
+  // texto a mano debe redefinir también este alias.
+  --color-border: var(--color-text);
+  --color-on-surface: #100819;
+  --color-on-surface-subtle: #66576a;
+  --color-accent: #ff5c8d;
+  --color-bubble-border: #100819;
+  --color-ring: #ffffff;
+  --color-focus: #100819;
+  --color-danger: #c8173f;
+  --color-rule-soft: rgb(16 8 25 / 16%);
+  --color-dot: rgb(255 92 141 / 55%);
+  --color-cell-on: #100819;
+  --color-cell-off: rgb(16 8 25 / 14%);
+  --color-badge-warn-border: #100819;
+  --color-control-accent: #100819;
+  --sofi-outline: none;
+}
+
+@mixin dark {
+  color-scheme: dark;
+  --color-bg: #100819;
+  --color-bg-alt: #1d1128;
+  --color-surface: #22152e;
+  --color-text: #fff5e8;
+  --color-text-muted: #dccbd6;
+  --color-text-subtle: #b3a1b0;
+  --color-border: var(--color-text);
+  --color-on-surface: #fff5e8;
+  --color-on-surface-subtle: #b9a7b6;
+  --color-accent: #ff6f9a;
+  --color-bubble-border: #fff5e8;
+  --color-ring: #fff5e8;
+  --color-focus: #ffe36e;
+  --color-danger: #ff8fa3;
+  --color-rule-soft: rgb(255 245 232 / 18%);
+  --color-dot: rgb(255 111 154 / 34%);
+  --color-cell-on: #fff5e8;
+  --color-cell-off: rgb(255 245 232 / 18%);
+  --color-badge-warn-border: #fff5e8;
+  --color-control-accent: #ffe36e;
+  // En oscuro, Sofi lleva un contorno crema de 2 px para no perderse en el fondo.
+  --sofi-outline: drop-shadow(2px 0 0 #fff5e8) drop-shadow(-2px 0 0 #fff5e8)
+    drop-shadow(0 -2px 0 #fff5e8);
+}
+
+// Sistema por defecto; una elección explícita (data-theme) manda. Los atributos
+// también sirven en contenedores anidados para forzar un tema en una zona.
+:root,
+[data-theme='light'] {
+  @include light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark;
+  }
+}
+
+[data-theme='dark'] {
+  @include dark;
+}

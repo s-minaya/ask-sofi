@@ -1,0 +1,794 @@
+@use 'utilities' as u;
+
+.srOnly {
+  @include u.visually-hidden;
+}
+
+.hit {
+  @include u.highlight;
+}
+
+// --- 1.1 · Paleta ---
+
+.paletteItem {
+  position: relative;
+  display: grid;
+  gap: 0.875rem;
+  align-content: start;
+}
+
+.newTag {
+  position: absolute;
+  top: -0.75rem;
+  left: -0.625rem;
+  transform: rotate(-6deg);
+}
+
+.chip {
+  position: relative;
+  height: 7rem;
+  border: var(--stroke-structure) solid var(--color-border);
+}
+
+// Franja con el valor en oscuro: siempre separada por una regla tinta.
+.chipDark {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 34%;
+  padding-bottom: 0.5rem;
+  border-left: var(--stroke-structure) solid var(--tone-ink);
+  font: 700 0.625rem/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.colorName {
+  @include u.type-title;
+}
+
+.hex {
+  margin-top: 0.25rem;
+  font: 600 0.875rem/1.3 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+// --- 1.2 · Tokens semánticos ---
+
+.themes {
+  display: grid;
+  gap: 1.5rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.panel {
+  padding: 1.375rem clamp(1rem, 2vw, 1.75rem) 0.625rem;
+  border: var(--stroke-structure) solid var(--tone-ink);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+// El panel oscuro se separa del fondo con un filo crema por dentro.
+.panelDark {
+  box-shadow: inset 0 0 0 var(--stroke-structure) var(--tone-cream);
+}
+
+.panelHead {
+  margin-bottom: 0.75rem;
+}
+
+.token {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  gap: 0.25rem 0.875rem;
+  align-items: center;
+  padding: 0.625rem 0;
+  border-top: var(--stroke-detail) solid var(--color-rule-soft);
+}
+
+.swatch {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: var(--stroke-control) solid var(--color-border);
+}
+
+.tokenValue {
+  font: 600 0.8125rem/1.3 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--color-text-muted);
+}
+
+// --- 1.3 · Contraste ---
+
+.pair {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.pairSample {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border: var(--stroke-detail) solid var(--color-border);
+  @include u.type-display;
+  font-size: 1.875rem;
+}
+
+.pairLabel {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.pairRatio {
+  margin-top: 0.25rem;
+  font: 700 1.125rem/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.level {
+  display: inline-block;
+  margin-left: 0.375rem;
+  padding: 0.1875rem 0.375rem 0.125rem;
+  background: var(--color-text);
+  color: var(--color-bg);
+  font: 700 0.625rem/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  vertical-align: 0.125rem;
+}
+
+.levelBad {
+  background: var(--tone-cherry);
+  color: var(--tone-white);
+}
+
+// --- 1.4 · Tipografía ---
+
+.families {
+  display: grid;
+  gap: var(--stroke-structure);
+  background: var(--color-text);
+  border: var(--stroke-structure) solid var(--color-border);
+
+  @include u.bp-from(u.$bp-error-columns) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  > div {
+    padding: 1.625rem clamp(1.125rem, 2.4vw, 2rem) 1.75rem;
+    background: var(--color-bg);
+  }
+}
+
+.aa {
+  margin-top: 1.125rem;
+  font-size: clamp(6rem, 11vw, 9.375rem);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+}
+
+.aaDisplay {
+  @include u.type-display;
+}
+
+.aaUi {
+  font-family: var(--font-ui);
+  font-weight: 500;
+}
+
+.familyName {
+  @include u.type-head;
+  margin-top: 0.875rem;
+}
+
+.scaleRow {
+  display: grid;
+  gap: 0.625rem 2rem;
+  padding: 1.625rem 0;
+  border-top: var(--stroke-detail) solid var(--color-rule-soft);
+
+  &:first-child {
+    border-top: var(--stroke-structure) solid var(--color-border);
+  }
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: 11.875rem minmax(0, 1fr) 15.625rem;
+    align-items: baseline;
+  }
+}
+
+.scaleMeta {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.scaleSpec {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.displayXl {
+  @include u.type-display-xl;
+}
+
+.displayL {
+  @include u.type-display-l;
+}
+
+.figure {
+  @include u.type-figure;
+}
+
+.unit {
+  @include u.type-figure-unit;
+}
+
+.displayM {
+  @include u.type-display-m;
+}
+
+.head {
+  @include u.type-head;
+}
+
+// La pestaña del diálogo, sin el diálogo.
+.nameSample {
+  display: inline-block;
+  padding: 0.25rem 1rem 0.4375rem;
+  background: var(--tone-ink);
+  color: var(--tone-cream);
+  @include u.type-name;
+}
+
+.dialogText {
+  max-width: 34ch;
+  --dialog-text-size: 1.4375rem;
+  --dialog-text-leading: 1.5;
+}
+
+.deck {
+  @include u.type-deck;
+  max-width: 40ch;
+}
+
+.body {
+  @include u.type-body;
+  max-width: 52ch;
+}
+
+.small {
+  @include u.type-small;
+  max-width: 56ch;
+  color: var(--color-text-muted);
+}
+
+.microItem {
+  display: grid;
+  gap: 0.625rem;
+  align-content: start;
+}
+
+.yes,
+.no {
+  display: grid;
+  grid-template-columns: 1.375rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 1.0625rem;
+  line-height: 1.45;
+}
+
+.no {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.mark {
+  display: inline-block;
+  font: 700 0.75rem/1 var(--font-ui);
+  text-decoration: none;
+}
+
+// --- 1.5 · Espacio y retícula ---
+
+.space {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.375rem 1.625rem;
+  padding: 1.75rem 1.5rem;
+  border: var(--stroke-structure) solid var(--color-border);
+
+  li {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+  }
+}
+
+.spaceBar {
+  height: 1.75rem;
+  background: var(--tone-pink);
+  border: var(--stroke-detail) solid var(--tone-ink);
+}
+
+.spaceValue {
+  font: 700 0.8125rem/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.layoutItem {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+// Esquema de composición: las zonas no cambian de color con el tema.
+.diagram {
+  display: grid;
+  gap: 0.5rem;
+  min-height: 8rem;
+  padding: 0.5rem;
+  border: var(--stroke-structure) solid var(--color-border);
+  background: var(--color-surface);
+
+  > span {
+    display: flex;
+    align-items: flex-end;
+    padding: 0.5rem;
+    border: var(--stroke-detail) solid var(--tone-ink);
+    background: var(--lab-paper);
+    color: var(--tone-ink);
+    font: 600 0.75rem/1.25 var(--font-ui);
+  }
+}
+
+.diagramBase {
+  grid-template-rows: 1fr 1fr 2.125rem;
+  width: min(100%, 9.375rem);
+
+  > span:last-child {
+    align-items: center;
+  }
+}
+
+.diagram > .cell-pink {
+  background: var(--tone-pink);
+}
+
+.diagram > .cell-butter {
+  background: var(--tone-butter);
+}
+
+.diagram > .cell-ink {
+  background: var(--tone-ink);
+  color: var(--tone-cream);
+}
+
+.diagram > .cell-soft {
+  background: var(--tone-pink-soft);
+}
+
+.ruler {
+  position: relative;
+  margin-top: 2.125rem;
+  padding-bottom: 2.5rem;
+
+  // En estrecho, una de cada dos marcas interiores baja de fila para no pisarse.
+  @include u.bp-until(u.$bp-header - 1px) {
+    padding-bottom: 3.625rem;
+  }
+}
+
+.rulerBar {
+  display: flex;
+  height: 2.625rem;
+  border: var(--stroke-structure) solid var(--color-border);
+
+  > span {
+    display: flex;
+    align-items: center;
+    padding: 0 0.625rem;
+    border-right: var(--stroke-structure) solid var(--color-border);
+    color: var(--tone-ink);
+    font: 700 0.6875rem/1.1 var(--font-ui);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+
+    &:last-child {
+      border-right: 0;
+    }
+  }
+}
+
+.segCream {
+  background: var(--tone-cream);
+}
+
+.segStage {
+  background: var(--lab-paper);
+}
+
+.segButter {
+  background: var(--tone-butter);
+}
+
+.segPink {
+  background: var(--tone-pink);
+}
+
+.tick {
+  position: absolute;
+  bottom: 0.5rem;
+  transform: translateX(-50%);
+  font: 700 0.8125rem/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+// En estrecho, las marcas suben a una primera fila y la marca baja ocupa la segunda.
+@include u.bp-until(u.$bp-header - 1px) {
+  .tick {
+    bottom: 1.625rem;
+  }
+
+  .tick.tickLow {
+    bottom: 0.5rem;
+  }
+}
+
+.tickStart {
+  left: 0;
+  transform: none;
+}
+
+.tickEnd {
+  right: 0;
+  transform: none;
+}
+
+.thresholdTitle {
+  @include u.type-head;
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+}
+
+// --- 1.6 · Forma ---
+
+.lines {
+  display: grid;
+  border-top: var(--stroke-structure) solid var(--color-border);
+
+  > li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.625rem;
+    padding: 1.125rem 0;
+    border-bottom: var(--stroke-detail) solid var(--color-rule-soft);
+
+    @include u.bp-from(u.$bp-error-columns) {
+      grid-template-columns: 13.75rem 10rem minmax(0, 1fr);
+      align-items: center;
+      gap: 1.5rem;
+    }
+  }
+}
+
+.lineName {
+  @include u.type-title;
+  font-size: 1.25rem;
+}
+
+.line {
+  width: 100%;
+  height: 0;
+}
+
+.lineStructure {
+  border-top: var(--stroke-structure) solid var(--color-border);
+}
+
+.lineControl {
+  border-top: var(--stroke-control) solid var(--color-border);
+}
+
+.lineDetail {
+  border-top: var(--stroke-detail) solid var(--color-border);
+}
+
+// Se dibuja dentro de una franja tinta, que es donde se usa.
+.lineHairline {
+  border-top: var(--stroke-hairline) solid rgb(255 245 232 / 25%);
+  outline: 6px solid var(--tone-ink);
+  outline-offset: -1px;
+}
+
+.lineDashed {
+  border-top: var(--stroke-structure) dashed var(--color-border);
+}
+
+.forms > li {
+  display: grid;
+  gap: 0.875rem;
+  align-content: start;
+}
+
+.square {
+  height: 6rem;
+  border: var(--stroke-structure) solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.pixelEdge {
+  width: max-content;
+  max-width: 100%;
+  padding: 0.1875rem;
+  background: var(--color-bubble-border);
+  @include u.pixel-corners;
+}
+
+.pixelPaper {
+  padding: 0.875rem 1.25rem;
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-size: 1.375rem;
+  font-weight: 500;
+  @include u.pixel-corners;
+}
+
+.stickerSample {
+  height: 6rem;
+  margin: 0.375rem;
+  background: var(--color-surface);
+  @include u.sticker;
+}
+
+.tilts {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  min-height: 6rem;
+  padding-left: 0.5rem;
+}
+
+.tiltLeft {
+  transform: rotate(-2deg);
+}
+
+.tiltRight {
+  transform: rotate(3deg);
+}
+
+// --- 1.7 · Foco ---
+
+.focusGrid > li {
+  display: grid;
+  gap: 1.125rem;
+  align-content: start;
+  justify-items: start;
+}
+
+.focusButton {
+  margin: 0.625rem;
+}
+
+.focusGrid .focusBubble {
+  width: min(100%, 16.25rem);
+  margin: 0.25rem 0.375rem 1.375rem;
+  --tail-left: 1.125rem;
+}
+
+.focusGrid .focusBubblePaper {
+  padding: 0.75rem 1rem 0.625rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+// Mismos tokens que las cajas tinta y mantequilla de Notice: cada una fija su foco.
+.focusGrid > .focusInk {
+  background: var(--tone-ink);
+  color: var(--tone-cream);
+  --color-focus: var(--tone-butter);
+  --color-ring: var(--tone-cream);
+}
+
+.focusGrid > .focusButter {
+  background: var(--tone-butter);
+  color: var(--tone-ink);
+  --color-focus: var(--tone-ink);
+  --color-ring: var(--tone-white);
+}
+
+// --- 1.8 · Movimiento ---
+
+.motionItem {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.demo {
+  display: flex;
+  align-items: center;
+  min-height: 6rem;
+  padding: 0.75rem;
+  overflow: hidden;
+  border: var(--stroke-detail) solid var(--color-border);
+  background: var(--color-bg-alt);
+  --notch-bg: var(--color-bg-alt);
+}
+
+.demoCenter {
+  justify-content: center;
+  padding: 0;
+}
+
+.demoTicker {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0;
+}
+
+.demoStack {
+  display: grid;
+  gap: 0.625rem;
+  align-content: center;
+}
+
+.tickerSample {
+  --ticker-label-size: 0.6875rem;
+  --ticker-label-padding: 0 0.625rem;
+  --ticker-text-size: 0.8125rem;
+}
+
+.caretSample {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.loadingText {
+  @include u.type-small;
+  font-weight: 600;
+}
+
+// --- 1.9 · Recursos gráficos ---
+
+.resources > li {
+  display: grid;
+  gap: 0.875rem;
+  align-content: start;
+}
+
+.logoLight,
+.logoDark {
+  padding: 1.25rem;
+  border: var(--stroke-detail) solid var(--tone-ink);
+}
+
+.logoLight {
+  background: var(--tone-cream);
+}
+
+.logoDark {
+  background: var(--tone-ink);
+}
+
+.logoImg {
+  display: block;
+  width: 15.75rem;
+  max-width: 100%;
+  height: auto;
+}
+
+.frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.frame {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+}
+
+.frameCaption {
+  @include u.type-micro;
+}
+
+.textures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.texDots {
+  height: 5.25rem;
+  border: var(--stroke-detail) solid var(--color-border);
+  @include u.dots;
+}
+
+.texBox {
+  display: grid;
+  place-items: center;
+  height: 5.25rem;
+  border: var(--stroke-detail) solid var(--color-border);
+}
+
+.texBurst {
+  width: 4.5rem;
+  height: 4.5rem;
+  background: var(--tone-butter);
+  @include u.burst-shape;
+}
+
+.texTitle {
+  @include u.type-title;
+  font-size: 1.75rem;
+}
+
+.texPixel {
+  width: 4rem;
+  height: 2.75rem;
+  background: var(--color-bubble-border);
+  @include u.pixel-corners;
+}
+
+.icons > li {
+  display: grid;
+  justify-items: center;
+  gap: 0.625rem;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--color-text-muted);
+
+  > svg {
+    color: var(--color-text);
+  }
+}
+
+.arrowGlyph {
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+  color: var(--color-text);
+}
+
+.icons .sparkSample {
+  color: var(--tone-lilac);
+}
+
+.icons .errorSample {
+  color: var(--color-danger);
+}
+
+// La cola se enseña suelta, fuera de su burbuja.
+.icons .tailSample {
+  position: static;
+  width: 1.875rem;
+  height: 1.5625rem;
+}
+
+.spinSample {
+  align-items: center;
+  height: 1.75rem;
+  color: var(--color-text);
+}

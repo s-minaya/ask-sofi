@@ -1,0 +1,6 @@
+// Dos voces: Bodoni Moda (siempre en cursiva) para titulares y cifras;
+// Space Grotesk para todo lo que se lee o se pulsa.
+:root {
+  --font-display: 'Bodoni Moda', 'Bodoni 72', didot, 'Times New Roman', serif;
+  --font-ui: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
