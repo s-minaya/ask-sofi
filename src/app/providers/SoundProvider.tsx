@@ -24,9 +24,10 @@ type SoundProviderProps = {
   // real: el Design Lab usa un audio simulado y no debe tocar las preferencias.
   persist?: boolean
   // No descarga ni prepara el audio al activar el sonido: lo hará la primera
-  // acción que lo pida expresamente (`unlock`). La aplicación real lo usa mientras
-  // ningún componente suyo reproduce la voz de Sofi, para no descargar un MP3
-  // que no suena. El Design Lab no lo usa y conserva su comportamiento.
+  // acción que lo pida expresamente (`unlock`). La aplicación real lo usa para no
+  // descargar un MP3 que no suena: solo la ficha del expediente reproduce la voz
+  // de Sofi, y el gesto que la abre (o que activa el sonido dentro de ella) lo
+  // prepara. El Design Lab no lo usa y conserva su comportamiento.
   deferAudio?: boolean
   children: ReactNode
 }

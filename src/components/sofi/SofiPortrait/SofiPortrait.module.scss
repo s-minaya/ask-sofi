@@ -1,6 +1,6 @@
 @use 'utilities' as u;
-// Animación generada con el spritesheet provisional (3 fotogramas de 384 px).
-@use '../../../styles/sprites';
+// Solo el parcial del parpadeo: el índice de sprites arrastraría las demás animaciones al CSS de cada pantalla.
+@use '../../../styles/sprites/sofi-blink';
 
 .sprite {
   display: block;
@@ -24,6 +24,21 @@
 
 .frame2 {
   background-position-x: 100%;
+}
+
+// Contenedor de una imagen estática: mide lo mismo que el fotograma.
+.portrait {
+  position: relative;
+  display: block;
+  flex: none;
+}
+
+// Sin `display` mientras está oculta: así el atributo hidden sigue mandando.
+.image:not([hidden]) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
 }
 
 // En oscuro, contorno crema de 2 px; en claro el token vale none.

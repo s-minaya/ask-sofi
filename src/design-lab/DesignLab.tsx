@@ -20,6 +20,7 @@ import { LabGroupLabel } from './parts/LabParts'
 import { FoundationsSection } from './sections/FoundationsSection'
 import { MotionSection } from './sections/MotionSection'
 import { PreviewSection } from './sections/PreviewSection'
+import { ProfileSection } from './sections/ProfileSection'
 import { SofiSection } from './sections/SofiSection'
 import { UiSection } from './sections/UiSection'
 
@@ -43,6 +44,7 @@ const SECTIONS: Record<
   sofi: () => <SofiSection />,
   motion: () => <MotionSection />,
   preview: ({ motion }) => <PreviewSection motion={motion} />,
+  profile: ({ motion }) => <ProfileSection motion={motion} />,
 }
 
 const FOOTER_NOTES: Record<LabSectionKey, [string, string]> = {
@@ -65,6 +67,10 @@ const FOOTER_NOTES: Record<LabSectionKey, [string, string]> = {
   preview: [
     'El marco se desplaza por dentro: rueda, trackpad o teclado.',
     'Sin peticiones reales · fixtures deterministas · el audio solo suena tras un gesto.',
+  ],
+  profile: [
+    'Propuesta de la feature 004, pendiente de aprobación (T012).',
+    'Prototipo en memoria: no guarda nada ni hace peticiones.',
   ],
 }
 

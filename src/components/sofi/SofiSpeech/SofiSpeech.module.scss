@@ -14,8 +14,41 @@
   }
 }
 
+// Pie entre el texto y el contenido de debajo: mide lo que el pie del diálogo.
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.25rem 1.25rem;
+  min-height: 2.75rem;
+  margin-top: 0.75rem;
+}
+
+// Contenido bajo el texto, dentro del bocadillo.
+.body {
+  margin-top: 0.75rem;
+}
+
 .ghost {
   visibility: hidden;
+}
+
+// Pie mientras escribe: «Ver todo» y la acción final en la misma celda.
+.footSlot {
+  display: grid;
+  justify-items: end;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.footLayer {
+  display: flex;
+  flex-wrap: wrap;
+  grid-area: 1 / 1;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.25rem 1.25rem;
 }
 
 .caret {

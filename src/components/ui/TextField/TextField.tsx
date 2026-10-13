@@ -10,6 +10,8 @@ type FieldProps = {
   // El error aparece al enviar, no mientras se escribe, y se va en cuanto el campo es válido.
   error?: ReactNode
   showCount?: boolean
+  // Límite del campo: el contador pasa a «x / maxCount». No corta lo que se escribe.
+  maxCount?: number
   value: string
   onChange: (value: string) => void
   disabled?: boolean
@@ -37,6 +39,7 @@ function FieldFrame({
   help,
   error,
   showCount = false,
+  maxCount,
   value,
   id,
   className,
@@ -72,7 +75,11 @@ function FieldFrame({
         <div className={styles.footer}>
           {error && <FieldMessage id={errorId}>{error}</FieldMessage>}
           {showCount && (
-            <Counter count={value.length} className={styles.count} />
+            <Counter
+              count={value.length}
+              max={maxCount}
+              className={styles.count}
+            />
           )}
         </div>
       )}

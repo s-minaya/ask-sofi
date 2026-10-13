@@ -1,0 +1,27 @@
+@use 'sprite';
+
+// Sofi investiga en internet de forma obsesiva: teclea a ráfagas, se acerca a la pantalla,
+// algo le escama («?!»), lo descubre y estalla en un frenesí sobre el teclado (bucle de 6,44 s).
+// Fotogramas: 0 teclea (reposo) · 1 teclea, otras manos · 2 se inclina y aporrea una tecla
+// · 3 sospecha «?!» · 4 euforia maníaca · 5 furia con rayos.
+// El portátil es el mismo en todos los fotogramas; entre 0 y 1 solo cambian las manos.
+.sofing {
+  @include sprite.animation(
+    $name: sofing,
+    $image: url('sofing.webp'),
+    $frames: 6,
+    $size: 384 384,
+    $timeline: (
+      // lee y teclea a ráfagas irregulares
+      0 800,
+      1 90, 0 80, 1 100, 0 70, 1 90, 0 110, 1 80, 0 70, 1 100, 0 300,
+      1 80, 0 90, 1 70, 0 80, 1 110, 0 70, 1 90, 0 90, 1 80, 0 360,
+      1 70, 0 80, 1 90, 0 70, 1 80, 0 100,
+      // se acerca, sospecha y lo encuentra
+      2 300, 3 1000, 4 450,
+      // frenesí: euforia y furia alternadas, y vuelta a la calma
+      5 90, 4 80, 5 90, 4 70, 5 100, 4 80, 5 90, 4 70, 5 240,
+      2 280,
+    ),
+  );
+}

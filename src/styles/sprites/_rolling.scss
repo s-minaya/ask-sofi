@@ -1,0 +1,202 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sprite';
+
+// Loader principal: Sofi gira divertida, se marea y se recompone (bucle de 5,8 s).
+// Fotogramas (rolling.webp): 0 reposo · 1 girando · 2 girando, melena alborotada · 3 mareada · 4 recomponiéndose.
+// 1 y 2 tienen la misma inclinación, así que se alternan en cualquier momento del giro sin dar saltos.
+// Efectos (rolling-fx.webp, celdas de 86×60): 0 y 1 arcos rojos · 2 estrella hacia la derecha · 3 hacia la izquierda.
+// ::before y ::after son los arcos rojos durante el giro y después dos estrellas que orbitan alrededor de la cabeza.
+// Todo el movimiento es transform/opacity. Al girar, la figura sobresale de su caja: no la metas en overflow: hidden.
+
+$timeline: (
+  // reposo, amago y arranque del giro
+  0 940,
+  // tres vueltas: una pose cada ~90°
+  1 160, 2 100, 1 80, 2 60, 1 60, 2 60, 1 60, 2 70, 1 90, 2 120, 1 190,
+  // mareada mientras frena y se tambalea; se recompone
+  3 2210, 4 1000, 0 600,
+);
+$total: sprite.duration($timeline);
+$duration: math.div($total, 1000) * 1s;
+
+// Giro del sprite: (ms ángulo curva hasta el siguiente punto).
+$spin: (
+  0 0deg linear,
+  400 0deg ease-out, // amago hacia atrás
+  600 -14deg cubic-bezier(0.55, 0, 0.35, 1), // tres vueltas; se pasa un poco
+  2400 1094deg ease-in-out, // rebote
+  2580 1074deg ease-in-out,
+  2760 1085deg ease-in-out,
+  2940 1079deg ease-in-out,
+  3100 1080deg ease-in-out, // tambaleo de mareo
+  3600 1077deg ease-in-out,
+  4100 1082deg ease-in-out,
+  4600 1079deg ease-in-out,
+  5000 1080deg linear,
+);
+
+// Efectos, en px de un fotograma de 384.
+$cell: 86 60;
+$box-a: -5 171; // esquina de ::before: arcos rojos a la izquierda
+$box-b: 283 27; // esquina de ::after: arcos rojos arriba a la derecha
+// Órbita: elipse inclinada alrededor de la cabeza mareada.
+$orbit-center: 212 74;
+$orbit-axes: 158 44;
+$orbit-tilt: 8deg;
+$orbit-start: 2000; // ms
+$orbit-theta: 200; // ángulo inicial de la estrella de ::before (0 derecha, 90 delante, 270 detrás); ::after, +180
+$orbit-legs: (4200 1100, 5200 1600); // tramos: hasta (ms) con un periodo (ms) que sea múltiplo de 8 pasos
+// Visibilidad de los efectos: (ms opacidad).
+$fade: (0 0, 940 0, 1040 1, 1700 1, 1900 0, 2050 0, 2250 1, 4600 1, 5000 0);
+
+@function -pct($ms) {
+  @return math.div(math.round(math.div($ms * 100000, $total)), 1000) * 1%;
+}
+
+@function -round($n, $digits: 4) {
+  $f: math.pow(10, $digits);
+  @return math.div(math.round($n * $f), $f);
+}
+
+// Misma lista de funciones en todos los fotogramas clave para que se interpolen una a una.
+@function -orbit($box, $theta) {
+  $w: list.nth($cell, 1);
+  $h: list.nth($cell, 2);
+  $k: math.div(list.nth($orbit-axes, 2), list.nth($orbit-axes, 1));
+  $dx: math.div(list.nth($orbit-center, 1) - list.nth($box, 1) - $w * 0.5, $w) * 100%;
+  $dy: math.div(list.nth($orbit-center, 2) - list.nth($box, 2) - $h * 0.5, $h) * 100%;
+  $r: math.div(list.nth($orbit-axes, 1), $w) * 100%;
+  $depth: 1 + 0.12 * math.sin($theta * 1deg); // más grande delante
+  @return translate(-round($dx), -round($dy)) rotate($orbit-tilt) scale(1, -round($k))
+    rotate($theta * 1deg) translateX(-round($r)) rotate(-$theta * 1deg)
+    scale(1, -round(math.div(1, $k))) rotate(-$orbit-tilt) scale(-round($depth));
+}
+
+$-still: translate(0%, 0%) rotate(0deg) scale(1, 1) rotate(0deg) translateX(0%) rotate(0deg) scale(1, 1)
+  rotate(0deg) scale(1);
+
+// Celdas de una estrella: arcos durante el giro y, en la órbita, la estrella con la estela del lado correcto
+// (detrás de la cabeza va hacia la derecha; delante, hacia la izquierda).
+@function -cells($arc-cell, $theta) {
+  $steps: ($arc-cell $orbit-start,);
+  $cell: 3;
+  @if math.floor(math.div($theta, 180)) % 2 == 1 {
+    $cell: 2;
+  }
+  $t0: $orbit-start;
+  $last: $orbit-start;
+  @each $until, $period in $orbit-legs {
+    // cruces por 0° y 180°: ahí cambia el sentido horizontal y, con él, el lado de la estela
+    $m: math.floor(math.div($theta, 180) + 0.000001) + 1;
+    $tc: $t0 + math.div(($m * 180 - $theta) * $period, 360);
+    @while $tc < $until {
+      $b: math.round($tc);
+      @if $b > $last {
+        $steps: list.append($steps, $cell $b - $last, $separator: comma);
+        $last: $b;
+      }
+      $cell: 5 - $cell;
+      $m: $m + 1;
+      $tc: $t0 + math.div(($m * 180 - $theta) * $period, 360);
+    }
+    $theta: $theta + math.div(($until - $t0) * 360, $period);
+    $t0: $until;
+  }
+  @return list.append($steps, $cell $total - $last, $separator: comma);
+}
+
+@mixin -orbit-keyframes($name, $box, $theta) {
+  @keyframes #{$name} {
+    0%,
+    #{-pct($orbit-start - 1)} {
+      transform: $-still;
+    }
+    $t: $orbit-start;
+    @each $until, $period in $orbit-legs {
+      @while $t < $until {
+        #{-pct($t)} {
+          transform: -orbit($box, $theta);
+        }
+        $t: $t + math.div($period, 8);
+        $theta: $theta + 45;
+      }
+    }
+    #{-pct($t)},
+    100% {
+      transform: -orbit($box, $theta);
+    }
+  }
+}
+
+@mixin -fx($name, $box, $arc-cell, $theta) {
+  left: math.div(list.nth($box, 1), 384) * 100%;
+  top: math.div(list.nth($box, 2), 384) * 100%;
+  @include sprite.animation(
+    $name: #{$name},
+    $image: url('rolling-fx.webp'),
+    $frames: 4,
+    $size: $cell,
+    $timeline: -cells($arc-cell, $theta),
+  );
+  // Tras el mixin y sin anular su «animation: none» con reducir movimiento.
+  @media (prefers-reduced-motion: no-preference) {
+    animation: #{$name} $duration step-end infinite, #{$name}-orbit $duration linear infinite,
+      rolling-fx-fade $duration linear infinite;
+  }
+  @include -orbit-keyframes(#{$name}-orbit, $box, $theta);
+}
+
+.rolling {
+  position: relative;
+  @include sprite.animation(
+    $name: rolling,
+    $image: url('rolling.webp'),
+    $frames: 5,
+    $size: 384 384,
+    $timeline: $timeline,
+  );
+  @media (prefers-reduced-motion: no-preference) {
+    animation: rolling $duration step-end infinite, rolling-spin $duration infinite;
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: math.div(list.nth($cell, 1), 384) * 100%;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &::before {
+    @include -fx(rolling-fx-a, $box-a, 0, $orbit-theta);
+  }
+
+  &::after {
+    @include -fx(rolling-fx-b, $box-b, 1, $orbit-theta + 180);
+  }
+}
+
+@keyframes rolling-spin {
+  @each $ms, $angle, $ease in $spin {
+    #{-pct($ms)} {
+      transform: rotate($angle);
+      animation-timing-function: $ease;
+    }
+  }
+  100% {
+    transform: rotate(list.nth(list.nth($spin, -1), 2));
+  }
+}
+
+@keyframes rolling-fx-fade {
+  @each $ms, $opacity in $fade {
+    #{-pct($ms)} {
+      opacity: $opacity;
+    }
+  }
+  100% {
+    opacity: list.nth(list.nth($fade, -1), 2);
+  }
+}

@@ -1,0 +1,19 @@
+@use 'utilities' as u;
+
+// Marco de las composiciones del expediente en el Design Lab: la misma raíz que
+// la aplicación. Las composiciones son los componentes reales de la feature.
+
+.frameApp {
+  position: relative;
+  min-height: 100dvh;
+  overflow-x: clip;
+  @include u.bp-app-container;
+}
+
+.srOnly {
+  @include u.visually-hidden;
+}
+
+.frameMain:focus {
+  outline: none;
+}

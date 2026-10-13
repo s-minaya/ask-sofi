@@ -7,6 +7,8 @@ import { DesignLab } from './DesignLab'
 
 // La app simulada solo se carga dentro del iframe de la Experience Preview.
 const PreviewFrameRoot = lazy(() => import('./preview/PreviewFrameRoot'))
+// Composiciones del expediente (004), cada una en su propio iframe.
+const ProfileFrameRoot = lazy(() => import('./profile/ProfileFrameRoot'))
 
 // Cabecera sola, para verla dentro de un iframe estrecho con sus media queries reales.
 function HeaderFrame() {
@@ -24,6 +26,14 @@ function HeaderFrame() {
 
 export function DesignLabRoot() {
   const frame = new URLSearchParams(window.location.search).get('frame')
+
+  if (frame === 'profile') {
+    return (
+      <Suspense fallback={null}>
+        <ProfileFrameRoot />
+      </Suspense>
+    )
+  }
 
   if (frame === 'preview') {
     return (

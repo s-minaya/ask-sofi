@@ -73,3 +73,18 @@
 .fill .option {
   flex: 1 1 0;
 }
+
+// Rejilla: columnas iguales de al menos 18 rem; el texto largo se parte en varias líneas.
+.grid {
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  }
+
+  .option {
+    justify-content: flex-start;
+    padding-block: 0.75rem;
+    line-height: 1.3;
+    text-align: start;
+  }
+}

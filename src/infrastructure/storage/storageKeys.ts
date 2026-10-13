@@ -5,12 +5,14 @@ export const STORAGE_NAMESPACE = 'ask-sofi:'
 
 // Claves declaradas en un único lugar y el almacenamiento al que pertenecen:
 //
-//   localStorage   → lo que la persona decide conservar (preferencias, y más
-//                    adelante historial, favoritos y perfil).
+//   localStorage   → lo que la persona decide conservar (preferencias, expediente
+//                    de la pareja, onboarding y, más adelante, historial y favoritos).
 //   sessionStorage → estado temporal de la consulta en curso.
 export const STORAGE_KEYS = {
   // localStorage
   preferences: 'ask-sofi:preferences',
+  partnerProfile: 'ask-sofi:partner-profile',
+  onboarding: 'ask-sofi:onboarding',
   // sessionStorage
   consultationDraft: 'ask-sofi:session:consultation',
   sessionScreen: 'ask-sofi:session:screen',

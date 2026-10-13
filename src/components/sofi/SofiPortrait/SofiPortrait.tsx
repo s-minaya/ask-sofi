@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import { cx } from '../../../utils/cx'
 import styles from './SofiPortrait.module.scss'
 
@@ -37,6 +37,9 @@ type SofiPortraitProps = {
   // Describe la expresión cuando aporta; vacío cuando acompaña a un texto que ya lo dice.
   alt?: string
   outline?: boolean
+  // Imagen estática que sustituye al parpadeo cuando carga. Mientras tanto, o si
+  // falla, se ve el fotograma: Sofi nunca se queda sin representación.
+  image?: string
   className?: string
   style?: CSSProperties
 }
@@ -55,6 +58,7 @@ export function SofiPortrait({
   crop,
   alt = '',
   outline = false,
+  image,
   className,
   style,
 }: SofiPortraitProps) {
@@ -62,6 +66,11 @@ export function SofiPortrait({
   const a11y = alt
     ? { role: 'img', 'aria-label': alt }
     : { 'aria-hidden': true as const }
+  // Con recorte o imagen, la accesibilidad pasa al contenedor exterior.
+  const wrapped = Boolean(crop || image)
+  const placement = crop
+    ? { margin: `${-crop.offsetY}px 0 0 ${-crop.offsetX}px` }
+    : undefined
   const sprite = (
     <span
       className={cx(
@@ -69,20 +78,43 @@ export function SofiPortrait({
         styles.sprite,
         FRAME_CLASS[shownFrame],
         outline && styles.outline,
-        !crop && className,
+        !wrapped && className,
       )}
       style={{
-        width: size,
-        height: size,
-        ...(crop
-          ? { margin: `${-crop.offsetY}px 0 0 ${-crop.offsetX}px` }
-          : style),
+        // Con imagen y sin recorte, el contenedor manda: la alternativa lo sigue.
+        width: image && !crop ? '100%' : size,
+        height: image && !crop ? '100%' : size,
+        ...(wrapped ? placement : style),
       }}
-      {...(crop ? { 'aria-hidden': true as const } : a11y)}
+      {...(wrapped ? { 'aria-hidden': true as const } : a11y)}
     />
   )
 
-  if (!crop) return sprite
+  if (!wrapped) return sprite
+
+  const content = image ? (
+    <PortraitImage
+      key={image}
+      src={image}
+      size={size}
+      outline={outline}
+      style={placement}
+      fallback={sprite}
+    />
+  ) : (
+    sprite
+  )
+
+  if (!crop)
+    return (
+      <span
+        className={cx(styles.portrait, className)}
+        style={{ width: size, height: size, ...style }}
+        {...a11y}
+      >
+        {content}
+      </span>
+    )
 
   return (
     <span
@@ -100,7 +132,47 @@ export function SofiPortrait({
       }}
       {...a11y}
     >
-      {sprite}
+      {content}
     </span>
+  )
+}
+
+type PortraitImageProps = {
+  src: string
+  size: number
+  outline: boolean
+  style?: CSSProperties
+  fallback: ReactNode
+}
+
+// Una instancia por imagen (key): al cambiar de recurso vuelve a esperar su carga.
+function PortraitImage({
+  src,
+  size,
+  outline,
+  style,
+  fallback,
+}: PortraitImageProps) {
+  const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>(
+    'loading',
+  )
+  return (
+    <>
+      {status !== 'ready' && fallback}
+      {status !== 'failed' && (
+        <img
+          src={src}
+          alt=""
+          width={size}
+          height={size}
+          decoding="async"
+          hidden={status !== 'ready'}
+          className={cx(styles.image, outline && styles.outline)}
+          style={style}
+          onLoad={() => setStatus('ready')}
+          onError={() => setStatus('failed')}
+        />
+      )}
+    </>
   )
 }

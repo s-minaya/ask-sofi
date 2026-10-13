@@ -196,6 +196,12 @@ Where an element goes, how it looks and how it behaves visually has already been
 
 ---
 
+## Sofi assets
+
+Integrate Sofi's static images and spritesheets only through the procedure in `tech-stack.md` §46.1. Do not reprocess finished spritesheets, and ask before resolving any visual ambiguity in fourth-wall assets.
+
+---
+
 ## Responsive and accessibility
 
 Ask Sofi is:

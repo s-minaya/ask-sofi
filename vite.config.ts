@@ -32,11 +32,23 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    // Pre-transforma al arrancar la aplicación y el Design Lab: el primer cliente
+    // no paga la carga en frío (3–4 s) mientras varias pruebas piden páginas a la vez.
+    warmup: {
+      clientFiles: ['./src/main.tsx', './src/design-lab/**/*.tsx'],
+    },
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     // Las comprobaciones en navegador real son de Playwright (npm run test:a11y).
     exclude: [...configDefaults.exclude, 'e2e/**'],
+    // Cada fichero crea su propio jsdom (~2 s) y la suite es de memoria, no de CPU:
+    // con 7 hilos en un portátil de 8 GB el test más lento pasaba de 1 s a 2,5–4 s
+    // y alguno superó los 5 s. Con 3 hilos la suite tarda lo mismo (~100 s) y el
+    // más lento queda en ~1,2 s. En CI se usan los hilos por defecto.
+    maxWorkers: process.env.CI ? undefined : 3,
     // Los tests de contrato leen los tokens SCSS como texto; el resto del CSS se sigue omitiendo.
     css: { include: [/\.scss\?raw$/] },
   },

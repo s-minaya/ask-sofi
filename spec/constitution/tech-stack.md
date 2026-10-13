@@ -1602,6 +1602,48 @@ según las características del asset.
 
 Debe existir fallback cuando corresponda.
 
+### 46.1. Integración de assets
+
+Los assets de Sofi se incorporan de forma progresiva, cuando una feature los necesita. Este apartado es la única fuente de verdad del procedimiento: las features no lo repiten.
+
+**Ubicación**
+
+```text
+spec/constitution/art-direction/sofi/  originales, sin pérdida; no se publican
+src/assets/sofi/                       estáticas de producción
+src/styles/sprites/                    spritesheets de producción
+```
+
+**Imágenes estáticas**
+
+Una imagen añadida a una feature no se usa tal cual:
+
+1. Identificar qué expresión o pose es.
+2. Renombrarla en inglés y en kebab-case según su significado (`sofi-thinking`), no según su uso en una pantalla.
+3. Mover el original a la carpeta de originales con ese nombre, sin modificar su contenido. Un derivado aprobado (p. ej. un recorte) se guarda junto a él con un sufijo que lo describa. Un retoque hecho a mano píxel a píxel se guarda ya a la resolución de salida: el script no lo reescala y solo lo cuantiza.
+4. Añadirla a `scripts/sofi-statics.json` y ejecutar `npm run assets:sofi` (o `npm run assets:sofi -- <nombre>` para una sola). El script la limpia y la optimiza según los dos pasos siguientes, sin modificar el original.
+5. Limpieza: alfa binario en origen (el recorte del generador deja el cuerpo semitransparente y polvo alrededor) y eliminación de motas sueltas. Si el original llega sobre un fondo opaco casi negro, primero se vuelve transparente solo lo conectado al borde: el contorno y los huecos oscuros encerrados en el dibujo se conservan.
+6. Optimización con las características de los spritesheets: 384 × 384 px por defecto, reescalado por área con alfa premultiplicado (sin núcleos con lóbulos, que crean halos en el contorno), borde antialias estrecho, paleta indexada sin tramado y WebP sin pérdida.
+7. Validar que el pixel art no pierde calidad, frente al original reducido y junto a un fotograma de los spritesheets a la misma escala, en tema claro y oscuro: contornos sin halos, colores de detalle conservados (iris, mejillas, brillos) y el WebP decodificado idéntico a lo que se codificó. El script comprueba esto último y muestra el error frente al original reducido; el resto se revisa a la vista.
+
+El manifiesto es el único lugar con las opciones de cada imagen: dimensiones (`width`, `height`), recorte (`crop`, con la proporción de la salida), umbral del fondo opaco (`background`) y colores de la paleta. El script se ejecuta solo bajo demanda: no forma parte de la build.
+
+No se reconstruye una rejilla de píxel irregular: si el periodo varía, forzarla duplica o borra líneas.
+
+**Spritesheets**
+
+Se producen en otro repositorio y llegan terminados: no se reprocesan.
+
+Cada ZIP exporta una carpeta `sprites/` con `_sprite.scss` (el mixin compartido), el parcial de la animación (`_<name>.scss`) y sus imágenes optimizadas. Para integrarlo:
+
+1. Copiar su contenido en `src/styles/sprites/`, actualizando `_sprite.scss` con la versión del ZIP.
+2. Cada componente importa solo el parcial que usa, con `@use` relativo, y aplica la clase desde su CSS Module (`styles['<name>']`). El índice `_index.scss` no se importa desde componentes: arrastraría todas las animaciones al CSS de cada pantalla. Ningún sprite se carga en estilos globales.
+3. Verificar en la build de producción que el CSS solo contiene las animaciones de las pantallas que las usan, que la animación se reproduce y que con movimiento reducido queda en un fotograma fijo.
+
+**Cuarta pared**
+
+Los assets en los que Sofi interactúa con la interfaz (p. ej. apoyarse en un borde) siguen las instrucciones particulares de cada asset. Ante cualquier ambigüedad visual se consulta antes de procesarlos o integrarlos.
+
 ---
 
 ## 47. Fonts
@@ -1942,6 +1984,8 @@ accessibility checks
 ```
 
 cuando las correspondientes features existan. Las comprobaciones de accesibilidad con Playwright y axe, y la de tamaño de texto, se ejecutan desde la feature `002` en un job aparte que sigue al pipeline inicial.
+
+Las pruebas de Playwright arrancan siempre su propio servidor de desarrollo, en un puerto distinto del de `npm run dev` (5199, o `E2E_PORT`), y no reutilizan ninguno: un servidor antiguo sirve módulos obsoletos y uno ajeno no es este código. Si el puerto está ocupado, la ejecución falla en lugar de conectarse a otro proceso.
 
 Las evals de Jev no deberán ejecutarse automáticamente en cada commit.
 

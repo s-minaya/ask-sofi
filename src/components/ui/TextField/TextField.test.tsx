@@ -61,6 +61,22 @@ describe('TextArea', () => {
     await userEvent.type(screen.getByLabelText('Texto de prueba'), 'ale.')
     expect(screen.getByText('5 caracteres')).toBeInTheDocument()
   })
+
+  it('con máximo, muestra «x / máximo» y lo dice entero a quien no lo ve', () => {
+    const { container } = render(
+      <TextArea
+        label="Notas"
+        value="Hola"
+        onChange={() => {}}
+        showCount
+        maxCount={500}
+      />,
+    )
+
+    expect(screen.getByText('4 / 500')).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.getByText('4 de 500 caracteres')).toBeInTheDocument()
+    expect(container).not.toHaveTextContent('4 caracteres')
+  })
 })
 
 describe('TextField', () => {

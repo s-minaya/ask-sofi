@@ -167,3 +167,102 @@
 .preview {
   margin-top: 1.5rem;
 }
+
+// --- Invitación al expediente: el primer diálogo de Sofi (004-plan §4) ---
+
+// En estrecho la cabecera deja de ser insignia + diálogo en fila: Sofi asomada
+// arriba y el bocadillo a todo el ancho. `aside` sube la especificidad sobre .listen.
+aside.listenInviting {
+  display: block;
+}
+
+// Sofi apoya las manos en el borde superior del bocadillo (el borde cae en el
+// 87,5 % de la imagen): el relleno superior lo calcula el componente.
+.invite {
+  // La mitad exacta del sprite de 384 px: el pixel art no se emborrona.
+  --peek-size: 192px;
+  position: relative;
+
+  // A dos columnas sustituye al retrato grande y se adapta al alto de la
+  // ventana, no al dispositivo: con espacio de sobra es el sprite entero y, con
+  // menos, 3/4 o la mitad, para que las acciones sigan a la vista.
+  @include u.bp-from(u.$bp-columns) {
+    margin-top: 1.75rem;
+
+    @include u.bp-from-height(u.$bp-regular) {
+      --peek-size: 288px;
+    }
+
+    @include u.bp-from-height(u.$bp-roomy) {
+      --peek-size: 384px;
+    }
+  }
+}
+
+.peek {
+  position: absolute;
+  top: 0;
+  right: clamp(0.5rem, 6%, 2.5rem);
+  z-index: var(--z-raised);
+  pointer-events: none;
+
+  @include u.bp-from(u.$bp-columns) {
+    right: 50%;
+    translate: 50% 0;
+  }
+}
+
+// Sin el solape sobre el retrato de la consulta: aquí el bocadillo es el borde.
+.invite .inviteDialog {
+  margin-top: 0;
+
+  // Con dos frases y dos acciones, un cuerpo algo menor que el del diálogo de la
+  // consulta (20 px) evita que las acciones queden bajo el pliegue.
+  // Con el sprite entero hay sitio para el cuerpo del diálogo de la consulta
+  // (20 px); en las alturas menores, algo menor, con Sofi.
+  @include u.bp-from(u.$bp-columns) {
+    --dialog-text-size: 1.125rem;
+
+    @include u.bp-from-height(u.$bp-roomy) {
+      --dialog-text-size: 1.25rem;
+    }
+  }
+}
+
+// Dos frases: la petición, que manda, y para qué sirve.
+.lead {
+  font-weight: 700;
+}
+
+.leadText {
+  margin-top: 0.5rem;
+}
+
+.inviteActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1rem;
+}
+
+// Acceso permanente en el pie del diálogo. En una columna el bocadillo es
+// estrecho: basta el enlace, que ya dice «expediente».
+.access {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.625rem;
+
+  > :first-child {
+    display: none;
+
+    @include u.bp-from(u.$bp-columns) {
+      display: inline-flex;
+    }
+  }
+}
+
+.listenText:focus {
+  outline: none;
+}

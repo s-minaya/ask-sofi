@@ -3,14 +3,13 @@ import type { SpeechVoice } from '../../../app/providers/sound'
 import { useReducedMotion } from '../../../hooks/useReducedMotion'
 import { useSound } from '../../../hooks/useSound'
 import { cx } from '../../../utils/cx'
-import { SoundOffIcon } from '../../ui/icons/icons'
-import { InlineNotice } from '../../ui/Notice/Notice'
 import { TextLink } from '../../ui/TextLink/TextLink'
 import {
   SofiDialog,
   SofiDialogText,
   type SofiDialogSize,
 } from '../SofiDialog/SofiDialog'
+import { SoundNotice } from '../SoundNotice/SoundNotice'
 import styles from './SofiSpeech.module.scss'
 import {
   DEFAULT_SPEECH_TIMING,
@@ -33,6 +32,9 @@ type SofiSpeechProps = {
   size?: SofiDialogSize
   // Lo que aparece al terminar de escribir («Ver las versiones»).
   doneAction?: ReactNode
+  // Contenido del bocadillo bajo el texto (p. ej. unas respuestas): siempre
+  // activo, también mientras Sofi escribe.
+  body?: ReactNode
   // Estado de presentación para sincronizar futuras animaciones (008) sin conocer sus assets.
   onStateChange?: (state: SpeechState) => void
   // Cambiarlo vuelve a escribir el texto desde el principio.
@@ -52,6 +54,7 @@ export function SofiSpeech({
   timing,
   size = 'lg',
   doneAction,
+  body,
   onStateChange,
   playToken = 0,
   autoplay = true,
@@ -63,7 +66,6 @@ export function SofiSpeech({
   const sound = useSound()
   const reducedMotion = useReducedMotion()
   const nameId = useId()
-
   return (
     <div className={cx(styles.speech, className)}>
       {/* Una instancia por texto y reproducción: al cambiar, la anterior se cancela limpia. */}
@@ -73,6 +75,7 @@ export function SofiSpeech({
         timing={{ ...DEFAULT_SPEECH_TIMING, ...timing }}
         size={size}
         doneAction={doneAction}
+        body={body}
         onStateChange={onStateChange}
         autoplay={autoplay || playToken > 0}
         revealedFromOutside={revealed}
@@ -82,28 +85,7 @@ export function SofiSpeech({
         nameId={nameId}
         className={dialogClassName}
       />
-      {sound.enabled && sound.status === 'blocked' && (
-        <InlineNotice role="status" icon={<SoundOffIcon size={18} />}>
-          <span>Tu navegador ha bloqueado el sonido.</span>
-          <TextLink size="sm" onClick={sound.unlock}>
-            Activar sonido
-          </TextLink>
-          <TextLink size="sm" onClick={sound.disable}>
-            Seguir sin sonido
-          </TextLink>
-        </InlineNotice>
-      )}
-      {sound.enabled && sound.status === 'unavailable' && (
-        <InlineNotice
-          role="status"
-          tone="plain"
-          icon={<SoundOffIcon size={18} />}
-        >
-          <span>
-            El sonido no está disponible. Sofi seguirá escribiendo en silencio.
-          </span>
-        </InlineNotice>
-      )}
+      <SoundNotice />
     </div>
   )
 }
@@ -113,6 +95,7 @@ type SpeechDialogProps = {
   timing: SpeechTiming
   size: SofiDialogSize
   doneAction?: ReactNode
+  body?: ReactNode
   onStateChange?: (state: SpeechState) => void
   autoplay: boolean
   revealedFromOutside: boolean
@@ -128,6 +111,7 @@ function SpeechDialog({
   timing,
   size,
   doneAction,
+  body,
   onStateChange,
   autoplay,
   revealedFromOutside,
@@ -170,7 +154,11 @@ function SpeechDialog({
   // «Ver todo» desaparece al completarse: el foco pasa a la acción que lo sustituye.
   useEffect(() => {
     if (!focusDone) return
-    footRef.current?.querySelector<HTMLElement>('a, button')?.focus()
+    // Solo una acción que pueda recibirlo: una inactiva (inert) queda fuera.
+    const action = [
+      ...(footRef.current?.querySelectorAll<HTMLElement>('a, button') ?? []),
+    ].find((element) => !element.closest('[inert]'))
+    action?.focus()
   }, [focusDone])
 
   const typing = step.status !== 'done'
@@ -181,32 +169,64 @@ function SpeechDialog({
     setFocusDone(true)
   }
 
+  const foot = typing ? (
+    // La acción final ya ocupa su sitio, invisible e inactiva: al terminar
+    // de escribir el pie no crece (también con el texto ampliado).
+    <span className={styles.footSlot}>
+      <span className={styles.footLayer}>
+        <TextLink onClick={revealAll}>Ver todo</TextLink>
+      </span>
+      {doneAction && (
+        <span
+          className={styles.footLayer}
+          style={{ visibility: 'hidden' }}
+          inert
+        >
+          {doneAction}
+        </span>
+      )}
+    </span>
+  ) : doneAction ? (
+    <span ref={footRef} style={{ display: 'contents' }}>
+      {doneAction}
+    </span>
+  ) : undefined
+
+  const typed = (
+    <div className={styles.type}>
+      <SofiDialogText className={styles.ghost} aria-hidden>
+        {text}
+      </SofiDialogText>
+      <SofiDialogText aria-hidden>
+        {text.slice(0, step.index)}
+        {(step.status === 'typing' || step.status === 'pause') && (
+          <span className={styles.caret} />
+        )}
+      </SofiDialogText>
+    </div>
+  )
+
   return (
     <SofiDialog
       size={size}
       nameId={nameId}
       className={className}
-      footer={
-        typing ? (
-          <TextLink onClick={revealAll}>Ver todo</TextLink>
-        ) : doneAction ? (
-          <span ref={footRef} style={{ display: 'contents' }}>
-            {doneAction}
-          </span>
-        ) : undefined
-      }
+      // Con contenido bajo el texto, el pie va entre los dos: «Ver todo» y lo que
+      // aparece al terminar quedan junto a lo que se escribe.
+      footer={body ? undefined : foot}
     >
-      <div className={styles.type}>
-        <SofiDialogText className={styles.ghost} aria-hidden>
-          {text}
-        </SofiDialogText>
-        <SofiDialogText aria-hidden>
-          {text.slice(0, step.index)}
-          {(step.status === 'typing' || step.status === 'pause') && (
-            <span className={styles.caret} />
-          )}
-        </SofiDialogText>
-      </div>
+      {body ? (
+        <>
+          {typed}
+          {foot && <div className={styles.foot}>{foot}</div>}
+          <div className={styles.body}>{body}</div>
+        </>
+      ) : (
+        typed
+      )}
+      {/* Siempre en la misma posición: si el contenido entra o sale del
+          bocadillo (al cruzar un umbral de pantalla), la región se conserva con
+          su texto y no se vuelve a anunciar. */}
       <p
         ref={liveRef}
         className={styles.srOnly}

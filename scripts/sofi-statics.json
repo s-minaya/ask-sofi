@@ -1,0 +1,43 @@
+{
+  "defaults": {
+    "width": 384,
+    "height": 384,
+    "colors": 255,
+    "minSpeckArea": 40
+  },
+  "assets": [
+    {
+      "source": "sofi-neutral.png",
+      "output": "sofi-neutral.webp"
+    },
+    {
+      "source": "sofi-surprised.png",
+      "output": "sofi-surprised.webp"
+    },
+    {
+      "source": "sofi-thinking.png",
+      "output": "sofi-thinking.webp"
+    },
+    {
+      "source": "sofi-smug-redrawn.png",
+      "output": "sofi-smug.webp",
+      "background": 3,
+      "note": "Nueva versión de la expresión, sin canal alfa: el fondo es negro (0–1) y el contorno empieza en 12"
+    },
+    {
+      "source": "sofi-approved.png",
+      "output": "sofi-approved.webp"
+    },
+    {
+      "source": "sofi-peek-no-ledge.png",
+      "output": "sofi-peek.webp",
+      "crop": {
+        "x": 0,
+        "y": 7,
+        "width": 1248,
+        "height": 1248
+      },
+      "note": "El corte de la fila 1099 cae en la fila 336 de 384 (87,5 %): el borde de la interfaz se apoya ahí"
+    }
+  ]
+}

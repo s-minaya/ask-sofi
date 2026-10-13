@@ -293,15 +293,17 @@ export function ErrorScreen({
   return (
     <div className={styles.err}>
       <SofiPortrait
-        size={300}
+        size={192}
         expression="oops"
         alt="Sofi cierra los ojos: algo ha fallado"
         className={styles.errPortrait}
+        // Sofi entera, con el busto apoyado en el borde (decisión 6 de la
+        // dirección artística): a la mitad del sprite, su silueta cabe sin recortes.
         crop={{
-          width: 150,
-          height: 150,
-          offsetX: 75,
-          offsetY: 66,
+          width: 155,
+          height: 190,
+          offsetX: 20,
+          offsetY: 7,
           background: 'var(--tone-white)',
           frame: 'sticker',
         }}

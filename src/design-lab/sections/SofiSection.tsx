@@ -40,6 +40,7 @@ import {
   SpeechCaret,
   type SpeechState,
 } from '../../components/sofi/SofiSpeech/SofiSpeech'
+import { SoundNoticeDemo } from '../parts/SoundNoticeDemo'
 import { Burst } from '../../components/ui/Burst/Burst'
 import { Button } from '../../components/ui/Button/Button'
 import { Counter } from '../../components/ui/Counter/Counter'
@@ -506,6 +507,8 @@ function DialogSpec({ stageMax }: { stageMax?: string }) {
           </span>
         </li>
       </ul>
+      <LabSub style={{ marginTop: '2.5rem' }}>Aviso de sonido</LabSub>
+      <SoundNoticeDemo />
       <>
         <DialogPlayground />
         <StagePlayground />

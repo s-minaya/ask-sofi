@@ -100,7 +100,17 @@ const EXCEPTIONS: Record<string, { reason: string; declarations: string[] }> = {
       'min-height: 600px',
       'inset: 20px 6% 120px 0',
       'margin-top: -96px',
+      // Sofi asomada en la invitación: el asset de 384 px entero, a 3/4 o a la
+      // mitad según el alto y el ancho disponibles (nunca una fracción sucia).
+      '--peek-size: 192px',
+      '--peek-size: 288px',
+      '--peek-size: 384px',
     ],
+  },
+  '/src/features/partner-profile/ProfileSheet.module.scss': {
+    reason:
+      'Tamaños de Sofi: la mitad exacta del sprite de 384 px y el sprite entero',
+    declarations: ['--sofi-size: 192px', '--sofi-size: 384px'],
   },
   '/src/design-lab/sections/UiSection.module.scss': {
     reason:

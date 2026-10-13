@@ -109,7 +109,14 @@ for (const colorScheme of ['light', 'dark'] as const) {
       await expectAccessible(page)
     })
 
-    for (const section of ['foundations', 'ui', 'sofi', 'motion', 'preview']) {
+    for (const section of [
+      'foundations',
+      'ui',
+      'sofi',
+      'motion',
+      'preview',
+      'profile',
+    ]) {
       test(`Design Lab · ${section}`, async ({ page }) => {
         await page.goto(`/design-lab?s=${section}`)
         await expect(

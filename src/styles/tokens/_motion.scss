@@ -6,4 +6,7 @@
   --duration-loader: 1.6s;
   --duration-ticker: 46s;
   --duration-blink: 4.2s;
+  // Celebración breve (una vez, sin bucle): el salto de «Guardar» al completar
+  // las seis áreas.
+  --duration-celebrate: 0.6s;
 }

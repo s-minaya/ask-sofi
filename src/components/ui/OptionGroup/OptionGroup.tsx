@@ -12,10 +12,14 @@ export type OptionGroupOption<T extends string> = {
 export type OptionGroupProps<T extends string> = {
   legend: ReactNode
   options: ReadonlyArray<OptionGroupOption<T>>
-  value: T
+  // Sin valor no hay ninguna opción marcada: «sin responder» es un estado propio.
+  value: T | undefined
   onChange: (value: T) => void
   // Las opciones se reparten todo el ancho.
   fill?: boolean
+  // Rejilla de columnas iguales para textos largos que no caben en una píldora:
+  // una opción por fila en estrecho y varias columnas cuando hay sitio.
+  grid?: boolean
   className?: string
 }
 
@@ -66,11 +70,14 @@ export function OptionGroup<T extends string>({
   value,
   onChange,
   fill = false,
+  grid = false,
   className,
 }: OptionGroupProps<T>) {
   const name = useId()
   return (
-    <fieldset className={cx(fill && styles.fill, className)}>
+    <fieldset
+      className={cx(fill && styles.fill, grid && styles.grid, className)}
+    >
       <legend className={styles.legend}>{legend}</legend>
       <div className={styles.options}>
         {options.map((option) => (

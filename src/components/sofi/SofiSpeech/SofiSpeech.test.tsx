@@ -84,6 +84,106 @@ describe('SofiSpeech', () => {
     ).toHaveFocus()
   })
 
+  // Una acción final que aún no corresponde (inactiva) no puede recibir el foco:
+  // se queda donde estaba, como si no hubiera acción.
+  it('«Ver todo» no da el foco a una acción final inactiva', () => {
+    render(
+      <SofiSpeech
+        text={TEXT}
+        doneAction={
+          <span inert>
+            <TextLink href="#versiones">Ver las versiones</TextLink>
+          </span>
+        }
+      />,
+    )
+    act(() => vi.advanceTimersByTime(756))
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Ver todo' }))
+    })
+
+    expect(document.activeElement?.closest('[inert]')).toBeNull()
+  })
+
+  it('mientras escribe reserva el hueco de la acción final, oculta e inactiva', () => {
+    render(
+      <SofiSpeech
+        text={TEXT}
+        doneAction={<TextLink href="#versiones">Ver las versiones</TextLink>}
+      />,
+    )
+    act(() => vi.advanceTimersByTime(756))
+
+    expect(screen.getByRole('button', { name: 'Ver todo' })).toBeVisible()
+    expect(screen.getByText('Ver las versiones')).not.toBeVisible()
+    expect(
+      screen.queryByRole('link', { name: 'Ver las versiones' }),
+    ).not.toBeInTheDocument()
+
+    act(() => vi.advanceTimersByTime(2000))
+    expect(
+      screen.getByRole('link', { name: 'Ver las versiones' }),
+    ).toBeVisible()
+  })
+
+  it('el contenido del bocadillo bajo el texto se puede usar mientras escribe', () => {
+    const chosen = vi.fn()
+    render(
+      <SofiSpeech
+        text={TEXT}
+        body={
+          <button type="button" onClick={chosen}>
+            Una respuesta
+          </button>
+        }
+      />,
+    )
+    act(() => vi.advanceTimersByTime(756))
+
+    const answer = screen.getByRole('button', { name: 'Una respuesta' })
+    expect(answer.closest('figure')).not.toBeNull()
+    expect(screen.getByRole('button', { name: 'Ver todo' })).toBeVisible()
+    fireEvent.click(answer)
+    expect(chosen).toHaveBeenCalledTimes(1)
+  })
+
+  it('con contenido bajo el texto, el pie va entre los dos: cerca de lo que se escribe', () => {
+    render(
+      <SofiSpeech
+        text={TEXT}
+        body={<button type="button">Una respuesta</button>}
+      />,
+    )
+    act(() => vi.advanceTimersByTime(756))
+
+    const skip = screen.getByRole('button', { name: 'Ver todo' })
+    const answer = screen.getByRole('button', { name: 'Una respuesta' })
+    expect(
+      skip.compareDocumentPosition(answer) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+  })
+
+  // Al cruzar el umbral, las respuestas entran o salen del bocadillo sin que el
+  // texto accesible se pierda ni se vuelva a escribir.
+  it('el texto accesible sobrevive a que el contenido entre o salga del bocadillo', () => {
+    const { rerender } = render(<SofiSpeech text={TEXT} />)
+    const announced = () =>
+      screen.getAllByText(TEXT, {
+        ignore: '[aria-hidden="true"], [aria-hidden="true"] *',
+      })
+
+    rerender(
+      <SofiSpeech text={TEXT} body={<button type="button">Una</button>} />,
+    )
+    expect(announced()).toHaveLength(1)
+    expect(announced()[0]).toHaveAttribute('aria-live', 'polite')
+
+    rerender(<SofiSpeech text={TEXT} />)
+    expect(announced()).toHaveLength(1)
+    expect(announced()[0]).toHaveAttribute('aria-live', 'polite')
+  })
+
   it('cancela la escritura al desmontar sin dejar temporizadores', () => {
     const { unmount } = render(<SofiSpeech text={TEXT} />)
     act(() => vi.advanceTimersByTime(750))

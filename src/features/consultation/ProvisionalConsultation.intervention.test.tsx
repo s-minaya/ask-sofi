@@ -28,7 +28,7 @@ const read = () => screen.getByRole('button', { name: /Leer entre líneas/ })
 describe('ProvisionalConsultation · aviso de demostración', () => {
   it('muestra el aviso aprobado de demostración, sin analizar nada', async () => {
     const user = userEvent.setup()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
 
     await user.type(message(), 'Vale.')
     await user.click(read())
@@ -43,7 +43,7 @@ describe('ProvisionalConsultation · aviso de demostración', () => {
   it('no hay intervención ni desplazamiento si falta el mensaje', async () => {
     setMediaQuery(STACKED_LAYOUT_QUERY, true)
     const user = userEvent.setup()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
 
     await user.click(read())
 
@@ -57,7 +57,7 @@ describe('ProvisionalConsultation · desplazamiento', () => {
   it('en una columna lleva al aviso una sola vez, con animación', async () => {
     setMediaQuery(STACKED_LAYOUT_QUERY, true)
     const user = userEvent.setup()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
 
     await user.type(message(), 'Vale.')
     await user.click(read())
@@ -76,7 +76,7 @@ describe('ProvisionalConsultation · desplazamiento', () => {
     setMediaQuery(STACKED_LAYOUT_QUERY, true)
     setMediaQuery(REDUCED_QUERY, true)
     const user = userEvent.setup()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
 
     await user.type(message(), 'Vale.')
     await user.click(read())
@@ -90,7 +90,7 @@ describe('ProvisionalConsultation · desplazamiento', () => {
   it('a varias columnas no fuerza el desplazamiento', async () => {
     setMediaQuery(STACKED_LAYOUT_QUERY, false)
     const user = userEvent.setup()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
 
     await user.type(message(), 'Vale.')
     await user.click(read())
@@ -102,7 +102,7 @@ describe('ProvisionalConsultation · desplazamiento', () => {
   it('no repite el salto al seguir editando, al redimensionar ni al cambiar de preferencia', async () => {
     setMediaQuery(STACKED_LAYOUT_QUERY, true)
     const user = userEvent.setup()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     await user.type(message(), 'Vale.')
     await user.click(read())
     expect(scrollIntoView).toHaveBeenCalledTimes(1)
@@ -118,7 +118,7 @@ describe('ProvisionalConsultation · desplazamiento', () => {
   it('cada nueva petición de lectura vuelve a llevar a la intervención', async () => {
     setMediaQuery(STACKED_LAYOUT_QUERY, true)
     const user = userEvent.setup()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     await user.type(message(), 'Vale.')
 
     await user.click(read())
@@ -130,7 +130,7 @@ describe('ProvisionalConsultation · desplazamiento', () => {
   it('no mueve el foco: el botón sigue activo y el aviso se anuncia como estado', async () => {
     setMediaQuery(STACKED_LAYOUT_QUERY, true)
     const user = userEvent.setup()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     await user.type(message(), 'Vale.')
 
     await user.click(read())
@@ -142,7 +142,7 @@ describe('ProvisionalConsultation · desplazamiento', () => {
   it('con el almacenamiento y el audio sin efecto sigue desplazando', () => {
     vi.useFakeTimers()
     setMediaQuery(STACKED_LAYOUT_QUERY, true)
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
 
     fireEvent.change(message(), { target: { value: 'Vale.' } })
     fireEvent.click(read())

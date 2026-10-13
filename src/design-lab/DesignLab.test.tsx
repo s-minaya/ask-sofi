@@ -36,6 +36,7 @@ describe('DesignLab', () => {
     ['Sofi Components', '?s=sofi'],
     ['Motion & Sound', '?s=motion'],
     ['Experience Preview', '?s=preview'],
+    ['Expediente', '?s=profile'],
     ['Foundations', '?s=foundations'],
   ])('renders the %s section from the navigation', (name, search) => {
     renderLab()
@@ -47,6 +48,24 @@ describe('DesignLab', () => {
       'aria-current',
       'page',
     )
+  })
+
+  // Las composiciones de 004 van en marcos; aquí, el catálogo de estados de Sofi.
+  it('shows every state of Sofi in the profile proposal', () => {
+    renderLab('?s=profile')
+    for (const name of [
+      'Sofi se asoma, curiosa',
+      'Sofi te pregunta',
+      'Sofi espera tu respuesta',
+      'Sofi sonríe, satisfecha',
+      'Sofi se lo piensa',
+      'Sofi, con gafas de sol, da su visto bueno',
+      'Sofi, sorprendida',
+      'Sofi se lo piensa antes de borrar',
+      'Sofi, tranquila, con el expediente en blanco',
+    ])
+      expect(screen.getByRole('img', { name })).toBeInTheDocument()
+    expect(screen.getAllByTitle(/^(Consulta|Expediente) ·/)).toHaveLength(4)
   })
 
   it('opens the section named in the address', () => {

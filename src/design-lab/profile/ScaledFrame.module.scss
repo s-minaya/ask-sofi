@@ -1,0 +1,29 @@
+@use 'utilities' as u;
+
+.frame {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.caption {
+  @include u.type-kicker;
+  color: var(--color-text-muted);
+}
+
+.box {
+  min-width: 0;
+}
+
+.holder {
+  overflow: hidden;
+  border: var(--stroke-structure) solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.device {
+  display: block;
+  border: 0;
+  transform-origin: 0 0;
+}

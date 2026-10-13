@@ -6,6 +6,11 @@ export function formatCharacterCount(count: number): string {
   return count === 1 ? '1 carácter' : `${count} caracteres`
 }
 
+// Con máximo, el plural lo pide el límite: «1 de 500 caracteres».
+export function formatCharacterLimit(count: number, max: number): string {
+  return `${count} de ${max} caracteres`
+}
+
 export function formatPercent(value: number): string {
   return `${Math.round(value)}${NARROW_NBSP}%`
 }

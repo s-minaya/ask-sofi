@@ -4,6 +4,7 @@ export const LAB_SECTIONS = [
   { key: 'sofi', num: '03', label: 'Sofi Components' },
   { key: 'motion', num: '04', label: 'Motion & Sound' },
   { key: 'preview', num: '05', label: 'Experience Preview' },
+  { key: 'profile', num: '06', label: 'Expediente' },
 ] as const
 
 export type LabSectionKey = (typeof LAB_SECTIONS)[number]['key']

@@ -47,6 +47,15 @@
   }
 }
 
+/// Duración total de una línea de tiempo (ms), para sincronizar otras animaciones con la del sprite.
+@function duration($timeline) {
+  $total: 0;
+  @each $step in $timeline {
+    $total: $total + list.nth($step, 2);
+  }
+  @return $total;
+}
+
 @function -percent($ms, $total) {
   @return math.div(math.round(math.div($ms * 100000, $total)), 1000) * 1%;
 }

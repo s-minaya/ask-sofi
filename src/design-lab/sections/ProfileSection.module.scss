@@ -1,0 +1,64 @@
+@use 'utilities' as u;
+
+.states {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.state {
+  display: grid;
+  justify-items: center;
+  gap: 0.375rem;
+  padding: 1rem 0.75rem 1.125rem;
+  border: var(--stroke-structure) solid var(--color-border);
+  background-color: var(--color-bg);
+  text-align: center;
+  @include u.dots;
+}
+
+// Comparativa: tarjetas más anchas, retrato arriba y texto debajo.
+.compare {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+
+  .state {
+    align-content: start;
+    // El anillo del marco sticker sobresale del recuadro.
+    gap: 1rem;
+    max-width: 26rem;
+  }
+}
+
+.statePurpose {
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.stateAsset {
+  @include u.type-micro;
+  font-family: var(--font-mono, monospace);
+  color: var(--color-text-muted);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.5rem;
+}
+
+// Móvil a su tamaño y escritorio reducido al lado; apilados si no caben.
+.frames {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: minmax(0, 24.5rem) minmax(0, 1fr);
+    align-items: start;
+  }
+}

@@ -8,6 +8,10 @@ $columns: 1080px; // portada, consulta y versiones a dos columnas
 $error-columns: 900px; // retrato y aviso del error lado a lado
 $tiny: 360px; // cabecera muy estrecha
 $compact: 560px; // componentes que se compactan según su contenedor
+// Alto de ventana en que la invitación de Sofi deja sus acciones a la vista con
+// el sprite entero (384 px) y con 3/4 (288 px). Medidos con el texto por defecto.
+$roomy: 840px;
+$regular: 712px;
 // Más estrecho que la pantalla más pequeña soportada (320 px) a tamaño de texto
 // por defecto: solo se da cuando el usuario agranda el texto. Ahí los textos de
 // una sola línea (botones, insignias) pasan a varias en lugar de salirse.
@@ -26,6 +30,14 @@ $large-text: 319.84px;
 
 @mixin from($min) {
   @media (min-width: #{to-em($min)}) {
+    @content;
+  }
+}
+
+// Alto de la ventana: lo que decide si una composición de dos columnas cabe sin
+// desplazarse. Igual que el ancho, en em: crece con el tamaño de texto.
+@mixin from-height($min) {
+  @media (min-height: #{to-em($min)}) {
     @content;
   }
 }

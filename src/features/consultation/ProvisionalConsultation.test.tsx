@@ -23,7 +23,7 @@ afterEach(() => {
 
 describe('ProvisionalConsultation · persistencia de la consulta', () => {
   it('arranca vacía cuando no hay nada guardado', () => {
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
 
     expect(message()).toHaveValue('')
     expect(context()).toHaveValue('')
@@ -31,7 +31,7 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
 
   it('recupera mensaje y contexto tras recargar durante la sesión', () => {
     vi.useFakeTimers()
-    const first = render(<ProvisionalConsultation />)
+    const first = render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     typeText(message(), 'Vale.')
     typeText(context(), 'Veníamos de discutir')
     act(() => {
@@ -39,7 +39,7 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
     })
     first.unmount()
 
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
 
     expect(message()).toHaveValue('Vale.')
     expect(context()).toHaveValue('Veníamos de discutir')
@@ -48,16 +48,22 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
   it('guarda con retardo, no en cada pulsación', async () => {
     vi.useFakeTimers()
     const setItem = vi.spyOn(Storage.prototype, 'setItem')
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
+
+    // Presentar la invitación al expediente también escribe: aquí, solo el borrador.
+    const draftWrites = () =>
+      setItem.mock.calls.filter(
+        ([key]) => key === STORAGE_KEYS.consultationDraft,
+      )
 
     for (const text of ['V', 'Va', 'Val', 'Vale']) typeText(message(), text)
-    expect(setItem).not.toHaveBeenCalled()
+    expect(draftWrites()).toHaveLength(0)
 
     act(() => {
       vi.advanceTimersByTime(1000)
     })
 
-    expect(setItem).toHaveBeenCalledTimes(1)
+    expect(draftWrites()).toHaveLength(1)
     expect(JSON.parse(storedDraft() ?? '').data).toEqual({
       message: 'Vale',
       context: '',
@@ -67,7 +73,7 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
 
   it('guarda lo pendiente al salir de la pantalla', () => {
     vi.useFakeTimers()
-    const view = render(<ProvisionalConsultation />)
+    const view = render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     typeText(message(), 'Vale')
     expect(storedDraft()).toBeNull()
 
@@ -78,7 +84,7 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
 
   it('guarda lo pendiente cuando la página se oculta', () => {
     vi.useFakeTimers()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     typeText(message(), 'Vale')
 
     window.dispatchEvent(new Event('pagehide'))
@@ -88,12 +94,13 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
 
   it('no deja rastro de la consulta en localStorage', () => {
     vi.useFakeTimers()
-    const view = render(<ProvisionalConsultation />)
+    const view = render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     typeText(message(), 'Vale')
     typeText(context(), 'Ayer')
     view.unmount()
 
-    expect(window.localStorage.length).toBe(0)
+    // Solo el registro de la invitación al expediente, nunca el texto de la consulta.
+    expect(Object.keys(window.localStorage)).toEqual([STORAGE_KEYS.onboarding])
   })
 
   it('«Borrar todo» vacía el formulario y el borrador guardado', async () => {
@@ -105,7 +112,7 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
         data: { message: 'Vale', context: 'Ayer' },
       }),
     )
-    const view = render(<ProvisionalConsultation />)
+    const view = render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     expect(message()).toHaveValue('Vale')
 
     await user.click(screen.getByRole('button', { name: 'Borrar todo' }))
@@ -114,13 +121,13 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
     expect(context()).toHaveValue('')
     expect(storedDraft()).toBeNull()
     view.unmount()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     expect(message()).toHaveValue('')
   })
 
   it('no recupera un borrador que se había pedido borrar mientras escribía', async () => {
     vi.useFakeTimers()
-    const view = render(<ProvisionalConsultation />)
+    const view = render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     typeText(message(), 'Vale')
 
     fireEvent.click(screen.getByRole('button', { name: 'Borrar todo' }))
@@ -131,7 +138,7 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
 
   it('el borrado completo de datos vacía también lo que hay en pantalla', () => {
     vi.useFakeTimers()
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     typeText(message(), 'Vale')
     typeText(context(), 'Ayer')
     act(() => {
@@ -147,7 +154,7 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
 
   it('ignora un borrador corrupto o de otra versión', () => {
     window.sessionStorage.setItem(STORAGE_KEYS.consultationDraft, '{roto')
-    const first = render(<ProvisionalConsultation />)
+    const first = render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     expect(message()).toHaveValue('')
     first.unmount()
 
@@ -155,7 +162,7 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
       STORAGE_KEYS.consultationDraft,
       JSON.stringify({ version: 7, data: { message: 'futuro' } }),
     )
-    render(<ProvisionalConsultation />)
+    render(<ProvisionalConsultation onOpenProfile={() => {}} />)
     expect(message()).toHaveValue('')
   })
 
@@ -171,7 +178,7 @@ describe('ProvisionalConsultation · persistencia de la consulta', () => {
         throw new Error('bloqueado')
       })
     const user = userEvent.setup()
-    const view = render(<ProvisionalConsultation />)
+    const view = render(<ProvisionalConsultation onOpenProfile={() => {}} />)
 
     await user.type(message(), 'Vale')
     expect(message()).toHaveValue('Vale')

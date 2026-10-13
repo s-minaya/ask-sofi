@@ -3,7 +3,17 @@ import {
   readConsultationDraft,
   saveConsultationDraft,
 } from './consultationDraftStorage'
+import {
+  isProfileInvitationPending,
+  markProfileInvitationPresented,
+} from './onboardingStorage'
+import {
+  deletePartnerProfile,
+  readPartnerProfile,
+  savePartnerProfile,
+} from './partnerProfileStorage'
 import { readPreferences, updatePreferences } from './preferencesStorage'
+import { localArea } from './storageAreas'
 import { LEGACY_THEME_KEY, STORAGE_KEYS } from './storageKeys'
 import {
   clearConsultation,
@@ -13,6 +23,8 @@ import {
 } from './userData'
 
 const HISTORY_KEY = 'ask-sofi:history:2026-01'
+
+const PROFILE = { answers: { conflict: 'talk-later' as const }, notes: 'Nota' }
 
 // Datos de otras aplicaciones del mismo origen: no deben tocarse nunca.
 function seedForeignData() {
@@ -67,6 +79,29 @@ describe('clearHistory', () => {
   })
 })
 
+describe('deletePartnerProfile', () => {
+  it('borra solo el expediente', () => {
+    seedForeignData()
+    window.localStorage.setItem(HISTORY_KEY, '[]')
+    updatePreferences({ theme: 'dark', sound: 'on' })
+    saveConsultationDraft({ message: 'hola', context: 'ayer' })
+    markProfileInvitationPresented()
+    savePartnerProfile(PROFILE)
+
+    deletePartnerProfile()
+
+    expect(readPartnerProfile()).toEqual({ status: 'missing' })
+    expect(readPreferences()).toEqual({ theme: 'dark', sound: 'on' })
+    expect(readConsultationDraft()).toEqual({
+      message: 'hola',
+      context: 'ayer',
+    })
+    expect(isProfileInvitationPending()).toBe(false)
+    expect(window.localStorage.getItem(HISTORY_KEY)).toBe('[]')
+    expectForeignDataIntact()
+  })
+})
+
 describe('clearUserData', () => {
   it('elimina todos los datos de Ask Sofi y respeta los ajenos', () => {
     seedForeignData()
@@ -74,6 +109,8 @@ describe('clearUserData', () => {
     window.localStorage.setItem(LEGACY_THEME_KEY, '{"version":1,"data":"dark"}')
     updatePreferences({ theme: 'dark', sound: 'on' })
     saveConsultationDraft({ message: 'hola', context: 'ayer' })
+    savePartnerProfile(PROFILE)
+    markProfileInvitationPresented()
 
     clearUserData()
 
@@ -95,6 +132,17 @@ describe('clearUserData', () => {
     expect(readConsultationDraft()).toEqual({ message: '', context: '' })
   })
 
+  it('elimina el expediente y vuelve a dejar pendiente la invitación', () => {
+    savePartnerProfile(PROFILE)
+    markProfileInvitationPresented()
+
+    clearUserData()
+    localArea.resetMemory()
+
+    expect(readPartnerProfile()).toEqual({ status: 'missing' })
+    expect(isProfileInvitationPending()).toBe(true)
+  })
+
   it('olvida también lo que solo estaba en memoria por no poder guardar', () => {
     const setItem = vi
       .spyOn(Storage.prototype, 'setItem')
@@ -103,7 +151,11 @@ describe('clearUserData', () => {
       })
     updatePreferences({ theme: 'dark' })
     saveConsultationDraft({ message: 'secreto', context: '' })
+    savePartnerProfile(PROFILE)
+    markProfileInvitationPresented()
     expect(readPreferences().theme).toBe('dark')
+    expect(readPartnerProfile().status).toBe('ok')
+    expect(isProfileInvitationPending()).toBe(false)
     expect(readConsultationDraft().message).toBe('secreto')
     setItem.mockRestore()
 
@@ -111,6 +163,8 @@ describe('clearUserData', () => {
 
     expect(readPreferences().theme).toBe('system')
     expect(readConsultationDraft().message).toBe('')
+    expect(readPartnerProfile()).toEqual({ status: 'missing' })
+    expect(isProfileInvitationPending()).toBe(true)
   })
 
   it('avisa al resto de la aplicación', () => {
@@ -130,5 +184,8 @@ describe('clearUserData', () => {
   it('usa claves con el namespace declarado', () => {
     expect(STORAGE_KEYS.preferences.startsWith('ask-sofi:')).toBe(true)
     expect(STORAGE_KEYS.consultationDraft.startsWith('ask-sofi:')).toBe(true)
+    // Sin el prefijo, el borrado global no los alcanzaría.
+    for (const key of Object.values(STORAGE_KEYS))
+      expect(key.startsWith('ask-sofi:')).toBe(true)
   })
 })

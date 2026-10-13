@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -53,6 +53,72 @@ describe('SofiPortrait', () => {
     ).toBeInTheDocument()
   })
 
+  describe('con una imagen estática', () => {
+    const image = '/sofi-smug.webp'
+    const sprite = (container: HTMLElement) =>
+      container.querySelector('[class*="sofi-blink"]')
+    const picture = (container: HTMLElement) => container.querySelector('img')
+
+    it('mientras carga se ve el parpadeo como alternativa', () => {
+      const { container } = render(
+        <SofiPortrait size={384} image={image} alt="Sofi, satisfecha" />,
+      )
+
+      expect(sprite(container)).toBeInTheDocument()
+      expect(picture(container)).not.toBeVisible()
+    })
+
+    it('al cargar, la imagen sustituye al parpadeo', () => {
+      const { container } = render(
+        <SofiPortrait size={384} image={image} alt="Sofi, satisfecha" />,
+      )
+
+      fireEvent.load(picture(container) as HTMLImageElement)
+
+      expect(sprite(container)).not.toBeInTheDocument()
+      expect(picture(container)).toBeVisible()
+      expect(picture(container)).toHaveAttribute('width', '384')
+    })
+
+    // Un recurso que falla nunca deja a Sofi sin representación.
+    it('si falla, se queda el parpadeo', () => {
+      const { container } = render(
+        <SofiPortrait size={384} image={image} frame={1} />,
+      )
+
+      fireEvent.error(picture(container) as HTMLImageElement)
+
+      expect(picture(container)).not.toBeInTheDocument()
+      expect(sprite(container)).toBeInTheDocument()
+    })
+
+    it('conserva la accesibilidad del retrato', () => {
+      render(
+        <>
+          <SofiPortrait size={384} image={image} alt="Sofi, satisfecha" />
+          <SofiPortrait size={192} image={image} />
+        </>,
+      )
+
+      expect(screen.getAllByRole('img')).toHaveLength(1)
+      expect(
+        screen.getByRole('img', { name: 'Sofi, satisfecha' }),
+      ).toBeInTheDocument()
+    })
+
+    it('al cambiar de imagen vuelve a esperar a que cargue', () => {
+      const { container, rerender } = render(
+        <SofiPortrait size={384} image={image} />,
+      )
+      fireEvent.load(picture(container) as HTMLImageElement)
+
+      rerender(<SofiPortrait size={384} image="/sofi-thinking.webp" />)
+
+      expect(sprite(container)).toBeInTheDocument()
+      expect(picture(container)).toHaveAttribute('src', '/sofi-thinking.webp')
+    })
+  })
+
   it('el fotomatón es decorativo y lo cuenta su pie', () => {
     render(<PhotoBooth orientation="vertical" />)
 
@@ -60,6 +126,24 @@ describe('SofiPortrait', () => {
       screen.getByText('Pillada leyendo tus mensajes').closest('figure'),
     ).toBeInTheDocument()
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
+  })
+})
+
+describe('SofiPortrait · tamaño', () => {
+  it('con imagen, la alternativa y la imagen siguen al contenedor si este cambia de tamaño', () => {
+    const { container } = render(
+      <SofiPortrait
+        size={384}
+        image="/sofi-approved.webp"
+        style={{ width: '120px', height: '120px' }}
+        alt="Sofi"
+      />,
+    )
+
+    const wrapper = screen.getByRole('img', { name: 'Sofi' })
+    expect(wrapper).toHaveStyle({ width: '120px', height: '120px' })
+    const fallback = container.querySelector('[class*="sprite"]')
+    expect(fallback).toHaveStyle({ width: '100%', height: '100%' })
   })
 })
 

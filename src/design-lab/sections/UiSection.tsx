@@ -573,7 +573,8 @@ function FieldSpec({ stageMax }: { stageMax?: string }) {
             <span className={styles.pin}>4</span>
             <span>
               <strong>Contador</strong> · informativo, cifras tabulares. Sin
-              límite inventado: si algún día hay máximo, lo fija la spec.
+              límite inventado: el máximo lo fija la spec del campo (las notas
+              del expediente, 500).
             </span>
           </li>
           <li>
@@ -855,10 +856,12 @@ function TagsSpec() {
             <Counter count={27} />
             <Counter count={232} />
             <Counter count={1} />
+            <Counter count={42} max={500} />
           </LabRow>
           <LabNote>
             Informativo y en singular cuando toca. No se anuncia en cada
-            pulsación.
+            pulsación. Con el máximo de la spec, «x / 500», que se lee «42 de
+            500 caracteres».
           </LabNote>
         </div>
         <div>

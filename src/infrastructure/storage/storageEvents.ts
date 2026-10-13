@@ -3,7 +3,8 @@
 // propio canal para que React no conserve datos obsoletos.
 //
 // `all` es el borrado completo de datos de Ask Sofi.
-export type StorageChangeScope = 'preferences' | 'consultation' | 'all'
+export type StorageChangeScope =
+  'preferences' | 'consultation' | 'partnerProfile' | 'all'
 
 type Listener = (scope: StorageChangeScope) => void
 

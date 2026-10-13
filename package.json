@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "preview": "vite preview",
-    "test:a11y": "playwright test"
+    "test:a11y": "playwright test",
+    "assets:sofi": "node --experimental-strip-types scripts/processSofiStatics.ts"
   },
   "dependencies": {
     "react": "^19.2.8",
@@ -39,6 +40,7 @@
     "oxc-transform-react": "^0.152.0",
     "prettier": "^3.9.9",
     "sass": "^1.105.1",
+    "sharp": "0.35.5",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.71.1",
     "vite": "^8.3.0",

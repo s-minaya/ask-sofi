@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { ThemeProvider } from '../../app/providers/ThemeProvider'
 import { IconButton } from './IconButton/IconButton'
+import { OptionGroup } from './OptionGroup/OptionGroup'
 import { SoundOnIcon } from './icons/icons'
 import { SegmentedControl } from './SegmentedControl/SegmentedControl'
 import { SoundChoice, type SoundChoiceValue } from './SoundChoice/SoundChoice'
@@ -74,6 +75,65 @@ describe('SegmentedControl', () => {
       within(group).getByRole('button', { name: 'Reducido' }),
     )
     expect(onChange).toHaveBeenCalledWith('reduce')
+  })
+})
+
+describe('OptionGroup', () => {
+  const OPTIONS = [
+    { value: 'often', label: 'A menudo' },
+    { value: 'rarely', label: 'Casi nunca' },
+    { value: 'unknown', label: 'No lo sé' },
+  ] as const
+
+  it('es un grupo de radios con nombre que avisa del valor elegido', async () => {
+    const onChange = vi.fn()
+    render(
+      <OptionGroup
+        legend="¿Utiliza la ironía al escribir?"
+        options={OPTIONS}
+        value="often"
+        onChange={onChange}
+      />,
+    )
+
+    const group = screen.getByRole('group', {
+      name: '¿Utiliza la ironía al escribir?',
+    })
+    expect(within(group).getByRole('radio', { name: 'A menudo' })).toBeChecked()
+    await userEvent.click(within(group).getByText('No lo sé'))
+    expect(onChange).toHaveBeenCalledWith('unknown')
+  })
+
+  // «Sin responder» es un estado propio, distinto de «No lo sé».
+  it('sin valor, ninguna opción está marcada', () => {
+    render(
+      <OptionGroup
+        legend="Sarcasmo"
+        options={OPTIONS}
+        value={undefined}
+        onChange={() => {}}
+      />,
+    )
+
+    for (const radio of screen.getAllByRole('radio'))
+      expect(radio).not.toBeChecked()
+  })
+
+  it('en rejilla conserva la misma semántica', async () => {
+    const onChange = vi.fn()
+    render(
+      <OptionGroup
+        legend="Sarcasmo"
+        options={OPTIONS}
+        value={undefined}
+        onChange={onChange}
+        grid
+      />,
+    )
+
+    expect(screen.getAllByRole('radio')).toHaveLength(3)
+    await userEvent.click(screen.getByText('Casi nunca'))
+    expect(onChange).toHaveBeenCalledWith('rarely')
   })
 })
 
