@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft — pendiente de aprobación.
+In Review
 
 ## Objective
 
@@ -82,7 +82,7 @@ Fuentes que no se repiten aquí: semántica de las estimaciones en `mission.md` 
 ### 7. Errores
 
 - Los errores son un canal separado del resultado. Nunca se presentan como `needs_context` ni `safety_concern`, y el flujo no depende del texto de una excepción.
-- Categorías mínimas: entrada inválida; procesamiento no disponible; respuesta del proveedor inválida; `safety_evaluation_unavailable`. Esta última indica que la seguridad no pudo evaluarse, con `retryable` según la causa: un fallo transitorio sí; un rechazo del proveedor no. Los identificadores se fijan en el plan; los adaptadores de `006` traducen a ellas los fallos concretos.
+- Categorías mínimas: entrada inválida; procesamiento no disponible; respuesta del proveedor inválida; `safety_evaluation_unavailable`. Esta última indica que la seguridad no pudo evaluarse, con `retryable` según la causa: `true` solo ante evidencia clara de fallo transitorio (por ejemplo, un fallo de red que el proveedor sabe transitorio); `false` ante rechazo explícito del proveedor y ante causa desconocida, incluida la ausencia del campo. Sin causa identificada, actuar con prudencia. Los identificadores se fijan en el plan; los adaptadores de `006` traducen a ellas los fallos concretos.
 - Cada error indica `retryable`: si tiene sentido ofrecer «Reintentar». No autoriza reintentos automáticos ni gasto nuevo.
 
 ### 8. Núcleo, puerto y proveedor falso
@@ -96,39 +96,39 @@ Fuentes que no se repiten aquí: semántica de las estimaciones en `mission.md` 
 
 ### Contratos
 
-- [ ] La entrada separa mensaje, contexto y expediente minimizado; rechaza mensaje vacío y longitudes excesivas sin truncar.
-- [ ] Un mensaje que solo es un marcador de contenido omitido nunca da `interpreted`; sin `concern`, da `needs_context`.
-- [ ] El catálogo expone los diez IDs, su `kind`, una definición neutral y `taxonomyVersion`.
-- [ ] Un `0` explícito se conserva; una señal ausente o rechazada sigue ausente.
-- [ ] `NaN`, `Infinity`, `-0.1` y `1.1` producen el error de respuesta inválida.
-- [ ] El resultado no contiene confianza global ni estimaciones normalizadas.
+- [x] La entrada separa mensaje, contexto y expediente minimizado; rechaza mensaje vacío y longitudes excesivas sin truncar.
+- [x] Un mensaje que solo es un marcador de contenido omitido nunca da `interpreted`; sin `concern`, da `needs_context`.
+- [x] El catálogo expone los diez IDs, su `kind`, una definición neutral y `taxonomyVersion`.
+- [x] Un `0` explícito se conserva; una señal ausente o rechazada sigue ausente.
+- [x] `NaN`, `Infinity`, `-0.1` y `1.1` producen el error de respuesta inválida.
+- [x] El resultado no contiene confianza global ni estimaciones normalizadas.
 
 ### Política
 
-- [ ] Dos `PolicyConfig` de prueba distintos cambian la salida según sus parámetros, y `policyVersion` lo refleja.
-- [ ] Dos señales altas («Me hacía ilusión verte, pero bueno…») se conservan sin reparto ni ganadora.
-- [ ] Si ninguna señal es comunicable pero la evaluación se completa correctamente, el resultado es `interpreted` con cero señales, no `needs_context`.
-- [ ] Seguridad `concern` da `safety_concern` sin señales, aunque falten otras estimaciones.
-- [ ] Seguridad `not_evaluated` da `safety_evaluation_unavailable`, nunca `interpreted`, `needs_context` ni `safety_concern`.
-- [ ] Suficiencia no evaluada da error. Si ya se confirmó `safety_concern`, prevalece.
-- [ ] Seguridad `no_concern_detected` sigue la precedencia normal.
-- [ ] Un límite explícito con suficiencia insuficiente da `needs_context` que conserva `setting_boundary`.
-- [ ] «Vale.» sin contexto puede dar `needs_context` sin error técnico.
+- [x] Dos `PolicyConfig` de prueba distintos cambian la salida según sus parámetros, y `policyVersion` lo refleja.
+- [x] Dos señales altas («Me hacía ilusión verte, pero bueno…») se conservan sin reparto ni ganadora.
+- [x] Si ninguna señal es comunicable pero la evaluación se completa correctamente, el resultado es `interpreted` con cero señales, no `needs_context`.
+- [x] Seguridad `concern` da `safety_concern` sin señales, aunque falten otras estimaciones.
+- [x] Seguridad `not_evaluated` da `safety_evaluation_unavailable`, nunca `interpreted`, `needs_context` ni `safety_concern`.
+- [x] Suficiencia no evaluada da error. Si ya se confirmó `safety_concern`, prevalece.
+- [x] Seguridad `no_concern_detected` sigue la precedencia normal.
+- [x] Un límite explícito con suficiencia insuficiente da `needs_context` que conserva `setting_boundary`.
+- [x] «Vale.» sin contexto puede dar `needs_context` sin error técnico.
 
 ### Expediente
 
-- [ ] Con el expediente autorizado y solo «No lo sé», «Depende», áreas vacías o notas: no se envía nada y `profileUsed` es `false`.
-- [ ] Con una respuesta concreta y otra desconocida: solo se envía la concreta; las lecturas son las del expediente y la seguridad y la suficiencia se evalúan sin él.
-- [ ] Sin autorización, aunque exista un expediente local, no se envía nada y `profileUsed` es `false`.
+- [x] Con el expediente autorizado y solo «No lo sé», «Depende», áreas vacías o notas: no se envía nada y `profileUsed` es `false`.
+- [x] Con una respuesta concreta y otra desconocida: solo se envía la concreta; las lecturas son las del expediente y la seguridad y la suficiencia se evalúan sin él.
+- [x] Sin autorización, aunque exista un expediente local, no se envía nada y `profileUsed` es `false`.
 
 ### Núcleo y errores
 
-- [ ] El fake es determinista, no lee el texto y su procedencia es `fake`.
-- [ ] Un fallo del proveedor da un error con `retryable`, sin recurrir al fake ni a otro proveedor.
-- [ ] Ningún error se presenta como `needs_context` o `safety_concern`.
-- [ ] Los metadatos incluyen las versiones, `profileUsed` y la procedencia, con `unknown` cuando no se observó la versión, y no contienen texto de la consulta.
-- [ ] El dominio no importa React, SDKs de proveedores, almacenamiento del navegador, Design Lab ni redactor.
-- [ ] Las pruebas usan Vitest y el fake, sin red.
+- [x] El fake es determinista, no lee el texto y su procedencia es `fake`.
+- [x] Un fallo del proveedor da un error con `retryable`, sin recurrir al fake ni a otro proveedor.
+- [x] Ningún error se presenta como `needs_context` o `safety_concern`.
+- [x] Los metadatos incluyen las versiones, `profileUsed` y la procedencia, con `unknown` cuando no se observó la versión, y no contienen texto de la consulta.
+- [x] El dominio no importa React, SDKs de proveedores, almacenamiento del navegador, Design Lab ni redactor.
+- [x] Las pruebas usan Vitest y el fake, sin red.
 
 ## Out of Scope
 
@@ -146,7 +146,7 @@ Fuentes que no se repiten aquí: semántica de las estimaciones en `mission.md` 
 
 **Decisiones aprobadas en esta spec:**
 
-1. **Seguridad no evaluada** → error `safety_evaluation_unavailable`, con `retryable` según la causa (§7).
+1. **Seguridad no evaluada** → error `safety_evaluation_unavailable`, con `retryable: false` en todos los casos definidos en esta feature: ausencia y rechazo dan ambos `false` (§7).
 2. **Ninguna señal comunicable con contexto suficiente** → `interpreted` con cero señales (§4 punto 5). No se convierte artificialmente en `needs_context`.
 3. **Suficiencia no evaluada** → error técnico. Si se confirmó `safety_concern`, prevalece (§4 punto 2).
 
