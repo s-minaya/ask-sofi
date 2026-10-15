@@ -360,7 +360,7 @@ Se priorizarán herramientas, servicios y niveles gratuitos para desarrollar, pr
 
 La excepción aceptada es el proveedor de decisiones. Jev, a través de Vercel AI Gateway, requiere comprar créditos y no entra en el nivel gratuito (`spec/constitution/jev.md`). Ese gasto es un coste operativo pequeño, limitado y controlado, asumido por la autora del proyecto.
 
-El LLM redactor de explicaciones añade un segundo coste operativo previsto, sujeto a las mismas condiciones. El proveedor y el límite concreto se aprueban en la feature que lo integre (007).
+La preparación lingüística de la entrada y el LLM redactor de explicaciones añaden costes operativos previstos, sujetos a las mismas condiciones. El proveedor y el límite concreto de cada uno se aprueban en la feature que lo integre (006 y 007, respectivamente).
 
 Un coste solo se acepta cuando cumple todas estas condiciones:
 

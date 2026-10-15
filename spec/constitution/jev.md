@@ -368,7 +368,8 @@ El LLM redactor es complementario a Jev: recibe los resultados autorizados por l
 | Respuesta en 004                    | ¿Se envía?     | Motivo                                                                                                                  |
 | ----------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | Concreta (p. ej. `drops-hints`)     | Sí             | Es la única que describe una tendencia.                                                                                 |
-| «Depende» (`depends`, `varies`)     | No, por defecto | Dice que no hay una tendencia estable; aporta poco y añade contenido **[I]**. Se revisa con E4.                         |
+| «Depende» (`depends`)               | No             | Dice que no hay una tendencia estable; aporta poco y añade contenido **[I]**. Se revisa con E4.                         |
+| `varies`                            | Sí             | `answerKind()` de 004 lo clasifica como `concrete`. Se envía igual que cualquier otra respuesta concreta.                |
 | «No lo sé» (`unknown`)              | No             | No aporta información y añade contenido ajeno a la decisión (§6.2) **[I]**.                                             |
 | Sin responder (área ausente)        | No             | Enviarla invitaría a inferir lo que el expediente no dice (`005-spec.md` §1).                                           |
 | Notas libres (`notes`)              | No, en v1      | Es texto libre sobre una tercera persona, puede contener inyecciones (§6.2), no se puede evaluar y contradice la minimización **[I]**. |
@@ -394,7 +395,7 @@ El LLM redactor es complementario a Jev: recibe los resultados autorizados por l
 | Evaluar la suficiencia de contexto en una petición sin expediente **[P]**        | Garantía estructural: el expediente no puede convertir un «Vale.» suelto en una lectura segura. Se comprueba con tests sin llamadas reales **[I]**. |
 | Instrucciones que nombran los campos y declaran qué prevalece **[P]**            | Depende de que el modelo las siga **[H]** (E4).                                                                                               |
 | El campo `about` de `reportedTendencies` **[P]**                                 | Depende del modelo **[H]**.                                                                                                                   |
-| Calcular las mismas lecturas con y sin expediente **[P]**                        | Mide la influencia del expediente. La regla sobre qué mostrar corresponde a 012 **[I]**.                                                      |
+| ~~Calcular las mismas lecturas con y sin expediente~~ **[Supersedida]**          | Las lecturas se obtienen solo con la configuración autorizada (`005-spec.md` §5). La influencia del expediente se evalúa en `011` con y sin él, y con expedientes engañosos. |
 
 Las dos peticiones pueden ir en paralelo. El coste se duplica, pero sigue siendo despreciable (§4.3) **[I]**.
 
@@ -584,7 +585,8 @@ Las llamadas reales consumen créditos: necesitan autorización expresa de la au
 | Significado de las lecturas y de sus números; estados; versiones; minimización del expediente | `005-spec.md` (y `mission.md` §4.2 si cambia) |
 | Cómo se llama al proveedor; política provisional                                            | `006-plan.md`                                 |
 | Copy, avisos de envío de datos; arquitectura, integración y validación de fidelidad del LLM redactor de explicaciones | Feature 007                                   |
-| Umbrales y confianza                                                                        | Features 011 y 012                            |
+| Valores provisionales de `PolicyConfig`                                                     | `006-plan.md` (a partir de E2/E3)              |
+| Umbrales definitivos y confianza                                                            | Features 011 y 012                            |
 | Política de coste y principio de gasto controlado                                           | `mission.md` §12 y `tech-stack.md` §27, §69   |
 | Cifra del presupuesto y su aplicación                                                       | Feature de integración (006), aprobada por la autora |
 | Principio de seguridad de las personas                                                      | `mission.md`                                  |

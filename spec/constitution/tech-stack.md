@@ -880,12 +880,10 @@ No se utilizará como generador libre de todo el contenido de la interfaz.
 Ask Sofi mantendrá el control sobre:
 
 - labels;
-- copy de presentación;
-- recomendaciones;
-- mensajes de error;
+- copy estática (seguridad, avisos, mensajes de error);
 - presentación.
 
-Las explicaciones de cada interpretación las generará un LLM redactor independiente (§26.1).
+El discurso dirigido a la persona (explicaciones, consejos y preguntas de contexto) lo genera el LLM redactor (§26.1), no Jev ni copy estática.
 
 Conceptualmente:
 
@@ -935,10 +933,11 @@ Arquitectura:
 Pendiente de Feature 007:
 
 - elección del proveedor;
-- si el mismo servicio realiza también la traducción de entrada (roadmap fase 006);
 - límite de gasto aprobado (sujeto a las condiciones de `mission.md` §12);
 - política de privacidad y minimización de datos;
 - validación de fidelidad: criterios para detectar que el discurso refleja los resultados sin añadir afirmaciones propias.
+
+La elección e integración del servicio de traducción de entrada pertenece a Feature 006 (`roadmap.md` §9). Si el mismo servicio hiciera ambas funciones, se coordinaría entre ambas features.
 
 ---
 
@@ -1008,11 +1007,11 @@ Ejemplo conceptual:
 ```ts
 type AnalysisResult =
   | { status: "interpreted"; signals: SignalEstimate[]; safety: SafetyEvaluation; meta: AnalysisMeta }
-  | { status: "needs_context"; reason: string; meta: AnalysisMeta }
-  | { status: "safety_concern"; resources: SafetyResource[]; meta: AnalysisMeta };
+  | { status: "needs_context"; sufficiency: SufficiencyLevel; preservedSignals?: SignalEstimate[]; meta: AnalysisMeta }
+  | { status: "safety_concern"; affectedPersonTypes: AffectedPersonType[]; meta: AnalysisMeta };
 ```
 
-Los tipos, nombres y campos exactos se definen en `005-spec.md`. No existe una confianza global obligatoria: cada señal lleva su propia estimación de apoyo. La seguridad se evalúa como `concern | no_concern_detected | not_evaluated`.
+Los tipos, nombres y campos exactos se definen en `005-spec.md`. Los recursos de ayuda pertenecen a la capa de presentación (`007`), no al resultado del dominio. No existe una confianza global obligatoria: cada señal lleva su propia estimación de apoyo. La seguridad se evalúa como `concern | no_concern_detected | not_evaluated`.
 
 Los errores técnicos son un canal separado y no se representan como estados del análisis.
 
