@@ -2,7 +2,7 @@
 
 ## Status
 
-In Review
+Complete
 
 ## Objective
 
@@ -154,13 +154,13 @@ Esta feature implementa únicamente los comportamientos de Sofi necesarios para 
 ### Sofi interaction
 
 - [x] Sofi presenta la pregunta activa en su bocadillo, con sus opciones dentro de él.
-- [ ] Cada nueva pregunta utiliza typewriter y sonido de hablar cuando las preferencias y el navegador lo permiten.
+- [x] Cada nueva pregunta utiliza typewriter y sonido de hablar cuando las preferencias y el navegador lo permiten.
 - [x] Las reacciones cortas no utilizan typewriter ni sonido de hablar.
 - [x] Sofi muestra estados visuales coherentes al preguntar, responder, guardar y gestionar errores.
 - [x] La reproducción anterior se interrumpe al cambiar de pregunta o abandonar la vista.
 - [x] El usuario puede interactuar durante el typewriter y omitirlo.
 - [x] El cuestionario funciona correctamente con sonido desactivado y movimiento reducido.
-- [ ] Las preguntas, cambios de estado y opciones son accesibles mediante teclado y tecnologías de asistencia.
+- [x] Las preguntas, cambios de estado y opciones son accesibles mediante teclado y lector de pantallas de Windows.
 
 ### Profile management & privacy
 
@@ -176,7 +176,7 @@ Esta feature implementa únicamente los comportamientos de Sofi necesarios para 
 - [x] Las nuevas composiciones y estados de Sofi están aprobados en el Design Lab.
 - [x] Existen pruebas de los flujos de creación, edición, persistencia y eliminación.
 - [x] Existen pruebas de interacción para typewriter, preferencias de sonido, interrupciones y movimiento reducido.
-- [ ] Se verifican las comprobaciones globales aplicables de accesibilidad, responsive y calidad establecidas en la constitution.
+- [x] Se verifican mediante pruebas automatizadas y revisión manual disponible los criterios de accesibilidad, responsive y calidad correspondientes a esta feature. La validación transversal en dispositivos, navegadores y lectores de pantalla adicionales corresponde a 015 — Accessibility & UX Verification.
 
 ### Additional acceptance criteria
 

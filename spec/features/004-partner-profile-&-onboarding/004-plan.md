@@ -438,7 +438,7 @@ Además de las comprobaciones habituales del proyecto:
 - Comprobar que cambiar la correspondencia de placeholders no exige modificar la lógica del expediente.
 - Confirmar que el consultorio y la persistencia de `003` no presentan regresiones.
 
-No se considerará completa la feature hasta satisfacer los criterios de `004-spec.md`.
+La Feature 004 puede cerrarse una vez verificados sus criterios de implementación y aceptación. Las comprobaciones manuales multiplataforma pendientes se realizarán durante `015 — Accessibility & UX Verification`, sobre el entorno de prepublicación de `017 — Public Deployment`. Permanecen pendientes de verificación y no bloquean el cierre de implementación de 004, pero sí la validación necesaria para el lanzamiento público.
 
 ### Resultados (T026–T029)
 

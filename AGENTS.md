@@ -35,6 +35,9 @@ Use the following documents according to the task:
 - Visual identity, approved screens and layout decisions:
   `spec/constitution/art-direction/`
 
+- Decision provider (Jev, Vercel AI Gateway): verified capabilities, limits, costs, privacy, alternatives and open questions:
+  `spec/constitution/jev.md`
+
 Do not repeat information already defined in another source-of-truth document.
 
 Prefer references over duplication.
@@ -49,6 +52,7 @@ Before working on a feature:
 2. Read its `<NNN>-plan.md` if it already exists.
 3. Read its `<NNN>-tasks.md` to identify the current task.
 4. Read only the relevant parts of the constitution required for that task.
+5. If the task touches analysis, decision providers, evaluations, privacy of analysis requests or provider costs, read the relevant sections of `spec/constitution/jev.md` and check its verification dates. Do not state provider capabilities, prices or limits from memory.
 
 Do not load unrelated feature specifications unless they are required to understand a dependency.
 
@@ -313,4 +317,7 @@ WHAT to implement now
 
 HOW agents should navigate the project
 → AGENTS.md
+
+WHAT the decision provider can do, at what cost and with which evidence
+→ jev.md
 ```
