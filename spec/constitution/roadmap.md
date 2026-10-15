@@ -79,7 +79,7 @@ La primera versión pública de Ask Sofi debe permitir que una persona:
 15. disfrute de una experiencia visual y narrativa protagonizada por Sofi;
 16. pueda consultar públicamente el código y contribuir al proyecto.
 
-La v1 debe poder utilizarse sin coste económico para la autora del proyecto.
+La v1 será gratuita para quienes la usen. La política de coste operativo se define en `mission.md` §12.
 
 ---
 
@@ -344,41 +344,34 @@ El dominio deberá poder representar conceptos como:
 
 - message;
 - current context;
-- partner profile;
-- interpretations;
-- probabilities;
-- confidence;
-- tone;
-- indirectness;
-- emotional needs;
+- partner profile (secundario, opt-in, minimizado);
+- signal estimates (independientes, sin suma fija);
 - context sufficiency;
+- safety evaluation;
 - analysis result.
 
-El sistema debe admitir varias interpretaciones simultáneas.
+El sistema debe admitir varias señales simultáneas con estimaciones independientes. Cada señal recibe un valor de apoyo propio; distintas señales pueden coexistir sin competir ni sumar 100 %.
 
-Posibles categorías iniciales:
-
-```text
-literal_permission
-needs_reassurance
-wants_initiative
-wants_space
-expressing_disappointment
-setting_boundary
-playful_teasing
-unclear
-insufficient_context
-```
-
-La lista definitiva se establecerá durante la specification de la feature.
-
-El dominio debe permitir que el resultado sea:
+Catálogo v1 provisional de diez señales (`spec/decisions/analysis-architecture-rationale.md` §3):
 
 ```text
-insufficient context
+literal_meaning        (reading)
+seeking_reassurance    (reading)
+inviting_initiative    (reading)
+requesting_space       (reading)
+expressing_disappointment (reading)
+expressing_annoyance   (reading)
+setting_boundary       (reading)
+playful_teasing        (cue)
+sarcastic_tone         (cue)
+indirect_hint          (cue)
 ```
 
-sin tratarlo como un error.
+Este catálogo es provisional: se validará empíricamente durante las integraciones y evaluaciones de Jev (006 y 011) y podrán añadirse, eliminarse, fusionarse o redefinirse señales según los resultados. No usar «definitiva», «congelada» o «validada» para la v1 provisional.
+
+`unclear` e `insufficient_context` no son señales de intención de la pareja. La falta de contexto produce el estado `needs_context` del resultado, sin tratarlo como un error.
+
+El resultado del dominio puede ser `interpreted`, `needs_context` o `safety_concern`. Los errores técnicos son un canal separado.
 
 ---
 
@@ -392,30 +385,41 @@ Feature prevista:
 spec/features/006-jev-integration/
 ```
 
+### Preparación lingüística de la entrada
+
+Antes de enviar mensajes a Jev, el sistema preparará en inglés el texto introducido por el usuario, incluyendo el contexto actual cuando exista.
+
+El proceso deberá conservar el mensaje original y preservar los elementos relevantes para su interpretación, especialmente emojis, puntuación, negaciones y expresiones ambiguas, sin añadir intenciones ni emociones que el usuario no haya expresado.
+
+Los emojis se conservarán como símbolos originales, incluidos los mensajes compuestos únicamente por emojis. No se asignará automáticamente un significado emocional a cada símbolo.
+
+La traducción será independiente del dominio de análisis y del proveedor de decisiones. La elección e integración del servicio de traducción —Azure AI Translator o el propio LLM redactor de explicaciones (fase 007) como candidatos— se concretará en la especificación y el plan de esta feature.
+
+Se contemplarán los errores de traducción, la minimización de datos, la privacidad y las verificaciones necesarias para detectar alteraciones relevantes del mensaje. Si no puede prepararse correctamente, no se enviará una traducción defectuosa a Jev ni se inventará un resultado.
+
 La integración deberá analizar información mediante varias decisiones estructuradas en lugar de depender de una única pregunta genérica.
 
 Ejemplo conceptual:
 
 ```text
-message
+message (prepared in English)
 +
-current context
+current context (prepared in English)
 +
-partner profile
+partner profile (opt-in, minimised, concrete answers only)
         ↓
+safety evaluation
 context sufficiency
-tone
-literalness
-sarcasm
-likely need
-possible interpretation
+independent signal estimates
         ↓
-analysis result
+policy
+        ↓
+analysis result (interpreted | needs_context | safety_concern)
 ```
 
-El perfil debe considerarse una tendencia secundaria.
+El perfil es secundario y opt-in: aporta tendencias, no determina la lectura.
 
-La evidencia actual debe tener prioridad.
+La evidencia actual tiene prioridad.
 
 ```text
 Current evidence
@@ -475,6 +479,16 @@ model probability
 ≠
 objective truth
 ```
+
+### Redacción dinámica
+
+Un LLM redactor con la personalidad de Sofi genera el discurso dirigido al usuario: explicaciones de cada señal, consejos, preguntas de contexto y texto de presentación. El copy estático de seguridad (pantalla de salida rápida y avisos de riesgo) es copy revisada y no depende del redactor.
+
+El redactor recibirá los resultados autorizados por la política del dominio y el contexto estrictamente necesario. No recalculará probabilidades, no añadirá interpretaciones independientes ni presentará como hechos conclusiones que los resultados del dominio no sustentan.
+
+La validación de fidelidad —verificar que el discurso refleja los resultados sin añadir afirmaciones propias— forma parte de los criterios de aceptación de esta feature.
+
+El proveedor, el coste, la privacidad y el contrato del redactor se definen en el plan de esta feature (`tech-stack.md` §26.1).
 
 ---
 
@@ -564,11 +578,10 @@ spec/features/010-personal-insights/
 Ask Sofi podrá calcular estadísticas como:
 
 - number of analyses;
-- most common interpretation;
-- most frequent confidence range;
+- most frequently detected signals;
 - recurring communication patterns;
 - saved analyses;
-- favorite categories.
+- distribution of analysis states (interpreted, needs_context, safety_concern).
 
 Podrá existir una experiencia visual tipo:
 
@@ -638,19 +651,23 @@ vs
 message + current context + partner profile
 ```
 
-Las métricas pueden incluir:
+Las métricas se evaluarán por señal cuando sea aplicable. Pueden incluir:
 
-- accuracy;
+- per-signal accuracy;
 - Brier score;
-- calibration;
-- confusion matrix;
-- abstention behavior.
+- calibration per signal;
+- abstention behavior;
+- safety detection quality;
+- translation fidelity (the prepared English preserves relevant elements);
+- LLM discourse fidelity (el discurso no introduce afirmaciones que los resultados del dominio no sustentan).
+
+El acuerdo humano (inter-rater agreement) es deseable pero no bloqueante: no existe un gold standard de interpretación de mensajes de pareja.
 
 Los resultados servirán para decidir:
 
-- umbrales de confianza;
+- umbrales provisionales de la política;
 - cuándo pedir contexto;
-- qué categorías funcionan mal;
+- qué señales funcionan mal, sobran o faltan;
 - qué información mejora realmente los análisis.
 
 Las cifras de evaluación nunca deberán inventarse para documentación o marketing.
@@ -667,16 +684,15 @@ Feature prevista:
 spec/features/012-analysis-reliability/
 ```
 
-El sistema podrá pedir más información cuando:
+La política podrá abstenerse o pedir más información cuando:
 
-- la confianza sea demasiado baja;
-- las interpretaciones principales estén demasiado igualadas;
+- el apoyo a las señales relevantes sea insuficiente para una lectura útil;
 - el contexto sea insuficiente;
-- existan señales contradictorias.
+- existan señales en tensión que la política no pueda resolver sin más datos.
 
-Los umbrales no se fijarán arbitrariamente durante el diseño inicial.
+Los umbrales de la política son provisionales y actualizables. No se fijarán arbitrariamente durante el diseño inicial.
 
-Deberán basarse, siempre que sea posible, en los resultados obtenidos mediante las evaluaciones.
+Deberán basarse, siempre que sea posible, en los resultados obtenidos mediante las evaluaciones (011).
 
 ---
 
@@ -783,6 +799,16 @@ Objetivo:
 
 Los tests automáticos complementarán, pero no sustituirán, las pruebas manuales.
 
+### Verificaciones en dispositivos reales
+
+Esta fase consolidará las comprobaciones manuales de accesibilidad y experiencia de usuario pendientes de features anteriores, manteniendo la trazabilidad con sus especificaciones originales.
+
+Las pruebas que requieran dispositivos físicos, lectores de pantalla o navegadores reales podrán ejecutarse sobre el entorno de prepublicación preparado en `017 — Public Deployment`.
+
+Las verificaciones aplazadas permanecerán identificadas como pendientes hasta su ejecución. No se considerarán superadas por el resultado de pruebas automatizadas ni por comprobaciones realizadas con otras tecnologías de asistencia.
+
+La validación necesaria deberá completarse antes del lanzamiento público de la v1.
+
 ---
 
 # 19. Phase 016 — Open Source Readiness
@@ -838,6 +864,17 @@ La documentación debe facilitar que alguien contribuya sin tener que leer todo 
 
 **Objetivo:** publicar Ask Sofi y permitir que pueda compartirse fácilmente.
 
+### Prepublicación y validación
+
+El despliegue se realizará en dos etapas:
+
+1. **Prepublicación:** disponer de una URL accesible desde dispositivos reales para completar las verificaciones pendientes de `015 — Accessibility & UX Verification`, sin anunciar todavía el lanzamiento público.
+2. **Publicación:** lanzar la v1 una vez completadas las verificaciones requeridas y resueltos los problemas bloqueantes.
+
+La prepublicación no implica habilitar servicios externos inseguros ni exponer credenciales o información privada.
+
+No se considerará completado el lanzamiento público mientras existan verificaciones obligatorias pendientes.
+
 Feature prevista:
 
 ```text
@@ -860,11 +897,7 @@ El deployment deberá incluir:
 - exclusión del material de trabajo (`spec/`, `evals/`) de las subidas por CLI, por ejemplo con `.vercelignore`;
 - CI checks before release.
 
-El coste operativo previsto continuará siendo:
-
-> **0 €**
-
-Si los recursos gratuitos se agotan, el sistema deberá degradarse antes que generar gastos inesperados.
+El despliegue debe respetar la política de coste de `mission.md` §12 y `tech-stack.md` §27 y §69. Esta feature no define límites de gasto propios.
 
 ---
 

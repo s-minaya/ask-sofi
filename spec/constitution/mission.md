@@ -83,21 +83,23 @@ Un perfil que indique que alguien “usa sarcasmo con frecuencia” nunca debe s
 
 ---
 
-### 4.2. Las probabilidades representan incertidumbre
+### 4.2. Las estimaciones representan apoyo independiente, no certeza
 
-Ask Sofi puede mostrar probabilidades o niveles de confianza, pero nunca debe presentarlos como una medición objetiva de los pensamientos o emociones de otra persona.
+Ask Sofi puede mostrar estimaciones numéricas o indicadores de apoyo, pero nunca debe presentarlos como una medición objetiva de los pensamientos o emociones de otra persona.
+
+Cada señal del análisis recibe una estimación independiente del apoyo que el modelo le asigna al enunciado concreto formulado. Distintas señales pueden coexistir sin competir entre sí y sin sumar un total fijo.
 
 Un resultado como:
 
-> 67 % — expressing disappointment
+> expressing_disappointment — 0,81
 
-significa que, entre las interpretaciones consideradas y con la información proporcionada, esa opción recibe mayor apoyo del sistema.
+significa que el sistema estima alto apoyo para esa lectura con la información proporcionada. No significa que haya exactamente un 81 % de probabilidad de que la pareja esté decepcionada, ni que las demás lecturas se repartan el 19 % restante.
 
 No significa:
 
-> “Existe científicamente un 67 % de probabilidad de que tu pareja esté decepcionada.”
+> “Existe científicamente un 81 % de probabilidad de que tu pareja esté decepcionada.”
 
-La interfaz debe comunicar esta diferencia de manera comprensible.
+Señal ausente o no evaluada no equivale a cero. La interfaz debe comunicar esta diferencia de manera comprensible.
 
 ---
 
@@ -352,11 +354,20 @@ Cuando ambas cosas diverjan, la discrepancia debe resolverse explícitamente.
 
 ## 12. Coste
 
-Uno de los requisitos fundamentales de Ask Sofi es poder mantenerse con un coste económico de:
+Ask Sofi será **gratuita para quienes la usan**: sin cuentas, sin suscripciones y sin pagos.
 
-> **0 €**
+Se priorizarán herramientas, servicios y niveles gratuitos para desarrollar, probar y publicar el proyecto.
 
-Se priorizarán herramientas, servicios y niveles gratuitos que permitan desarrollar, probar y publicar el proyecto sin asumir gastos.
+La excepción aceptada es el proveedor de decisiones. Jev, a través de Vercel AI Gateway, requiere comprar créditos y no entra en el nivel gratuito (`spec/constitution/jev.md`). Ese gasto es un coste operativo pequeño, limitado y controlado, asumido por la autora del proyecto.
+
+El LLM redactor de explicaciones añade un segundo coste operativo previsto, sujeto a las mismas condiciones. El proveedor y el límite concreto se aprueban en la feature que lo integre (007).
+
+Un coste solo se acepta cuando cumple todas estas condiciones:
+
+- es necesario para un requisito del producto;
+- tiene un límite máximo aprobado antes de utilizarse, definido en la feature que lo introduce y no aquí;
+- se detiene o degrada de forma segura al alcanzar ese límite;
+- no depende de que el tráfico se comporte correctamente.
 
 Si una funcionalidad externa puede generar costes, debe existir una estrategia para:
 
@@ -406,7 +417,7 @@ Cuando existan varias soluciones posibles, se priorizarán en este orden:
 4. accesibilidad;
 5. simplicidad de implementación;
 6. mantenibilidad;
-7. coste cero;
+7. coste mínimo y controlado;
 8. personalidad visual;
 9. incorporación de nuevas funcionalidades.
 

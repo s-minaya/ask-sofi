@@ -46,7 +46,7 @@ Las citas entre comillas angulares son traducciones propias de originales en ing
 
 - Es el modelo de decisión «System One» de TypeSafe AI. Recibe un estado (`state`) y preguntas tipadas, y devuelve respuestas estructuradas con probabilidades **[E]** [TS-intro].
 - No genera texto, no escribe código ni conversa **[E]** [TS-agents].
-- Versión vigente: `jev-1.13.0`. Los alias `jev-latest` y `jev-preview` apuntan a ella y se mueven con cada lanzamiento, así que sus respuestas pueden cambiar **[E]** [TS-models].
+- Versión vigente documentada: `jev-1.13.0` (verificada 2026-10-14). Los alias `jev-latest` y `jev-preview` se mueven con cada lanzamiento, así que sus respuestas pueden cambiar **[E]** [TS-models]. **[PENDIENTE]** Verificar a qué versión apuntan los alias antes de comenzar la feature 006; no asumir que siguen en 1.13.0.
 - En AI Gateway se llama `typesafe-ai/jev` y está publicado desde el 2026-09-15 **[E]** [GW-catalog]. Lo sirven dos endpoints, `typesafe-ai` y `digitalocean` **[E]** [GW-endpoints].
 - Hay otros modelos de decisión en AI Gateway con las mismas primitivas (§9) **[E]** [GW-catalog].
 

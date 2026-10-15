@@ -880,11 +880,12 @@ No se utilizará como generador libre de todo el contenido de la interfaz.
 Ask Sofi mantendrá el control sobre:
 
 - labels;
-- explicaciones;
+- copy de presentación;
 - recomendaciones;
-- copy;
 - mensajes de error;
 - presentación.
+
+Las explicaciones de cada interpretación las generará un LLM redactor independiente (§26.1).
 
 Conceptualmente:
 
@@ -894,6 +895,8 @@ Jev
 structured decisions
  ↓
 Ask Sofi domain
+ ↓
+LLM writer (explanations)
  ↓
 product copy
  ↓
@@ -905,6 +908,37 @@ Esto permite que el producto siga siendo:
 - testeable;
 - consistente;
 - explicable.
+
+---
+
+## 26.1. LLM Discourse Writer
+
+El LLM redactor es un componente complementario a Jev. No lo sustituye ni participa en las estimaciones probabilísticas.
+
+Su responsabilidad es generar el discurso dirigido al usuario: explicaciones de cada señal, consejos, preguntas de contexto y texto de presentación. Genera texto natural, original y contextualizado en español con la personalidad de Sofi.
+
+El copy estático de seguridad (pantalla de salida rápida y avisos de riesgo) es copy revisada y no la genera el redactor.
+
+Restricciones no negociables:
+
+- Recibe únicamente los resultados autorizados por la política del dominio y el contexto estrictamente necesario. No recibe salida cruda de Jev.
+- No recalcula probabilidades ni produce valores numéricos propios.
+- No añade interpretaciones independientes de las que devuelve el dominio.
+- No presenta como hechos afirmaciones no sustentadas por los resultados del dominio.
+
+Arquitectura:
+
+- Deberá implementarse detrás de su propio adaptador, sustituible independientemente de Jev.
+- Existirá un `FakeDiscourseWriter` para pruebas y desarrollo offline.
+- La salida es texto, no estructura: el dominio no depende del contenido concreto del discurso.
+
+Pendiente de Feature 007:
+
+- elección del proveedor;
+- si el mismo servicio realiza también la traducción de entrada (roadmap fase 006);
+- límite de gasto aprobado (sujeto a las condiciones de `mission.md` §12);
+- política de privacidad y minimización de datos;
+- validación de fidelidad: criterios para detectar que el discurso refleja los resultados sin añadir afirmaciones propias.
 
 ---
 
@@ -925,9 +959,11 @@ Las credenciales:
 - nunca llegarán al navegador;
 - vivirán exclusivamente en variables de entorno del servidor.
 
-El consumo deberá mantenerse dentro de los recursos gratuitos disponibles.
+Jev no entra en el nivel gratuito de AI Gateway y requiere créditos comprados. Las capacidades, límites y precios del proveedor y de la pasarela se mantienen en `spec/constitution/jev.md`; no se duplican aquí.
 
-Si el recurso gratuito no está disponible:
+El consumo deberá mantenerse dentro de un límite de gasto aprobado y aplicado en la propia plataforma. La feature de integración fija el límite y la forma de aplicarlo (`mission.md` §12).
+
+Si el límite se alcanza o no hay saldo:
 
 > Ask Sofi debe fallar de forma segura antes que generar costes inesperados.
 
@@ -970,14 +1006,15 @@ Las respuestas internas utilizarán estructuras explícitas.
 Ejemplo conceptual:
 
 ```ts
-type AnalysisResponse = {
-  status: "success" | "needs_context";
-  interpretations: Interpretation[];
-  confidence: ConfidenceLevel;
-};
+type AnalysisResult =
+  | { status: "interpreted"; signals: SignalEstimate[]; safety: SafetyEvaluation; meta: AnalysisMeta }
+  | { status: "needs_context"; reason: string; meta: AnalysisMeta }
+  | { status: "safety_concern"; resources: SafetyResource[]; meta: AnalysisMeta };
 ```
 
-Los errores previsibles deberán representarse claramente.
+Los tipos, nombres y campos exactos se definen en `005-spec.md`. No existe una confianza global obligatoria: cada señal lleva su propia estimación de apoyo. La seguridad se evalúa como `concern | no_concern_detected | not_evaluated`.
+
+Los errores técnicos son un canal separado y no se representan como estados del análisis.
 
 No se dependerá del texto de una excepción para determinar lógica de producto.
 
@@ -1061,7 +1098,7 @@ spec/features/013-security/
 de acuerdo con:
 
 - experiencia de usuario;
-- recursos gratuitos disponibles;
+- presupuesto de gasto disponible;
 - comportamiento observado;
 - riesgo de abuso.
 
@@ -1235,7 +1272,9 @@ Web API ─────┐
 MCP ─────────┘
 ```
 
-No existirán dos implementaciones del traductor.
+No existirán dos implementaciones del núcleo de análisis.
+
+Nota: «traductor» tiene dos sentidos en Ask Sofi. El **traductor de idiomas** (ES→EN) prepara la entrada para Jev y se integra en 006. El «**traductor sentimental**» es el concepto del producto (traducir lo que tu pareja quiere decir) y lo resuelve el dominio completo, no un componente aislado. Ambos usos son legítimos; el contexto los distingue.
 
 ---
 
@@ -1384,9 +1423,9 @@ MSW permitirá desarrollar y verificar la interfaz sin depender de:
 Los mocks deberán representar estados relevantes del contrato HTTP, incluyendo:
 
 ```text
-success
+interpreted
 needs_context
-low_confidence
+safety_concern
 slow_response
 validation_error
 rate_limited
@@ -1567,8 +1606,9 @@ Los estados asíncronos deberán diferenciar:
 idle
 submitting
 processing
-success
+interpreted
 needs_context
+safety_concern
 error
 ```
 
@@ -2482,11 +2522,9 @@ La futura autenticación del MCP remoto, si llega a existir, constituye un probl
 
 ## 69. Cost requirement
 
-El coste esperado del proyecto será:
+Ask Sofi será gratuita para sus usuarios y su coste operativo será el mínimo necesario.
 
-```text
-0 €
-```
+El despliegue y las herramientas utilizarán niveles gratuitos. El gasto operativo aceptado comprende el proveedor de decisiones, la traducción de entrada y el LLM redactor, sujetos a las condiciones de `mission.md` §12.
 
 Esto afecta directamente a las decisiones técnicas.
 
