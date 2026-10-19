@@ -13,6 +13,8 @@
     "test": "vitest run",
     "preview": "vite preview",
     "test:a11y": "playwright test",
+    "eval:jev": "node --experimental-strip-types evals/jev/runner/start.ts",
+    "eval:sheets": "node --experimental-strip-types evals/jev/fixtures/writeSheets.ts",
     "verify:bundle": "node --experimental-strip-types scripts/verifyClientBundle.ts",
     "assets:sofi": "node --experimental-strip-types scripts/processSofiStatics.ts"
   },

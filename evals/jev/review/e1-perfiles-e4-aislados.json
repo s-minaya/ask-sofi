@@ -1,0 +1,12 @@
+{
+  "dataset": "E4",
+  "source": "original E1 review manuscript; independent of baseline E1 labels",
+  "approval": "author_approved_2026-10-19",
+  "profiles": {
+    "e1-53": "sarcasm: often, directness: drops-hints",
+    "e1-54": "personalSpace: usually-yes",
+    "e1-55": "personalSpace: usually-no, conflict: talk-now",
+    "e1-56": "directness: drops-hints, messageStyle: long-expressive",
+    "e1-57": "sarcasm: often"
+  }
+}
