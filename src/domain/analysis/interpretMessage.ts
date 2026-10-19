@@ -70,7 +70,8 @@ export async function interpretMessage(
   )
   if (!decision.ok) return { ok: false, error: decision.error }
 
-  const { id, alias, observedVersion } = reply.provenance
+  const { id, alias, observedVersion, respondedModel, instructionVersion } =
+    reply.provenance
   return {
     ok: true,
     result: {
@@ -85,6 +86,8 @@ export async function interpretMessage(
           id,
           ...(alias === undefined ? {} : { alias }),
           observedVersion: observedVersion ?? 'unknown',
+          ...(respondedModel === undefined ? {} : { respondedModel }),
+          ...(instructionVersion === undefined ? {} : { instructionVersion }),
         },
       },
     },

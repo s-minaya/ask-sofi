@@ -76,7 +76,7 @@ Fuentes que no se repiten aquí: semántica de las estimaciones en `mission.md` 
 - `needs_context` contiene el nivel de suficiencia, la indicación opcional de qué falta y, si existen, las señales del §4 punto 3.
 - `safety_concern` contiene los tipos de persona afectada y ninguna señal ni estimación sentimental. Los recursos de ayuda y su copy pertenecen a `007`.
 - El resultado es autosuficiente: no depende del redactor y sirve a un consumidor que no lo use (`014`).
-- Metadatos: `schemaVersion`, `taxonomyVersion`, `policyVersion`, `profileUsed` y procedencia del proveedor (identificador, alias pedido y versión observada, o `unknown`). No se declara una versión que no se haya observado. `006` y `007` añaden la procedencia del traductor y del redactor en su capa.
+- Metadatos: `schemaVersion`, `taxonomyVersion`, `policyVersion`, `profileUsed` y procedencia del proveedor (identificador, alias pedido, versión observada o `unknown`, modelo que respondió si se observa, y versión de las instrucciones del adaptador si se aplica). Los dos últimos campos son opcionales: un proveedor genérico o el fake no los declaran. No se declara una versión que no se haya observado. `006` y `007` añaden la procedencia del traductor y del redactor en su capa.
 - Los metadatos no contienen el mensaje, el contexto ni el expediente.
 
 ### 7. Errores

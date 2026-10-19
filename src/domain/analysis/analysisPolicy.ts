@@ -89,6 +89,70 @@ function sufficiencyLevel(
   return 'partial'
 }
 
+// Pasos 1–4 de la política: no miran las señales. Si alguno decide, las lecturas
+// no pueden cambiar la salida (005-plan §3.6). Si ninguno decide, devuelve la
+// suficiencia, que esos pasos ya comprobaron que es un número.
+type WithoutReadings =
+  { decided: PolicyDecision } | { decided?: undefined; sufficiency: number }
+
+function decideWithoutReadings(
+  estimates: DecisionEstimates,
+  facts: PolicyFacts,
+  config: PolicyConfig,
+): WithoutReadings {
+  const { safety, sufficiency } = estimates
+
+  // 1. Con indicios de riesgo, la seguridad prevalece sobre cualquier otra salida,
+  // aunque falten las demás estimaciones.
+  if (typeof safety === 'number' && safety >= config.safety.concernAt) {
+    return {
+      decided: {
+        ok: true,
+        body: {
+          status: 'safety_concern',
+          affectedPersonTypes: affectedTypes(
+            estimates.affected,
+            config.safety.affectedTypeAt,
+          ),
+        },
+      },
+    }
+  }
+
+  // 2. Una seguridad sin evaluar no es «sin riesgo»: es un error, nunca un resultado.
+  // Causa desconocida (ausencia) y rechazo explícito: ambos dan retryable false.
+  if (typeof safety !== 'number')
+    return { decided: fail('safety_evaluation_unavailable', false) }
+
+  // 3. Sin suficiencia evaluada no se puede saber si hay base para interpretar.
+  // Causa desconocida (ausencia) y rechazo explícito: ambos dan retryable false.
+  if (typeof sufficiency !== 'number')
+    return { decided: fail('processing_unavailable', false) }
+
+  // 4. Un marcador no es texto de la pareja: el dominio ya sabe que falta contenido.
+  // Solo llega aquí si la suficiencia se evaluó correctamente (paso 3 superado).
+  if (facts.omittedContentOnly) {
+    return {
+      decided: {
+        ok: true,
+        body: { status: 'needs_context', sufficiency: 'insufficient' },
+      },
+    }
+  }
+
+  return { sufficiency }
+}
+
+// Un adaptador que pide las lecturas en una petición aparte las pide solo si
+// pueden cambiar la salida. Comparte código con la política: no copia sus reglas.
+export function readingsNeeded(
+  estimates: DecisionEstimates,
+  facts: PolicyFacts,
+  config: PolicyConfig,
+): boolean {
+  return decideWithoutReadings(estimates, facts, config).decided === undefined
+}
+
 // Función pura: sin I/O ni conocimiento del proveedor. El orden de los pasos es
 // la precedencia de 005-spec §4, con el marcador omitido y las lecturas ausentes
 // colocados según 005-plan §3.6.
@@ -97,43 +161,10 @@ export function analysisPolicy(
   facts: PolicyFacts,
   config: PolicyConfig,
 ): PolicyDecision {
-  const { safety, sufficiency } = estimates
+  const early = decideWithoutReadings(estimates, facts, config)
+  if (early.decided !== undefined) return early.decided
 
-  // 1. Con indicios de riesgo, la seguridad prevalece sobre cualquier otra salida,
-  // aunque falten las demás estimaciones.
-  if (typeof safety === 'number' && safety >= config.safety.concernAt) {
-    return {
-      ok: true,
-      body: {
-        status: 'safety_concern',
-        affectedPersonTypes: affectedTypes(
-          estimates.affected,
-          config.safety.affectedTypeAt,
-        ),
-      },
-    }
-  }
-
-  // 2. Una seguridad sin evaluar no es «sin riesgo»: es un error, nunca un resultado.
-  // Causa desconocida (ausencia) y rechazo explícito: ambos dan retryable false.
-  if (typeof safety !== 'number')
-    return fail('safety_evaluation_unavailable', false)
-
-  // 3. Sin suficiencia evaluada no se puede saber si hay base para interpretar.
-  // Causa desconocida (ausencia) y rechazo explícito: ambos dan retryable false.
-  if (typeof sufficiency !== 'number')
-    return fail('processing_unavailable', false)
-
-  // 4. Un marcador no es texto de la pareja: el dominio ya sabe que falta contenido.
-  // Solo llega aquí si la suficiencia se evaluó correctamente (paso 3 superado).
-  if (facts.omittedContentOnly) {
-    return {
-      ok: true,
-      body: { status: 'needs_context', sufficiency: 'insufficient' },
-    }
-  }
-
-  const level = sufficiencyLevel(sufficiency, config.sufficiency)
+  const level = sufficiencyLevel(early.sufficiency, config.sufficiency)
   const communicable = communicableSignals(
     estimates.signals,
     config.signals.communicableAt,

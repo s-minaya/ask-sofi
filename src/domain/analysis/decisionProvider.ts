@@ -8,11 +8,15 @@ import {
 } from './signalCatalog'
 
 // Procedencia que declara el proveedor. La versión solo se informa si se observó
-// de verdad; el núcleo la sustituye por 'unknown' en los metadatos.
+// de verdad; el núcleo la sustituye por 'unknown' en los metadatos. El modelo que
+// respondió y la versión de las instrucciones son opcionales: un proveedor
+// genérico, como el fake, no los declara.
 export type ProviderProvenance = {
   id: string
   alias?: string
   observedVersion?: string
+  respondedModel?: string
+  instructionVersion?: string
 }
 
 // Seguridad y suficiencia no tienen campo para el expediente: solo las lecturas

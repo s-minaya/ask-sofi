@@ -46,7 +46,13 @@ export type AnalysisMeta = {
   taxonomyVersion: number
   policyVersion: string
   profileUsed: boolean
-  provider: { id: string; alias?: string; observedVersion: string }
+  provider: {
+    id: string
+    alias?: string
+    observedVersion: string
+    respondedModel?: string
+    instructionVersion?: string
+  }
 }
 
 export type AnalysisResult = AnalysisResultBody & { meta: AnalysisMeta }

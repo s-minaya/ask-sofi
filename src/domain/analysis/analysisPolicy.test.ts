@@ -4,8 +4,13 @@ import {
   STRICT_TEST_POLICY_CONFIG,
   TEST_POLICY_CONFIG,
 } from '../../test/analysisFixtures'
-import { analysisPolicy, type PolicyConfig } from './analysisPolicy'
+import {
+  analysisPolicy,
+  readingsNeeded,
+  type PolicyConfig,
+} from './analysisPolicy'
 import type { DecisionEstimates } from './decisionProvider'
+import { SIGNAL_IDS } from './signalCatalog'
 
 const normal = { omittedContentOnly: false }
 const decide = (
@@ -528,5 +533,81 @@ describe('analysisPolicy', () => {
     decide(input)
 
     expect(input).toEqual(before)
+  })
+})
+
+// Un adaptador que pide las lecturas aparte solo las pide si cambian la salida
+// (006-plan §3.3). Los casos con `false` son los pasos 1–4 de la política.
+describe('readingsNeeded', () => {
+  const omitted = { omittedContentOnly: true }
+  const needed = (
+    input: DecisionEstimates,
+    config: PolicyConfig = TEST_POLICY_CONFIG,
+    facts = normal,
+  ) => readingsNeeded(input, facts, config)
+
+  it('no hacen falta con indicios de seguridad, aunque falte lo demás', () => {
+    expect(needed(estimates({ safety: 0.9 }))).toBe(false)
+    expect(
+      needed(estimates({ safety: 0.9, sufficiency: undefined, signals: {} })),
+    ).toBe(false)
+  })
+
+  it('no hacen falta con la seguridad sin evaluar, ausente o rechazada', () => {
+    expect(needed(estimates({ safety: undefined }))).toBe(false)
+    expect(needed(estimates({ safety: 'rejected' }))).toBe(false)
+  })
+
+  it('no hacen falta con la suficiencia sin evaluar si no hay indicios de riesgo', () => {
+    expect(needed(estimates({ sufficiency: undefined }))).toBe(false)
+    expect(needed(estimates({ sufficiency: 'rejected' }))).toBe(false)
+  })
+
+  it('no hacen falta con un marcador de contenido omitido y la evaluación correcta', () => {
+    expect(needed(estimates(), TEST_POLICY_CONFIG, omitted)).toBe(false)
+  })
+
+  it('hacen falta con contexto insuficiente: un needs_context conserva los límites explícitos', () => {
+    expect(needed(estimates({ sufficiency: 0.1 }))).toBe(true)
+  })
+
+  it('hacen falta con contexto parcial y con contexto suficiente', () => {
+    expect(needed(estimates({ sufficiency: 0.45 }))).toBe(true)
+    expect(needed(estimates({ sufficiency: 0.9 }))).toBe(true)
+  })
+
+  it('depende de la configuración que se aplique, no de números fijos', () => {
+    const borderline = estimates({ safety: 0.3 })
+
+    expect(needed(borderline)).toBe(true)
+    expect(needed(borderline, STRICT_TEST_POLICY_CONFIG)).toBe(false)
+  })
+
+  it('coincide con lo que la política decide sin mirar las señales', () => {
+    const everyHigh = Object.fromEntries(SIGNAL_IDS.map((id) => [id, 0.95]))
+    const grid = [undefined, 'rejected', 0.05, 0.4, 0.95] as const
+
+    for (const safety of grid)
+      for (const sufficiency of grid)
+        for (const facts of [normal, omitted]) {
+          const base = { safety, sufficiency, affected: {} }
+          const withoutSignals = analysisPolicy(
+            { ...base, signals: {} },
+            facts,
+            TEST_POLICY_CONFIG,
+          )
+          const withSignals = analysisPolicy(
+            { ...base, signals: everyHigh },
+            facts,
+            TEST_POLICY_CONFIG,
+          )
+          const label = JSON.stringify({ safety, sufficiency, facts })
+
+          // Si no hacen falta, las señales no pueden cambiar la salida.
+          if (
+            !readingsNeeded({ ...base, signals: {} }, facts, TEST_POLICY_CONFIG)
+          )
+            expect(withSignals, label).toEqual(withoutSignals)
+        }
   })
 })

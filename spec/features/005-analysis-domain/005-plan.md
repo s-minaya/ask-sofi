@@ -112,7 +112,13 @@ type DecisionReply =
   | { ok: true; payload: unknown; provenance: ProviderProvenance }
   | { ok: false; retryable: boolean } // fallo de toda la llamada (402, 429, tiempo de espera…)
 
-type ProviderProvenance = { id: string; alias?: string; observedVersion?: string }
+type ProviderProvenance = {
+  id: string
+  alias?: string
+  observedVersion?: string
+  respondedModel?: string
+  instructionVersion?: string
+}
 ```
 
 `payload` es dato no confiable: el núcleo lo valida con Zod (`parseDecisionPayload`) antes de usarlo. Forma validada:
@@ -164,6 +170,8 @@ Aplica la precedencia de `005-spec.md` §4. Solo se fija aquí dónde encajan el
 | 6 | Ninguna señal evaluada | error `processing_unavailable`, `retryable: false` |
 | 7 | En los demás casos | `interpreted` con las señales comunicables, en el orden del catálogo, y `safety: no_concern_detected` |
 
+Los pasos 1–4 no dependen de las lecturas. `readingsNeeded(estimates, facts, config)`, exportada junto a `analysisPolicy`, dice si hacen falta: es `false` cuando alguno de esos pasos ya decide. Un adaptador que obtiene las lecturas en una petición aparte la usa para no pedirlas cuando no cambiarían la salida (`006-plan` §3.3). Comparte código con la política; no copia sus reglas.
+
 El paso 3 va antes del 4 para respetar `005-spec.md` §4: «Suficiencia no evaluada → error». Un fallo técnico de suficiencia no queda enmascarado por la detección del marcador. Solo llega al paso 4 si la suficiencia se evaluó correctamente; de lo contrario, un marcador en un mensaje con suficiencia fallida daría `needs_context` silenciosamente en lugar del error que corresponde.
 
 ### 3.7 Resultado, errores y metadatos
@@ -184,7 +192,7 @@ Tipos según `005-spec.md` §6 y §7. `interpreted.safety` es siempre `no_concer
 
 Los errores solo llevan `code` y `retryable`: nunca texto de una excepción ni del proveedor.
 
-Metadatos: `schemaVersion`, `taxonomyVersion`, `policyVersion`, `profileUsed` y `provider` (`id`, `alias?`, `observedVersion`, con `'unknown'` si el proveedor no la declaró). El mensaje, el contexto y el expediente nunca están en ellos.
+Metadatos: `schemaVersion`, `taxonomyVersion`, `policyVersion`, `profileUsed` y `provider` (`id`, `alias?`, `observedVersion` con `'unknown'` si el proveedor no la declaró, `respondedModel?` y `instructionVersion?`). Los dos nuevos campos son opcionales: el fake no los declara. El mensaje, el contexto y el expediente nunca están en ellos.
 
 ### 3.8 Núcleo y proveedor falso
 

@@ -219,6 +219,47 @@ describe('interpretMessage', () => {
       })
     })
 
+    it('transmite el modelo que respondió y la versión de las instrucciones cuando el proveedor los declara', async () => {
+      const provider: DecisionProvider = {
+        evaluate: async () => ({
+          ok: true,
+          payload: {
+            signals: { literal_meaning: 0.7 },
+            safety: 0.01,
+            sufficiency: 0.9,
+          },
+          provenance: {
+            id: 'jev',
+            alias: 'typesafe-ai/jev',
+            respondedModel: 'typesafe-ai/jev',
+            instructionVersion: '2026-10-a',
+          },
+        }),
+      }
+
+      const outcome = await interpretMessage(
+        { message: 'a' },
+        { provider, policy: TEST_POLICY_CONFIG },
+      )
+
+      expect(resultOf(outcome).meta.provider).toEqual({
+        id: 'jev',
+        alias: 'typesafe-ai/jev',
+        // Sin versión observada, sigue siendo 'unknown': nada se inventa.
+        observedVersion: 'unknown',
+        respondedModel: 'typesafe-ai/jev',
+        instructionVersion: '2026-10-a',
+      })
+    })
+
+    it('el fake no declara modelo ni instrucciones: los campos no existen en los metadatos', async () => {
+      const { outcome } = await run({ message: MESSAGE }, 'two-high-signals')
+      const { provider } = resultOf(outcome).meta
+
+      expect(provider).not.toHaveProperty('respondedModel')
+      expect(provider).not.toHaveProperty('instructionVersion')
+    })
+
     it('ni el resultado ni los metadatos contienen el mensaje, el contexto ni el expediente', async () => {
       const { outcome } = await run(
         {
