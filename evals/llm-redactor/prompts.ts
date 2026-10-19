@@ -27,7 +27,7 @@ or labels such as [sarcasm] or [ironic].
 7. Do not add punctuation, emojis, or emotional modifiers not in the original.
 
 The translation will be passed to a probabilistic analysis engine that will interpret it. \
-Do not pre-interpret the message.`;
+Do not pre-interpret the message.`
 
 /**
  * Prompt para la tarea de redacción de explicaciones.
@@ -73,4 +73,4 @@ tener una conversación real".
 
 FORMATO
 Responde con 2–4 frases en español de España, registro conversacional.
-Los emojis son bienvenidos cuando encajan con el tono y la situación no es seria.`;
+Los emojis son bienvenidos cuando encajan con el tono y la situación no es seria.`
