@@ -53,6 +53,7 @@ Before working on a feature:
 3. Read its `<NNN>-tasks.md` to identify the current task.
 4. Read only the relevant parts of the constitution required for that task.
 5. If the task touches analysis, decision providers, evaluations, privacy of analysis requests or provider costs, read the relevant sections of `spec/constitution/jev.md` and check its verification dates. Do not state provider capabilities, prices or limits from memory.
+6. If the task affects architectural or functional decisions that were studied before, read only the relevant sections of `spec/decisions/analysis-architecture-rationale.md` (§0 explains how it is organised) to understand their reasons, limits, discarded alternatives and pending decisions. It is a historical and justifying record, not an independent source of truth: current specs, plans and the constitution keep their authority. If it contradicts them, or records an approved agreement that the normative documents do not reflect, report it before implementing. Do not read it whole for every task.
 
 Do not load unrelated feature specifications unless they are required to understand a dependency.
 

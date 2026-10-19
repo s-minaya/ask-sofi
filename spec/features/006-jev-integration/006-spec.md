@@ -25,6 +25,7 @@ Fuentes que no se repiten aquí: alcance y flujo conceptual en `roadmap.md` §9;
 - Cada ejecución real (experimento, verificación manual o smoke test) tiene autorización expresa de la autora. Las pruebas automáticas normales nunca llaman a servicios reales.
 - Los datos del proveedor que use la feature (alias y versión, precios, límites y formato de rechazos) se verifican y se actualizan en `jev.md` con fecha.
 - Los experimentos usan solo mensajes ficticios o sintéticos.
+- Ningún entorno desplegado (producción, previews ni CI) tendrá credenciales de inferencia de AI Gateway ni del servicio de traducción hasta que estén activas las protecciones de `013` y haya autorización posterior explícita de la autora. Sin credenciales configuradas, el endpoint falla cerrado y no realiza llamadas a proveedores.
 
 ### 2. Preparación lingüística
 
@@ -48,7 +49,7 @@ Fuentes que no se repiten aquí: alcance y flujo conceptual en `roadmap.md` §9;
 - Las respuestas del expediente llegan a Jev como frases estables en inglés, versionadas y distintas del copy de `004` (`jev.md` §8.2).
 - Un rechazo, una ausencia, un tipo incorrecto o un valor no finito en una pregunta se traducen a ausencia o a respuesta inválida según `005`; nunca a `0` ni a `false`. El rechazo de la pregunta de seguridad deja la seguridad sin evaluar.
 - No hay fallback a otro modelo, a un LLM ni al fake.
-- Los fallos de la pasarela (402, 403, 429), los tiempos de espera y los errores de red se traducen a errores de `005`, sin mostrar mensajes del proveedor. Los reintentos automáticos son pocos y acotados; el número se fija en el plan.
+- Los fallos de la pasarela (402, 403, 429), los tiempos de espera y los errores de red se traducen a errores de `005`, sin mostrar mensajes del proveedor. No hay reintentos automáticos: el error indica `retryable` y reintentar es una acción de la persona (`005` §7, `007`).
 - Se registran el alias pedido, el modelo que respondió y la versión solo si se observa; si no, `unknown`.
 
 ### 4. Servidor
@@ -56,12 +57,14 @@ Fuentes que no se repiten aquí: alcance y flujo conceptual en `roadmap.md` §9;
 - Esta feature entrega `POST /api/interpret` (`tech-stack.md` §28). Es la frontera de servidor donde se componen los adaptadores y se repite la minimización; `007` lo consume y usa MSW en desarrollo. La protección contra abuso sigue en `013`.
 - El servidor compone `interpretMessage()` con la preparación lingüística y el adaptador de Jev.
 - Vuelve a validar la entrada y a minimizar el expediente con la función de `005`; no confía en la minimización del cliente.
+- Falla cerrado: sin credencial, sin traductor aprobado o sin `PolicyConfig` respaldada por experimentos, responde `processing_unavailable` y no llama a ningún proveedor, ni al fake.
 - Añade a los metadatos la procedencia de la preparación lingüística (servicio usado u omitido).
 - No registra mensaje, contexto ni expediente.
 
 ### 5. Experimentos y valores provisionales
 
 - Se aplican los experimentos de `jev.md` §11 que corresponden a esta feature: E1 (escenarios, sin llamadas), E2, E3, E4, E5, E6 y E8.
+- Las etiquetas de E1 las aprueba la autora antes de ejecutar nada y sin ver respuestas de Jev. Pueden proponerse con asistencia, pero cada caso conserva su procedencia y los informes la citan (`006-plan.md` §5.2).
 - Cada experimento deja un informe reproducible con fecha, versión observada del modelo, versión de las instrucciones y configuración.
 - Comparar entradas en español, en inglés o en ambos informa a la autora, pero no cambia por sí solo el envío en inglés.
 - A partir de E2 y E3 se proponen valores provisionales de `PolicyConfig` con su procedencia (experimento, fecha y modelo observado) y un nuevo `policyVersion`. Se registran en el plan (`jev.md` §12). No se fija ningún valor sin base experimental.
@@ -85,26 +88,28 @@ Fuentes que no se repiten aquí: alcance y flujo conceptual en `roadmap.md` §9;
 ### Preparación lingüística
 
 - [ ] El original se conserva y los emojis compuestos (👍🏽, 🤷‍♀️, secuencias ZWJ) sobreviven a la preparación.
-- [ ] Si la preparación falla o no supera la validación, no se llama a Jev y se devuelve un error.
+- [x] Si la preparación falla o no supera la validación, no se llama a Jev y se devuelve un error.
 - [ ] Un texto con instrucciones incrustadas se trata como contenido (ejecución explícita con casos sintéticos; resultado documentado).
 
 ### Jev
 
-- [ ] Cada señal es una pregunta `boolean` independiente.
-- [ ] Rechazos, ausencias y valores inválidos se traducen según `005`; un rechazo de seguridad nunca equivale a «sin riesgo».
-- [ ] Las preguntas de seguridad y suficiencia nunca reciben datos del expediente.
-- [ ] Con el expediente autorizado pero sin respuestas concretas no se pide evaluación con expediente y `profileUsed` es `false`.
-- [ ] 402, 403, 429, tiempos de espera y errores de red producen errores de `005` sin texto del proveedor, sin fallback y con reintentos acotados.
-- [ ] La procedencia registra alias, modelo que respondió, versión observada o `unknown`, versión de las instrucciones y preparación lingüística usada.
+- [x] Cada señal es una pregunta `boolean` independiente.
+- [x] Rechazos, ausencias y valores inválidos se traducen según `005`; un rechazo de seguridad nunca equivale a «sin riesgo».
+- [x] Las preguntas de seguridad y suficiencia nunca reciben datos del expediente.
+- [x] Con el expediente autorizado pero sin respuestas concretas no se pide evaluación con expediente y `profileUsed` es `false`.
+- [x] 402, 403, 429, tiempos de espera y errores de red producen errores de `005` sin texto del proveedor, sin fallback y sin reintentos automáticos.
+- [x] La procedencia registra alias, modelo que respondió, versión observada o `unknown`, versión de las instrucciones y preparación lingüística usada.
 
 ### Servidor y experimentos
 
 - [ ] `POST /api/interpret` está implementado en esta feature.
-- [ ] El servidor vuelve a minimizar el expediente y no registra contenido de la consulta.
-- [ ] Los informes de E1–E6 y E8 existen, con fecha, configuración y versión observada.
+- [x] El servidor vuelve a minimizar el expediente y no registra contenido de la consulta.
+- [x] Mientras falte la credencial, el traductor aprobado o la `PolicyConfig` con valores experimentales, el servidor falla cerrado sin llamar a proveedores.
+- [x] El conjunto E1 existe con las etiquetas aprobadas y su cobertura documentada (`006-plan.md` §8.3).
+- [ ] Los informes de E2–E6 y E8 existen, con fecha, configuración y versión observada.
 - [ ] Los valores provisionales de `PolicyConfig` están en el plan con su procedencia y `policyVersion`.
 - [ ] El conjunto canario existe y su ejecución explícita está documentada.
-- [ ] La suite normal de tests no hace llamadas reales.
+- [x] La suite normal de tests no hace llamadas reales.
 
 ## Out of Scope
 
@@ -117,13 +122,13 @@ Fuentes que no se repiten aquí: alcance y flujo conceptual en `roadmap.md` §9;
 
 **Provisional:** los valores de `PolicyConfig` que proponga esta feature; las instrucciones de cada pregunta.
 
-**Pendiente de evaluar (en esta feature, con autorización):** proveedor de traducción y su fidelidad; transporte; estructura del estado y selección de áreas del expediente (E4); comportamiento de la suficiencia (E3) y de la seguridad ante hipérboles (E6); robustez ante inyección y cambios de género (E5); posibilidad de fijar o ver la versión de Jev (E8).
+**Pendiente de evaluar (en esta feature, con autorización):** proveedor de traducción y su fidelidad; estructura del estado y selección de áreas del expediente (E4); comportamiento de la suficiencia (E3) y de la seguridad ante hipérboles (E6); robustez ante inyección y cambios de género (E5); posibilidad de fijar o ver la versión de Jev (E8).
 
-**Se decide en el plan, con aprobación de la autora:**
+**Decididos en el plan (aprobados el 2026-10-16, `006-plan.md` §9):** transporte (`POST /v1/decisions` con `fetch`, sin reintentos automáticos); opciones de enrutado y privacidad de cada petición; presupuesto (0 € autorizados hasta que la autora apruebe una cifra).
+
+**Pendiente de decisión de la autora:**
 
 - proveedor de traducción. Azure AI Translator (NMT) es el candidato preferente a investigar; la alternativa es un LLM, incluido el redactor de `007` (`roadmap.md` §9). Ninguno está elegido;
-- transporte: `/v1/evaluate` con `fetch` o `experimental_decide` (`jev.md` §10);
-- opciones de enrutado y privacidad de cada petición (`jev.md` §10);
 - cifra del límite de gasto de Jev y, si la traducción tiene coste, también la suya.
 
 **Decisiones aprobadas en esta spec:**

@@ -46,7 +46,9 @@ Las citas entre comillas angulares son traducciones propias de originales en ing
 
 - Es el modelo de decisión «System One» de TypeSafe AI. Recibe un estado (`state`) y preguntas tipadas, y devuelve respuestas estructuradas con probabilidades **[E]** [TS-intro].
 - No genera texto, no escribe código ni conversa **[E]** [TS-agents].
-- Versión vigente documentada: `jev-1.13.0` (verificada 2026-10-14). Los alias `jev-latest` y `jev-preview` se mueven con cada lanzamiento, así que sus respuestas pueden cambiar **[E]** [TS-models]. **[PENDIENTE]** Verificar a qué versión apuntan los alias antes de comenzar la feature 006; no asumir que siguen en 1.13.0.
+- Versión vigente documentada: `jev-1.14.0` (verificada V1, 2026-10-16) **[E]** [TS-models] [GW-jev-1.14]. Los alias: `jev-latest` apunta a `jev-1.13.0` y `jev-preview` a `jev-1.14.0` (verificado V1, 2026-10-16) **[E]** [GW-jev]. Los alias se mueven con cada lanzamiento, así que sus respuestas pueden cambiar.
+- `jev-1.14.0` acepta imágenes en el estado y tiene un modo experimental de contexto largo **[E]** [GW-jev-1.14]. Sin embargo, la página de System One de TypeSafe sigue diciendo que solo acepta texto **[E]** [TS-system-one]. Ask Sofi solo envía texto; la discrepancia no afecta.
+- Los IDs versionados (como `typesafe-ai/jev-1.14.0`) devuelven 404 a través de AI Gateway, y `modelId` en la respuesta es el alias, no la versión concreta **[E]** [GW-community-version]. Hay un bug abierto (`vercel/ai#21213`); la versión del modelo no se puede fijar ni observar por esta vía **[H]**. E8 lo comprueba.
 - En AI Gateway se llama `typesafe-ai/jev` y está publicado desde el 2026-09-15 **[E]** [GW-catalog]. Lo sirven dos endpoints, `typesafe-ai` y `digitalocean` **[E]** [GW-endpoints].
 - Hay otros modelos de decisión en AI Gateway con las mismas primitivas (§9) **[E]** [GW-catalog].
 
@@ -98,6 +100,7 @@ Fuentes: [GW-decision] [TS-api] [AISDK-typesafe] **[E]**.
 
 Fuentes: [GW-decision] [TS-api] [TS-choice] [TS-noul] **[E]**.
 
+- En `POST /v1/decisions` (verificado V1, 2026-10-16, página con fecha 2026-10-08) **[E]** [GW-openai-decisions]: la petición lleva `model`, `input` (cadena o array de mensajes) y `questions`; cada pregunta `predicate` tiene `type`, `name` opcional e `instructions`, y la tabla de la página no lista `criteria` para `predicate`. Un estado en objeto, por tanto, viaja serializado en `input`. La respuesta trae `model`, `answers` (en el orden de las preguntas, con su `name`; un `predicate` devuelve `probability`), `usage` y `provider_metadata.gateway` (enrutado y coste). Los errores de validación usan el formato de OpenAI (`error.message/type/param/code`); los de enrutado o facturación, el de AI Gateway. Si el endpoint admite campos no documentados como `criteria` no consta **[H]**; E8 lo comprueba.
 - Las probabilidades se redondean a dos decimales y pueden no sumar exactamente 1; la guía de Vercel da el ejemplo de 0,99 y pide no renormalizar **[E]** [AISDK-typesafe] [GW-kb-guide]. El AI SDK rechaza una salida inválida en lugar de normalizarla **[E]** [AISDK-decisions].
 - Tensión documental: el AI SDK valida que las distribuciones sumen 1 con una tolerancia por defecto de 0,000001 y admite que el proveedor declare su redondeo (`rounding`) **[E]** [AISDK-decisions]. No hay evidencia de cómo se aplica con el redondeo a dos decimales de Jev **[H]**. Quien consuma la respuesta debe validar con una tolerancia derivada del redondeo declarado, no con una exacta, y sin renormalizar (`tech-stack.md` §23).
 - La confianza de `choice` y `score` llega aparte en los metadatos del proveedor (`providerMetadata.typesafe.confidence`, por clave de pregunta) y puede faltar; la guía de Vercel prueba explícitamente ese caso **[E]** [GW-kb-guide] [AISDK-decisions].
@@ -120,7 +123,7 @@ Fuentes: [GW-decision] [TS-api] [TS-choice] [TS-noul] **[E]**.
 
 ### 3.4. Resultados parciales, respuestas defectuosas y fallbacks
 
-- Una pregunta puede devolver `{"type": "refusal"}` mientras las demás se responden, y la petición se factura igual **[E]**. Está documentado en `/v1/decisions` [GW-openai-decisions], y la razón `refused` aparece en [GW-fallbacks]. No está documentado que `/v1/evaluate` use el mismo formato **[H]**.
+- Una pregunta puede devolver `{"type": "refusal"}` mientras las demás se responden, y la petición se factura igual **[E]**. Está documentado en `/v1/decisions` [GW-openai-decisions], y la razón `refused` aparece en [GW-fallbacks]. V1 (2026-10-16) no encontró documentación de rechazos por pregunta en `/v1/evaluate`: la documentación de ese endpoint solo describe fallos globales (500) cuando el proveedor devuelve una respuesta malformada **[E]** [GW-evaluation-fallbacks]. Por tanto, `/v1/decisions` es la vía documentada para obtener rechazos por pregunta.
 - El AI SDK convierte cualquier rechazo en `Experimental_DecisionRefusalError` para toda la llamada. No lo reintenta y no admite resultados parciales **[E]** [AISDK-decisions].
 - El proveedor puede devolver respuestas defectuosas: ausentes, de tipo incorrecto o con probabilidades no finitas **[E]** [GW-fallbacks].
 - Los fallbacks de decisión son opcionales. Repiten toda la petición con otro modelo y se facturan las dos llamadas. Si responde un LLM, no hay `confidence` ni distribuciones. En la API compatible con TypeSafe llegan `confidence: 0` y `probabilities: {}`, que significan «no disponible» **[E]** [GW-fallbacks].
@@ -129,7 +132,7 @@ Fuentes: [GW-decision] [TS-api] [TS-choice] [TS-noul] **[E]**.
 
 - No es determinista. En un caso límite de su propio cookbook, la etiqueta principal coincidió en el 90,8 % de 15 repeticiones. La desviación típica media de las probabilidades fue 0,0098 **[E]** [TS-consistency].
 - La API directa de TypeSafe informa de la versión que respondió **[E]** [TS-models].
-- En AI Gateway, `/v1/evaluate` devuelve el identificador del modelo final. La API compatible con TypeSafe repite el identificador pedido **[E]** [GW-fallbacks]. No está documentado si se puede fijar o conocer `jev-1.13.0` a través de AI Gateway **[H]**.
+- En AI Gateway, `/v1/evaluate` devuelve el identificador del modelo final. La API compatible con TypeSafe repite el identificador pedido **[E]** [GW-fallbacks]. V1 (2026-10-16): los IDs versionados devuelven 404 a través de AI Gateway, y `modelId` en la respuesta es el alias, no la versión concreta **[E]** [GW-community-version]. No se puede fijar ni observar la versión por esta vía.
 - `experimental_decide`, del AI SDK, «puede cambiar en versiones patch» **[E]** [AISDK-decisions].
 
 ## 4. Acceso, errores y coste
@@ -226,7 +229,7 @@ Hay que comprobarlo en el dashboard de la cuenta antes de la feature de integrac
 
 - Vercel no entrena con los prompts, y AI Gateway no conserva el contenido de las peticiones ni de las respuestas **[E]** [GW-faq].
 - Sí registra metadatos: estado, modelo, proveedor, tokens, coste, duración, método de autenticación e intentos de enrutado. Los intentos de enrutado se conservan 30 días **[E]** [GW-faq].
-- La retención cero de datos (ZDR) por petición solo existe en los planes Pro y Enterprise **[E]** [GW-zdr].
+- La retención cero de datos (ZDR) por petición solo existe en los planes Pro y Enterprise **[E]** [GW-zdr]. V1 (2026-10-16) confirma que las guías de precios y privacidad no listan ZDR para Hobby **[E]** [GW-control-data]. En Hobby, `only: ["typesafe-ai"]` enruta al endpoint con ZDR del proveedor (§5.2), que es el mecanismo disponible.
 - `disallowPromptTraining` está disponible en todos los planes, sin coste **[E]** [GW-no-training].
 - Restringir proveedores con `only` en cada petición no tiene coste en ningún plan **[E]** [GW-pricing].
 - En Vercel, las funciones pueden autenticarse con tokens OIDC en lugar de una clave fija **[E]** [GW-faq].
@@ -397,7 +400,7 @@ El LLM redactor es complementario a Jev: recibe los resultados autorizados por l
 | El campo `about` de `reportedTendencies` **[P]**                                 | Depende del modelo **[H]**.                                                                                                                   |
 | ~~Calcular las mismas lecturas con y sin expediente~~ **[Supersedida]**          | Las lecturas se obtienen solo con la configuración autorizada (`005-spec.md` §5). La influencia del expediente se evalúa en `011` con y sin él, y con expedientes engañosos. |
 
-Las dos peticiones pueden ir en paralelo. El coste se duplica, pero sigue siendo despreciable (§4.3) **[I]**.
+Son dos peticiones. La segunda (lecturas con expediente) solo se envía si el resultado depende de ellas (`006-plan.md` §3.3). El coste se duplica como máximo, pero sigue siendo despreciable (§4.3) **[I]**.
 
 ### 8.5. Sesgos y contradicciones
 
@@ -425,7 +428,7 @@ La minimización puede hacerse en el navegador antes de enviar la petición, y r
 
 ### 8.7. Ejemplos de petición **[P]**
 
-Son ejemplos ilustrativos: no se han probado y no fijan el contrato ni el copy. Las instrucciones van en inglés porque es el idioma principal de Jev (§6.1). Si eso mejora el resultado es una hipótesis **[H]** (E2).
+Son ejemplos ilustrativos: no se han probado y no fijan el contrato ni el copy. Usan la forma de la API de TypeSafe (`state`, `criteria`); en `POST /v1/decisions` el estado va serializado en `input`, las preguntas son `predicate` y los `criteria` se incorporan a las `instructions` (§3.1). Las instrucciones van en inglés porque es el idioma principal de Jev (§6.1). Si eso mejora el resultado es una hipótesis **[H]** (E2).
 
 **A. Sin expediente.** Si hay expediente, es también la petición que decide si el contexto basta.
 
@@ -464,7 +467,7 @@ Son ejemplos ilustrativos: no se han probado y no fijan el contrato ni el copy. 
 }
 ```
 
-**B. Con expediente.** Solo pide lecturas. Va en paralelo con la petición A, que decide la suficiencia y la seguridad sin el expediente.
+**B. Con expediente.** Solo pide lecturas. Se envía después de la petición A, que decide la suficiencia y la seguridad sin el expediente, y solo si A no determina ya el resultado (`006-plan.md` §3.3).
 
 ```json
 {
@@ -538,26 +541,20 @@ Afectan sobre todo a 006 y se aprueban allí. Se recogen aquí para que no se pi
 1. Tratar las probabilidades de cualquier proveedor como señales sin calibrar hasta que 011 las evalúe.
 2. No usar la `confidence` del proveedor como confianza de Ask Sofi. Interpretar los centinelas como ausencia: un valor ausente nunca es 0.
 3. Usar `boolean` para lecturas compatibles. Reservar `choice` para alternativas excluyentes, con opción residual y pregunta de existencia.
-4. Elegir en 006 entre `/v1/evaluate` con `fetch` y `experimental_decide`. Tendencia: `fetch`, sin dependencia nueva, porque:
-   - `/v1/evaluate` sigue soportado y no requiere migración (§4.1);
-   - `experimental_decide` puede cambiar en versiones patch y falla entera ante un rechazo (§3.4, §3.5);
-   - el error de presupuesto se lee con claridad en HTTP (§4.2);
-   - los tests con MSW cubren la frontera HTTP (`tech-stack.md` §42.4).
-
-   A favor del SDK: tipos, reintentos y el mock oficial. Lo que no está documentado sobre el formato de los rechazos en `/v1/evaluate` (§3.4) se verifica antes de decidir; ninguna de las dos vías se adopta sin ese dato.
+4. **Decidido (006-plan §9.2, 2026-10-16):** `POST /v1/decisions` con `fetch`, sin dependencia nueva. Es el endpoint que documenta los rechazos por pregunta (§3.4); `experimental_decide` falla entero ante un rechazo y puede cambiar en versiones patch (§3.4, §3.5); el error de presupuesto se lee con claridad en HTTP (§4.2); MSW cubre la frontera HTTP (`tech-stack.md` §42.4).
 5. En cada petición, usar `only: ["typesafe-ai"]` y `disallowPromptTraining: true`, sin fallbacks a LLM.
-6. En Vercel, autenticar con OIDC; fijar un presupuesto con tope (cifra aprobada por la autora) y mantener desactivada la recarga automática. Diseñar para un tope blando (§7.9).
+6. Autenticar con una clave de API dedicada, solo en variable de servidor; OIDC queda para `017` (006-plan §9.3). Fijar un presupuesto con tope (cifra aprobada por la autora) y mantener desactivada la recarga automática. Diseñar para un tope blando (§7.9).
 7. Registrar qué modelo responde y, si se puede, qué versión. Mantener un conjunto canario para detectar cambios de comportamiento.
 8. Escribir instrucciones directas que nombren los campos del estado y alinear los `criteria` con ellas.
 9. Enviar el estado mínimo descrito en §8.
-10. Limitar los reintentos. Traducir 402, 403 y 429 a códigos de fallo propios, sin mostrar nunca los mensajes del proveedor (`tech-stack.md` §60).
+10. Sin reintentos automáticos (006-plan §10, P1). Traducir 402, 403 y 429 a códigos de fallo propios, sin mostrar nunca los mensajes del proveedor (`tech-stack.md` §60).
 
 ### 10.1. Pruebas sin llamadas reales
 
 Las convenciones de testing viven en `tech-stack.md` §42 y en `AGENTS.md`. Aquí solo se indica qué aporta la documentación del proveedor.
 
 - Lógica del dominio y política: `FakeDecisionProvider` y Vitest; no necesitan red ni SDK **[E]** [GW-kb-guide] (mismo patrón: la decisión recibe el modelo como parámetro).
-- Cliente HTTP del adaptador: MSW sobre `/v1/evaluate`, con las respuestas que documenta §3, incluidas las anómalas (probabilidades redondeadas, respuesta ausente, tipo incorrecto, confianza ausente, centinelas `0` y `{}`, 402, 429) **[P]**.
+- Cliente HTTP del adaptador: MSW sobre `/v1/decisions`, con las respuestas que documenta §3, incluidas las anómalas (probabilidad con dos decimales que se transmite sin redondear, respuesta ausente, tipo incorrecto, confianza ausente, centinelas `0` y `{}`, 402, 429) **[P]**.
 - Si se adopta el SDK: el mock oficial (`Experimental_DecisionMockModelV4`, §4.1) evita la red, pero solo cubre ese camino **[I]**.
 - La guía de Vercel prueba la confianza justo en el umbral, la probabilidad baja y la ausencia de metadatos de confianza. Son casos útiles para la política de 005/012 **[E]** [GW-kb-guide].
 - Los tests con valores fijos comprueban el código, no la calibración: eso es evaluación explícita (011) **[E]** [GW-kb-guide].
@@ -568,13 +565,13 @@ Las convenciones de testing viven en `tech-stack.md` §42 y en `AGENTS.md`. Aqu�
 | -- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------- | ------------------------------------- |
 | E0 | Cuenta: ¿puede el equipo actual comprar créditos y fijar presupuestos? ¿Qué hace `zeroDataRetention` en Hobby? ¿Importe mínimo de compra? | No                | 0 €                                   |
 | E1 | Conjunto de escenarios en español, etiquetados con todas las lecturas posibles. Variantes: sin contexto, con contexto, con expediente, con expediente engañoso, con inyección y con el género cambiado. | No | 0 €; se reutiliza en 011 |
-| E2 | Validez y coherencia: lecturas como `boolean` o como `choice` (con permutaciones); tres repeticiones; instrucciones en inglés o en español. | Sí                | ≈ 0,10 $ **[I]**                      |
-| E3 | ¿Separa la suficiencia de contexto los pares mínimos («Vale.» suelto o con contexto)? ¿La infla el expediente?                            | Sí                | Céntimos **[I]**                      |
-| E4 | Expediente: solo respuestas concretas o también «Depende»; nombres y orden de los campos; todas las áreas o solo las relevantes; expedientes engañosos; influencia con y sin expediente. | Sí | Céntimos **[I]** |
+| E2 | Validez y coherencia: lecturas como `boolean`; tres repeticiones; instrucciones en inglés, brazo en español informativo. Las opciones `choice` y permutaciones están decididas (D1: `boolean`; 006-plan §9.7). | Sí                | ≈ 0,10 $ **[I]**                      |
+| E3 | ¿Separa la suficiencia de contexto los pares mínimos («Vale.» suelto o con contexto)? La inflación por el expediente está descartada por construcción en `005` (la suficiencia se evalúa sin expediente). | Sí                | Céntimos **[I]**                      |
+| E4 | Expediente: nombres y orden de los campos; todas las áreas o solo las relevantes; expedientes engañosos; influencia con y sin expediente. «Depende» está decidido: `005` solo envía respuestas concretas. | Sí | Céntimos **[I]** |
 | E5 | Robustez ante inyecciones en el contexto y ante cambios de género                                                                         | Sí                | Céntimos **[I]**                      |
 | E6 | Señales de riesgo frente a hipérboles coloquiales («te mato como no traigas pan»)                                                         | Sí                | Céntimos **[I]**                      |
 | E7 | Explicaciones: comprensión del copy por lectura, con y sin observaciones, con 3–5 personas; selección de citas con Jev                    | Solo la selección de citas | Céntimos **[I]**             |
-| E8 | ¿Se puede fijar y ver `jev-1.13.0` a través de AI Gateway? ¿Cambian los resultados de un día a otro?                                       | Sí                | Céntimos **[I]**                      |
+| E8 | ¿Se puede fijar y ver la versión de Jev a través de AI Gateway (los IDs versionados daban 404 en V1)? ¿Qué devuelve `model`? ¿Admite `/v1/decisions` el campo `criteria`? ¿Cambian los resultados de un día a otro?                                       | Sí                | Céntimos **[I]**                      |
 
 Las llamadas reales consumen créditos: necesitan autorización expresa de la autora y que E0 esté resuelto. Las pruebas automáticas normales nunca las hacen (`AGENTS.md`, `tech-stack.md` §42.2).
 
@@ -598,7 +595,7 @@ Las llamadas reales consumen créditos: necesitan autorización expresa de la au
 | [GW-decision]        | [Vercel — Decision](https://vercel.com/docs/ai-gateway/modalities/decision)                                                | 2026-10-07             | 2026-10-13 |
 | [GW-typesafe]        | [Vercel — TypeSafe API](https://vercel.com/docs/ai-gateway/sdks-and-apis/typesafe)                                         | 2026-10-05             | 2026-10-13 |
 | [GW-fallbacks]       | [Vercel — Decision Fallbacks](https://vercel.com/docs/ai-gateway/models-and-providers/decision-fallbacks)                   | 2026-10-08             | 2026-10-13 |
-| [GW-openai-decisions] | [Vercel — OpenAI-Compatible Decisions API](https://vercel.com/docs/ai-gateway/sdks-and-apis/openai-decisions)             | 2026-10-08             | 2026-10-13 |
+| [GW-openai-decisions] | [Vercel — OpenAI-Compatible Decisions API](https://vercel.com/docs/ai-gateway/sdks-and-apis/openai-decisions)             | 2026-10-08             | 2026-10-16 |
 | [GW-pricing]         | [Vercel — AI Gateway Pricing](https://vercel.com/docs/ai-gateway/pricing)                                                  | 2026-09-08             | 2026-10-13 |
 | [GW-rate]            | [Vercel — AI Gateway Rate Limits](https://vercel.com/docs/ai-gateway/rate-limits)                                          | 2026-09-08             | 2026-10-13 |
 | [GW-faq]             | [Vercel — AI Gateway FAQ](https://vercel.com/docs/ai-gateway/faq)                                                          | 2026-09-13             | 2026-10-14 |
@@ -643,3 +640,9 @@ Las llamadas reales consumen créditos: necesitan autorización expresa de la au
 | [LIT-turpin]         | [Turpin et al., «Language Models Don't Always Say What They Think», NeurIPS 2023](https://arxiv.org/abs/2305.04388)        | 2023                   | 2026-10-14 |
 | [GDPR-r18]           | [RGPD, considerando 18](https://gdpr-info.eu/recitals/no-18/) (texto oficial en [EUR-Lex](https://eur-lex.europa.eu/eli/reg/2016/679/oj)) | 2016 | 2026-10-14 |
 | [GDPR-a9]            | [RGPD, artículo 9](https://www.legislation.gov.uk/eur/2016/679/article/9/adopted) (texto oficial en [EUR-Lex](https://eur-lex.europa.eu/eli/reg/2016/679/oj)) | 2016 | 2026-10-14 |
+| [GW-jev-1.14]        | [Vercel changelog — Jev 1.14 on AI Gateway](https://vercel.com/changelog/typesafe-ais-jev-1-14-is-now-available-on-ai-gateway) | 2026-10-15 | 2026-10-16 |
+| [GW-jev]             | [Vercel — Jev model page](https://vercel.com/ai-gateway/models/jev) | Datos en vivo | 2026-10-16 |
+| [GW-community-version] | [Vercel Community — AI Gateway drops the resolved Jev model version](https://community.vercel.com/t/ai-gateway-drops-the-resolved-jev-model-version/49479) | 2026-09 | 2026-10-16 |
+| [GW-control-data]    | [Vercel KB — How to control AI provider data handling](https://vercel.com/kb/guide/control-ai-provider-data) | Sin fecha | 2026-10-16 |
+| [GW-evaluation-fallbacks] | [Vercel — Evaluation Fallbacks](https://vercel.com/docs/ai-gateway/models-and-providers/evaluation-fallbacks) | Sin fecha | 2026-10-16 |
+| [TS-system-one]      | [TypeSafe — System One](https://docs.typesafe.ai/concepts/system-one) | Sin fecha | 2026-10-16 |
