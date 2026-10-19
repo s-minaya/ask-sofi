@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.server.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "module": "esnext",
+    "types": ["node"],
+    "strict": true,
+    "skipLibCheck": true,
+
+    /* Mismo criterio de importación que el cliente: sin extensiones */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "resolveJsonModule": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  // Lo que se ejecuta en el servidor (sin DOM) y sus herramientas de evaluación.
+  // Las pruebas de src se comprueban con la configuración de la aplicación.
+  "include": ["api", "src/server", "evals/jev"],
+  "exclude": ["src/**/*.test.ts"]
+}

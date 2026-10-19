@@ -12,8 +12,9 @@ const read = (sources: Record<string, unknown>) =>
 const domain = read(
   import.meta.glob('./*.ts', { query: '?raw', import: 'default', eager: true }),
 )
+// Solo el fake: los adaptadores reales de la misma carpeta (006) llaman a la red.
 const fake = read(
-  import.meta.glob('../../infrastructure/ai/*.ts', {
+  import.meta.glob('../../infrastructure/ai/fakeDecisionProvider.ts', {
     query: '?raw',
     import: 'default',
     eager: true,

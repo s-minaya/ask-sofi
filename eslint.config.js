@@ -63,6 +63,8 @@ export default tseslint.config(
       'playwright.config.ts',
       'e2e/**/*.ts',
       'scripts/**/*.ts',
+      'api/**/*.ts',
+      'evals/**/*.ts',
     ],
     languageOptions: {
       globals: globals.node,

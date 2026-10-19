@@ -13,6 +13,7 @@
     "test": "vitest run",
     "preview": "vite preview",
     "test:a11y": "playwright test",
+    "verify:bundle": "node --experimental-strip-types scripts/verifyClientBundle.ts",
     "assets:sofi": "node --experimental-strip-types scripts/processSofiStatics.ts"
   },
   "dependencies": {
