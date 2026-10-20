@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft — pendiente de aprobación.
+Approved — 2026-10-20
 
 ## Objective
 
@@ -50,7 +50,7 @@ Fuentes que no se repiten aquí: alcance y flujo conceptual en `roadmap.md` §9;
 - Un rechazo, una ausencia, un tipo incorrecto o un valor no finito en una pregunta se traducen a ausencia o a respuesta inválida según `005`; nunca a `0` ni a `false`. El rechazo de la pregunta de seguridad deja la seguridad sin evaluar.
 - No hay fallback a otro modelo, a un LLM ni al fake.
 - Los fallos de la pasarela (402, 403, 429), los tiempos de espera y los errores de red se traducen a errores de `005`, sin mostrar mensajes del proveedor. No hay reintentos automáticos: el error indica `retryable` y reintentar es una acción de la persona (`005` §7, `007`).
-- Se registran el alias pedido, el modelo que respondió y la versión solo si se observa; si no, `unknown`.
+- Se registran el alias pedido y el modelo que respondió. La versión de Jev se registra solo si se observa realmente en la respuesta; si no, se guarda el valor literal `unknown`, nunca una versión inferida.
 
 ### 4. Servidor
 
@@ -67,7 +67,7 @@ Fuentes que no se repiten aquí: alcance y flujo conceptual en `roadmap.md` §9;
 - Las etiquetas de E1 las aprueba la autora antes de ejecutar nada y sin ver respuestas de Jev. Pueden proponerse con asistencia, pero cada caso conserva su procedencia y los informes la citan (`006-plan.md` §5.2).
 - Cada experimento deja un informe reproducible con fecha, versión observada del modelo, versión de las instrucciones y configuración.
 - Comparar entradas en español, en inglés o en ambos informa a la autora, pero no cambia por sí solo el envío en inglés.
-- A partir de E2 y E3 se proponen valores provisionales de `PolicyConfig` con su procedencia (experimento, fecha y modelo observado) y un nuevo `policyVersion`. Se registran en el plan (`jev.md` §12). No se fija ningún valor sin base experimental.
+- A partir de E2, E3 y E6 se proponen valores provisionales de `PolicyConfig` con su procedencia (experimento, fecha y modelo observado) y un nuevo `policyVersion`. Se registran en el plan (`jev.md` §12). No se fija ningún valor sin base experimental.
 - Un conjunto canario de entradas sintéticas permite detectar cambios de comportamiento cuando cambian el alias o las instrucciones. Se ejecuta de forma explícita.
 - Los hallazgos sobre señales mal definidas, redundantes o ausentes se documentan para `011`; esta feature no cambia la taxonomía.
 
