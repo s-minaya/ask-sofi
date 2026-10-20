@@ -348,6 +348,281 @@ Sin red real, sin credenciales y sin gasto. El máximo de E1 pasó de 60 a 65 ca
 | Hojas | `npm run eval:sheets` regenera 6 tandas (8–12 casos) con la leyenda alineada al criterio de la autora; ya no toca los ficheros aprobados |
 
 **Limitaciones declaradas:** 51 de las 65 etiquetas son propuestas asistidas por IA aprobadas por la autora, no un etiquetado humano independiente; el inglés de referencia es el aprobado por la autora, no una salida de modelo; nada de esto se ha contrastado con Jev (E2, E3, E6 no se han ejecutado).
+### 8.4 E0–G1 — Investigación de cuentas, facturación y alternativas (2026-10-20)
+
+**Estado: parcialmente completado. Feature 006 en pausa; Bloque C no autorizado.**
+
+Este registro documenta las verificaciones realizadas por la autora en los paneles de Vercel y Azure, la investigación pública complementaria y las decisiones adoptadas antes de continuar con 007.
+
+La revisión documental V1, la implementación sin red y el conjunto E1 de 65 casos aprobados ya están documentados en §8.1–8.3. No se repiten aquí.
+
+#### 8.4.1 Estado de las puertas de ejecución
+
+| Puerta | Estado al 2026-10-20 | Pendiente |
+|---|---|---|
+| V1 | Completada (§8.1) | Actualizar datos variables antes de llamadas reales |
+| E0 | Parcial | Respuesta humana de Vercel sobre responsabilidad de facturación |
+| E0-V | Comprobada en el equipo actual | No existe despliegue de Ask Sofi ni proyecto con OIDC configurado |
+| E0-T | Parcial | Traductor no elegido; verificar ruta regional, condiciones y comportamiento real |
+| G1 | Configuración parcialmente aprobada | Aplicar presupuesto, aprobar configuración restante y crear clave dedicada |
+| G2 | No autorizado | Autorización independiente para cada experimento |
+
+**Gasto en inferencia realizado durante esta investigación: 0 USD.**
+
+No se han comprado créditos de AI Gateway, generado claves de Vercel, enviado solicitudes de inferencia ni ejecutado traducciones reales.
+
+Ningún presupuesto aprobado equivale a autorización para consumirlo.
+
+#### 8.4.2 Vercel AI Gateway — Cuenta real
+
+Comprobado por la autora mediante su dashboard y capturas del 2026-10-20:
+
+- Plan: **Hobby / Free**.
+- Saldo de AI Gateway: **0 USD**.
+- Los créditos promocionales de v0 son independientes del saldo de AI Gateway.
+- El formulario de compra de AI Gateway muestra un mínimo de **10 USD**.
+- **Auto-reload: Disabled**.
+- Los créditos prepagados indican caducidad al año.
+- El repositorio Ask Sofi no aparece conectado a un proyecto desplegado en el equipo de Vercel consultado.
+- No existe configuración OIDC comprobada para Ask Sofi.
+- No se ha realizado ninguna compra ni conexión de despliegue.
+
+**Nota:** no confundir el mínimo de compra de 10 USD con un presupuesto o una autorización de gasto de 10 USD.
+
+**Privacidad:** la comprobación V1 ya determinó que la opción ZDR de AI Gateway no está disponible en Hobby. El enrutado exclusivo a TypeSafe mediante `only: ["typesafe-ai"]` es una medida distinta y no equivale a una garantía ZDR del conjunto de la cadena.
+
+Además, las condiciones generales de los productos de IA de Vercel contienen restricciones relativas al envío de datos personales sensibles (§3.4). Antes de cualquier uso con personas reales deben resolverse las condiciones aplicables, además de los requisitos de 013 y 017. Los experimentos de 006 utilizan exclusivamente casos sintéticos.
+
+#### 8.4.3 E0 — Incertidumbre sobre facturación
+
+**Pregunta pendiente:** ¿puede Vercel cobrar en una tarjeta registrada por consumo de AI Gateway que exceda los créditos prepagados cuando Auto-reload está desactivada?
+
+Investigación:
+
+1. **Vercel Academy** indica que AI Gateway utiliza créditos prepagados y que las peticiones se detienen cuando el saldo llega a cero.
+2. Los presupuestos de API key son **soft caps**: una petición que cruza el límite puede terminar y las posteriores se bloquean. Un presupuesto no es una garantía estricta de gasto máximo.
+3. La incidencia pública `vercel/ai#11280` documenta el bloqueo de solicitudes al agotar créditos, incluso con BYOK. Es evidencia sobre comportamiento técnico, no garantía contractual sobre cargos.
+4. Las condiciones legales de Vercel, §10.2, contemplan la posibilidad de pagar uso adicional tras consumir créditos prepagados.
+5. El §10.3 describe la autorización específica para cobros de recarga automática cuando esa opción se elige.
+6. No se encontró un caso público verificable de facturación adicional bajo las condiciones exactas de esta cuenta: Hobby, créditos prepagados agotados y Auto-reload desactivada.
+
+La autora preguntó al asistente de soporte de Vercel. Este indicó que, con Auto-reload desactivada, las solicitudes deberían bloquearse al agotarse el saldo y no producir una recarga automática, pero reconoció que no podía ofrecer una interpretación contractual definitiva.
+
+**Acción realizada:** apertura de una consulta de facturación dirigida a soporte humano de Vercel.
+
+**Estado:** respuesta pendiente.
+
+**Criterio de desbloqueo:** revisar la respuesta escrita de soporte y confirmar si existe alguna ruta de cobro adicional, incluida una solicitud que cruce el saldo o un presupuesto blando. Si no queda suficientemente claro, no comprar créditos ni iniciar el Bloque C.
+
+Las afirmaciones del asistente de soporte se conservan como información orientativa, no como garantía contractual.
+
+#### 8.4.4 G1 — Presupuestos y clave dedicada
+
+**Presupuesto de equipo aprobado por la autora:**
+
+| Configuración | Valor aprobado |
+|---|---|
+| Team Budget | 1 USD |
+| Refresh Period | `No refresh` |
+| Alertas | 50 %, 75 % y 100 % |
+| Auto-reload | Disabled |
+
+El panel permite crear ese presupuesto, pero **no se ha pulsado `Set Budget`**.
+
+Por tanto, el importe está aprobado, pero **el presupuesto todavía no está aplicado**.
+
+**Clave dedicada:**
+
+El formulario de creación de API key permite definir nombre, caducidad, atribución de gasto y presupuesto.
+
+Se propuso:
+
+| Configuración | Estado |
+|---|---|
+| Nombre `ask-sofi-006-evals` | Propuesto |
+| Spend Attribution `User` | **Aprobado** |
+| Spend Budget 1 USD | Propuesto; pendiente de aprobación específica |
+| Budget Refresh `Never` | Propuesto |
+| Expiration 30 days | Propuesto |
+
+Atención: el formulario mostraba **1.000 USD de presupuesto por defecto**, valor que no debe aceptarse accidentalmente.
+
+No se ha pulsado `Create API Key`, por lo que **no se ha creado la clave**.
+
+El presupuesto de equipo y el de la clave son restricciones superpuestas, no importes que deban sumarse. Ambos pueden comportarse como límites blandos.
+
+**G1 sigue abierto.** Se completará únicamente después de resolver E0 y aprobar los parámetros restantes, aplicando los controles y comprobando sus valores guardados.
+
+Ninguna credencial de inferencia se incorporará a producción, previews ni CI antes de las protecciones de 013 y la autorización posterior exigida en `006-spec.md`.
+
+#### 8.4.5 Azure AI Translator — Cuenta y recurso de evaluación
+
+La autora creó una cuenta Azure Free Trial y un recurso Translator para investigar el candidato F0, sin seleccionar todavía al proveedor definitivo.
+
+**Cuenta y suscripción:**
+
+- Suscripción: `Azure subscription 1`.
+- Estado observado: activa.
+- Oferta inicial: cuenta gratuita de Azure con crédito promocional de **200 USD durante 30 días**.
+- El portal mostraba la opción `Upgrade to pay-as-you-go`.
+- No se ha realizado esa actualización.
+- El límite de gasto de la cuenta gratuita es distinto de la cuota gratuita del recurso Translator.
+
+**Recurso creado:**
+
+| Campo | Valor observado |
+|---|---|
+| Resource group | `rg-ask-sofi-evals` |
+| Región del resource group | West Europe |
+| Recurso | `ask-sofi-translator-evals` |
+| Servicio | Azure AI Translator |
+| Región del recurso | **North Europe (Ireland)** |
+| Pricing tier | **Free F0** |
+| Network access | All networks |
+| Managed identity | Desactivada |
+| Estado | Activo |
+
+Primero se intentó crear el recurso en West Europe, pero Azure rechazó el despliegue con `RequestDisallowedByAzure`. Se utilizó North Europe y el recurso quedó creado correctamente.
+
+La región del grupo de recursos **no determina** la región de procesamiento del servicio.
+
+**Endpoints observados/investigados:**
+
+- Traducción de texto global: `https://api.cognitive.microsofttranslator.com/`
+- Endpoint europeo para traducción de texto: `https://api-eur.cognitive.microsofttranslator.com/`
+- Endpoint específico mostrado para el recurso: `https://ask-sofi-translator-evals.cognitiveservices.azure.com/`
+- Región de la suscripción para cabeceras de autenticación: `northeurope`
+
+La ruta europea es candidata a verificación; no se ha probado todavía con este recurso ni se ha validado de extremo a extremo el tratamiento regional de datos.
+
+**Cuotas F0 verificadas:**
+
+- **2 millones de caracteres gratuitos al mes**, según la página oficial de precios de Translator.
+- **2 millones de caracteres por hora**, según la documentación de límites del servicio.
+
+Estas cifras **no son contradictorias**: la primera es una franquicia de facturación mensual; la segunda es un límite de velocidad o capacidad de procesamiento.
+
+Se debe verificar el comportamiento de la cuota en la cuenta real antes de depender de él. No confundir una respuesta de agotamiento de cuota con una garantía contractual extensible a otros servicios de Azure.
+
+**Privacidad:** Microsoft documenta que la traducción de texto no conserva los datos enviados después del procesamiento. La región utilizada, la configuración real y el marco contractual aplicable deberán comprobarse antes de utilizar datos personales.
+
+**Estado de uso:**
+
+- Recurso Free F0 creado y activo.
+- Claves existentes en el panel, enmascaradas; no copiadas, compartidas ni utilizadas.
+- Ninguna llamada de traducción.
+- Ninguna prueba de fidelidad lingüística.
+- Ningún cambio a Pay-as-you-go.
+- Proveedor de traducción **todavía no elegido**.
+
+**Continuidad:** la cuenta Free Trial es temporal. Cuando se acerque su vencimiento, habrá que decidir si mantener Azure y bajo qué modalidad. Una eventual conversión a Pay-as-you-go requiere aprobación separada, porque elimina la protección general del límite de gasto de prueba y podría permitir cargos por otros recursos.
+
+#### 8.4.6 Investigación de alternativas a Jev
+
+Se investigaron proveedores alternativos y proyectos publicados en la comunidad, incluyendo recursos difundidos por midudev tras su charla con Capgemini e InfoJobs.
+
+**Hallazgos:**
+
+| Alternativa | Resultado de la investigación | Decisión |
+|---|---|---|
+| TypeSafe AI directo | Evita AI Gateway, pero implica otra cuenta, credenciales, facturación y condiciones de privacidad | No sustituye la ruta aprobada |
+| OpenRouter | Posible intermediario; no se ha acreditado una mejora concluyente para Jev | No seleccionado |
+| Laya | Modelo de decisiones abierto; tiene implementación local y variante multilingüe | Candidato a exploración, no adoptado |
+| Kev | Familia abierta de modelos de decisiones basada en Qwen; requiere evaluar hardware y calidad | No adoptado |
+| jevos / Von | Alternativas comunitarias con limitaciones propias de calidad o mantenimiento | No adoptadas |
+
+**Laya en AI Gateway:**
+
+Vercel anunció el acceso gratuito a Laya mediante Boundless hasta el **31 de octubre de 2026**.
+
+- `convaiinnovations/laya-free`: identificador promocional que deja de servir después de la promoción.
+- `convaiinnovations/laya`: identificador estándar que empieza a facturar al terminar la promoción.
+
+Esta promoción es temporal; no constituye una solución gratuita permanente ni elimina la necesidad de verificar privacidad y límites de acceso.
+
+**Laya local:**
+
+- Código y pesos disponibles públicamente.
+- Licencia Apache 2.0.
+- Puede evitar el coste por petición de API cuando se ejecuta en hardware propio.
+- No evita los costes ni requisitos de hardware, memoria, descargas o alojamiento.
+- Su fidelidad con mensajes españoles y las señales específicas de Ask Sofi no está evaluada.
+
+**Kev local:**
+
+- Modelos abiertos de varios tamaños.
+- Ejecución local posible con requisitos variables de hardware.
+- Las comparaciones publicadas por sus autores no sustituyen pruebas sobre E1.
+- No se justifica incorporarlo a esta feature sin un objetivo experimental concreto.
+
+También se localizaron repositorios comunitarios de Super Mario controlado por Jev y materiales relacionados con la divulgación de midudev. No quedó demostrada una vinculación directa entre esos repositorios y el código de la charla mencionada por la autora.
+
+No se confirmó una oferta vigente y permanente de Jev gratuito para producción. La información sobre antiguos créditos promocionales de TypeSafe no fue corroborada en una fuente oficial actual.
+
+**Decisión conservada:** Jev a través de Vercel AI Gateway permanece como proveedor previsto. Azure Translator sigue siendo candidato de traducción pendiente de L1. No se modifica la arquitectura, la taxonomía ni el alcance experimental de 006.
+
+#### 8.4.7 Fuentes nuevas de esta investigación
+
+Consultadas o revisadas el **2026-10-20**. Las fuentes históricas de V1 ya constan en `jev.md` §13; aquí se registran las incorporaciones y las consultas específicas de esta sesión.
+
+**Vercel — Presupuestos, facturación y condiciones**
+
+- [Budgets and Spend Limits](https://vercel.com/docs/ai-gateway/observability-and-spend/budgets) — Presupuestos de equipo y clave.
+- [Vercel Academy — Set a Budget](https://vercel.com/academy/ai-gateway/set-a-budget) — Créditos prepagados, bloqueo por saldo y soft caps.
+- [Vercel AI Product Terms](https://vercel.com/legal/ai-product-terms) — §§3, 8 y 10; especialmente facturación y tratamiento de información sensible.
+- [GitHub — vercel/ai#11280](https://github.com/vercel/ai/issues/11280) — Comportamiento observado cuando se agotan los créditos, incluso con BYOK.
+- [AI Gateway Pricing](https://vercel.com/docs/ai-gateway/pricing) — Modelo de precios y créditos.
+- [AI Gateway — ZDR](https://vercel.com/docs/ai-gateway/security-and-compliance/zdr) — Condiciones y disponibilidad de Zero Data Retention.
+
+**Azure — Cuota, cuenta y tratamiento de datos**
+
+- [Azure Translator Pricing](https://azure.microsoft.com/en-us/pricing/details/translator/) — Franquicia gratuita mensual de F0.
+- [Translator Service Limits](https://learn.microsoft.com/en-us/azure/ai-services/translator/service-limits) — Cuota de velocidad F0 y límites por solicitud.
+- [Azure Spending Limit](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/spending-limit) — Protección y limitaciones del límite de gasto de la cuenta gratuita.
+- [Avoid charges with Azure free account](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/avoid-charges-free-account) — Funcionamiento de la cuenta gratuita y posibles cargos.
+- [Translator — Data privacy and security](https://learn.microsoft.com/en-us/azure/foundry/responsible-ai/translator/data-privacy-security) — Tratamiento y conservación de contenido.
+- [Translator — Region support](https://learn.microsoft.com/en-us/azure/ai-services/translator/region-support) — Regiones y endpoints.
+- [Translator — Secure deployment](https://learn.microsoft.com/en-us/azure/ai-services/translator/secure-deployment) — Configuración y acceso.
+
+**Alternativas, repositorios y recursos comunitarios**
+
+- [Laya — GitHub](https://github.com/NandhaKishorM/laya) — Implementación abierta.
+- [Laya — Hugging Face](https://huggingface.co/convaiinnovations/laya) — Modelos y pesos.
+- [Laya — Demo](https://huggingface.co/spaces/convaiinnovations/laya-demo) — Playground público.
+- [Vercel — Laya Free hasta 31/10/2026](https://vercel.com/changelog/laya-decision-model-now-available-on-ai-gateway-free-through-october-31) — Promoción y comportamiento posterior de identificadores.
+- [Kev — GitHub](https://github.com/jaredpalmer/kev) — Modelos abiertos de decisión.
+- [Kev — Playground](https://huggingface.co/spaces/jaredpalmer/kev) — Demo pública.
+- [jevos — GitHub](https://github.com/feder-cr/jev) — Implementación local alternativa.
+- [Von — GitHub](https://github.com/wfzyx/von) — Alternativa comunitaria.
+- [Super Mario — typesafe-mario](https://github.com/fhshaik/typesafe-mario) — Ejemplo comunitario.
+- [Super Mario — mario-jev](https://github.com/shantanugoel/mario-jev) — Segundo ejemplo comunitario.
+- [awesome-jev](https://github.com/heyjunpenn/awesome-jev) — Recopilación comunitaria.
+- [Midudev — Vídeo sobre Jev](https://youtu.be/KvpQ16XlUv0) — Material divulgativo.
+- [Midudev — Publicación sobre Laya](https://es.linkedin.com/posts/midudev_buscas-una-alternativa-de-c%C3%B3digo-abierto-activity-7510694203740385281-Gt_Q) — Referencia social.
+
+**Jerarquía de evidencia:** condiciones legales y documentación oficial por encima de anuncios promocionales, incidencias comunitarias, publicaciones sociales y respuestas de asistentes de soporte. Ninguna fuente comunitaria sustituye las condiciones específicas de la cuenta.
+
+Las verificaciones particulares del dashboard proceden de capturas y comprobaciones de la autora durante esta sesión, no de páginas públicas. No se incluyen capturas de cuentas ni credenciales en Git.
+
+#### 8.4.8 Punto exacto para retomar 006
+
+**Se puede avanzar en 007 con fakes y contratos existentes. Eso no desbloquea las llamadas reales de 006.**
+
+Al retomar:
+
+1. **E0:** recuperar la respuesta escrita del soporte de facturación de Vercel. Revisar especialmente cobros por encima del saldo, Auto-reload desactivada y presupuestos blandos. Registrar el resultado con fecha.
+2. **E0 / privacidad:** volver a comprobar precios, modelo, versión, condiciones de retención, entrenamiento, regiones y configuración de enrutado aplicables en la fecha de la prueba.
+3. **E0-T:** comprobar el estado del recurso Azure Free F0 y de la prueba gratuita, aclarar continuidad y validar la ruta regional antes de cualquier llamada autorizada. No asumir que Azure ya está seleccionado.
+4. **G1:** completar la aprobación de los parámetros pendientes, aplicar el Team Budget y comprobarlo. Crear la clave dedicada solo después de resolver E0 y verificar su presupuesto, caducidad y atribución. Auto-reload debe continuar desactivada.
+5. **G2:** pedir autorización expresa antes de cada ejecución real, con su tope de coste y volumen. Ninguna aprobación anterior constituye autorización general.
+6. **Bloque C:** comenzar por T021/E8, después T022–T030 en el orden del plan. Utilizar exclusivamente datos sintéticos y registrar informes y procedencia.
+7. **Cierre:** completar E2/E3/E6 y L1; elegir traductor según sus resultados; derivar `PolicyConfig` con evidencia; ejecutar el canario y la prueba de humo; verificar criterios de aceptación antes de cerrar 006.
+
+**No hacer al retomar automáticamente:** comprar créditos, convertir Azure a Pay-as-you-go, generar credenciales, configurar claves en despliegues, ejecutar modelos reales, cambiar de proveedor, alterar `PolicyConfig` sin experimentos ni marcar completados E0/G1/G2 sin pruebas.
+
+**Último estado conocido:** la autora ha aprobado el Team Budget de 1 USD sin renovación y la atribución `User` de la futura clave; ninguno se ha aplicado mediante la creación de una clave. Azure F0 está creado y sin uso. Se espera respuesta humana de facturación de Vercel.
+
+**Próxima acción concreta:** revisar esa respuesta cuando llegue. Hasta entonces, Bloque B sigue abierto y Bloque C bloqueado.
 
 ## 9. Decisiones aprobadas (2026-10-16)
 
