@@ -1615,7 +1615,7 @@ Las animaciones visuales de Sofi se conectarán a esos estados de UI.
 
 La lógica de dominio no conocerá animaciones.
 
-No se introducirán retrasos artificiales para mantener un loader visible.
+No se introducirán retrasos artificiales para mantener un loader visible. Única excepción: la presentación de un resultado no crítico puede esperar, con un límite máximo, a que Sofi complete su primer ciclo narrativo (`spec/constitution/art-direction/sofi/animation-catalog.md` §6.4). La operación nunca se retrasa.
 
 ---
 

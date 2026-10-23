@@ -35,6 +35,9 @@ Use the following documents according to the task:
 - Visual identity, approved screens and layout decisions:
   `spec/constitution/art-direction/`
 
+- Meaning, triggers, interruptions and reduced-motion behaviour of Sofi's animations:
+  `spec/constitution/art-direction/sofi/animation-catalog.md`
+
 - Decision provider (Jev, Vercel AI Gateway): verified capabilities, limits, costs, privacy, alternatives and open questions:
   `spec/constitution/jev.md`
 
@@ -321,4 +324,7 @@ HOW agents should navigate the project
 
 WHAT the decision provider can do, at what cost and with which evidence
 → jev.md
+
+WHAT each Sofi animation means and when it plays
+→ animation-catalog.md
 ```

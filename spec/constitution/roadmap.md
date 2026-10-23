@@ -504,19 +504,9 @@ spec/features/008-sofi-character/
 
 Se utilizará una ilustración propia de Sofi como personaje principal.
 
-Estados iniciales posibles:
+El significado, los disparadores y las alternativas de cada animación se definen en `spec/constitution/art-direction/sofi/animation-catalog.md`.
 
-```text
-idle
-listening
-thinking
-reading
-suspicious
-eureka
-error
-```
-
-Durante una espera real pueden aparecer pequeños mensajes como:
+Durante una espera real pueden aparecer pequeñas etiquetas de actividad. Son ejemplos; su copy se aprueba en el Design Lab:
 
 ```text
 Sofi is reading between the lines...
@@ -527,7 +517,7 @@ Sofi found something...
 
 Las animaciones:
 
-- no deben retrasar artificialmente el análisis;
+- no retrasarán el análisis; la presentación de un resultado no crítico solo puede esperar, con un límite, a que termine el primer ciclo de Sofi (catálogo §6.4);
 - sólo aparecerán cuando exista espera real;
 - deberán tener alternativa estática;
 - deberán respetar `prefers-reduced-motion`;
