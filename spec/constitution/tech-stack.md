@@ -1593,7 +1593,15 @@ Las animaciones de Sofi deberán disponer de una alternativa estática.
 
 La información nunca dependerá de una animación.
 
-El usuario podrá disponer además de una preferencia propia relacionada con animaciones.
+La persona dispone además de una preferencia propia de movimiento, reversible:
+
+```text
+system  → predeterminada: sigue a prefers-reduced-motion
+reduce  → reduce el movimiento aunque el sistema no lo pida
+full    → animaciones completas aunque el sistema pida reducirlas, por elección expresa
+```
+
+La preferencia se aplica con el atributo `data-motion` en `<html>`: un único ámbito por documento. El CSS propio responde a ella con el mixin `u.reduced-motion`. Los parciales de spritesheets, que no se modifican, responden mediante una transformación PostCSS del build limitada a sus módulos dueños (§46.1). En los tres modos, el resultado coincide con el del sistema sin duplicar reglas. El JS consulta el mismo estado efectivo.
 
 ---
 
@@ -1651,6 +1659,7 @@ Los assets de Sofi se incorporan de forma progresiva, cuando una feature los nec
 spec/constitution/art-direction/sofi/  originales, sin pérdida; no se publican
 src/assets/sofi/                       estáticas de producción
 src/styles/sprites/                    spritesheets de producción
+src/components/sofi/sprites/           módulos dueños de los parciales (uno por animación)
 ```
 
 **Imágenes estáticas**
@@ -1676,8 +1685,9 @@ Se producen en otro repositorio y llegan terminados: no se reprocesan.
 Cada ZIP exporta una carpeta `sprites/` con `_sprite.scss` (el mixin compartido), el parcial de la animación (`_<name>.scss`) y sus imágenes optimizadas. Para integrarlo:
 
 1. Copiar su contenido en `src/styles/sprites/`, actualizando `_sprite.scss` con la versión del ZIP.
-2. Cada componente importa solo el parcial que usa, con `@use` relativo, y aplica la clase desde su CSS Module (`styles['<name>']`). El índice `_index.scss` no se importa desde componentes: arrastraría todas las animaciones al CSS de cada pantalla. Ningún sprite se carga en estilos globales.
-3. Verificar en la build de producción que el CSS solo contiene las animaciones de las pantallas que las usan, que la animación se reproduce y que con movimiento reducido queda en un fotograma fijo.
+2. Cada parcial tiene un único módulo dueño en `src/components/sofi/sprites/`, que lo importa con `@use` relativo; los componentes aplican la clase de ese módulo (`styles['<name>']`). Ningún otro módulo importa parciales, ni un índice que agrupe animaciones: arrastraría todas las animaciones al CSS de cada pantalla. Ningún sprite se carga en estilos globales.
+3. Las tiras de Sofi (`src/styles/sprites/`) se emiten siempre como archivos: la configuración de Vite las excluye de la incrustación en base64, que las duplicaría en el CSS y en el JS de su módulo. Ningún otro asset cambia su comportamiento por defecto.
+4. Verificar en la build de producción que el CSS solo contiene las animaciones de las pantallas que las usan, que la animación se reproduce, también con una conexión lenta, y que con movimiento reducido queda en un fotograma fijo.
 
 **Cuarta pared**
 

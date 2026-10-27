@@ -13,7 +13,7 @@ Fuentes que no se repiten aquí: significado, disparadores, interrupciones, rete
 ## Dependencies
 
 - `002` (Design Lab, `SofiSpeech`, sonido), `003` (preferencias y borrado), `004` (estados de Sofi del expediente y registro de recursos visuales), `005` (estados del resultado).
-- Emisores todavía pendientes, que conectarán con el contrato de esta feature: `007` (procesamiento, resultados, errores, seguridad y salida rápida), `009` (favorito guardado) y la feature que incorpore «Borrar todos mis datos», sin asignar.
+- Emisores todavía pendientes, que conectarán con el contrato de esta feature: `007` (procesamiento, resultados, errores, seguridad y salida rápida) y `009` (favorito guardado y la interfaz «Borrar todos mis datos», que reutiliza `003` y este contrato).
 - `006`: las reglas de `eureka`/`suspicious` y las latencias reales esperan su desbloqueo.
 - Relacionada: `015` (verificación en dispositivos).
 
@@ -68,8 +68,8 @@ Fuentes que no se repiten aquí: significado, disparadores, interrupciones, rete
 
 ### 7. Movimiento reducido
 
-- Se cumple el catálogo §7.2: `prefers-reduced-motion`, el modo forzado y la preferencia propia producen el mismo resultado en CSS y JS, con la pose estática aprobada para cada recurso.
-- Preferencia propia de movimiento reducido, junto a tema y sonido, guardada con `003`. Por defecto sigue al sistema y su diseño se aprueba en el Lab (`tech-stack.md` §44).
+- Se cumple el catálogo §7.2: `prefers-reduced-motion`, el modo forzado y la preferencia `reduce` producen el mismo resultado en CSS y JS, con la pose estática aprobada para cada recurso.
+- Preferencia propia de movimiento `system | reduce | full` (`tech-stack.md` §44), junto a tema y sonido, guardada con `003` y reversible. `system` es la predeterminada; `full` activa expresamente las animaciones completas aunque el sistema pida reducirlas. Su diseño se aprueba en el Lab.
 - Se evalúa si algún bucle automático necesita además un control de pausa (WCAG 2.2.2; catálogo §7.2).
 
 ### 8. Velocidad
@@ -92,7 +92,7 @@ Fuentes que no se repiten aquí: significado, disparadores, interrupciones, rete
 
 ### 11. Composición
 
-Las incidencias de composición se resuelven en los contenedores, sin tocar el arte, y se aprueban en el Lab (catálogo §9.8 y §12):
+Las observaciones de composición de la auditoría solo requieren cambios si el defecto se reproduce durante la integración. Si se reproduce, se resuelve en el contenedor, sin tocar el arte, y se aprueba en el Lab (catálogo §9.8 y §12). El contorno de `memory-wipe` no se modifica por defecto. Observaciones que comprobar:
 
 - el contorno del tema oscuro durante la disolución de `memory-wipe`;
 - la base que se levanta con los saltos de `eureka`, `error` y `memory-wipe` en el escenario ancho;
@@ -133,8 +133,8 @@ Las incidencias de composición se resuelven en los contenedores, sin tocar el a
 ### Accesibilidad y movimiento
 
 - [ ] Sprites, capas e indicador quedan fuera del árbol de accesibilidad, y los hechos se anuncian una vez desde sus componentes.
-- [ ] Sistema, modo forzado y preferencia propia producen la misma pose estática aprobada y detienen CSS y JS (Playwright).
-- [ ] La preferencia propia persiste, es revocable y vuelve al valor por defecto al borrar todos los datos.
+- [ ] Sistema, modo forzado y preferencia `reduce` producen la misma pose estática aprobada y detienen CSS y JS; con `full`, las animaciones se reproducen aunque el sistema pida reducirlas (Playwright en Chromium, Firefox y WebKit).
+- [ ] La preferencia propia persiste, es reversible y vuelve a `system` al borrar todos los datos.
 - [ ] La verificación de destellos de `error` y la evaluación de WCAG 2.2.2 están documentadas.
 
 ### Velocidad, sonido y Lab
@@ -149,7 +149,7 @@ Las incidencias de composición se resuelven en los contenedores, sin tocar el a
 - Nuevos spritesheets, animaciones descartadas (catálogo §11) y retoques del arte.
 - Modificar el repositorio de spritesheets.
 - Retirar los ZIP sin aprobación expresa.
-- Interfaz de resultados, seguridad y salida rápida (`007`); favoritos (`009`); el control «Borrar todos mis datos».
+- Interfaz de resultados, seguridad y salida rápida (`007`); favoritos y el control «Borrar todos mis datos» (`009`).
 - Reglas de `eureka`/`suspicious` (tras `006`).
 - Verificación en dispositivos reales (`015`).
 
@@ -160,18 +160,19 @@ Las incidencias de composición se resuelven en los contenedores, sin tocar el a
 - copy de actividad e indicador;
 - duración y límite del primer ciclo;
 - velocidad de producción de cada animación;
-- pose reducida de cada recurso;
+- pose reducida de cada recurso, salvo la de `memory-wipe`, fijada en el catálogo (ficha 015);
 - pausas de `talking` y paso `blink` → `talking`;
 - composición (§11);
 - ubicación y versión reducida de los easter eggs;
 - diseño de la preferencia de movimiento;
 - selección de efectos sonoros.
 
-**Se decide con mediciones:** `rolling` en la carga de la app o de una vista y su precarga; el retraso anti-destello, con latencias reales.
+**Se decide con mediciones:** `rolling` en la carga de la app o de una vista y su precarga; la carga de `talking` y `uncertain` (diferida, precarga contextual o inicial), sin esperas artificiales y sin depender de `006`; el retraso anti-destello, con latencias reales.
 
-**Riesgo técnico para el plan, sin demostrar:** el plan debe demostrar que el adaptador controla CSS, JS y poses estáticas en los tres modos de movimiento reducido sin duplicar reglas incompatibles con los parciales. La dificultad es que los parciales solo definen su pose reducida dentro de `prefers-reduced-motion`, y ni el modo forzado ni la preferencia propia la activan. Si no se demuestra, se vuelve a decidir antes de implementar.
+**Riesgos técnicos para el plan:**
 
-**Pendiente de asignar:** la feature dueña de «Borrar todos mis datos».
+- El adaptador debe controlar CSS, JS y poses estáticas en todos los modos de movimiento sin duplicar reglas incompatibles con los parciales. La estrategia aprobada es la transformación PostCSS de `tech-stack.md` §44. Pruebas de concepto superadas en Chromium, Firefox y WebKit (`008-plan.md` §2); falta confirmarlas con la implementación.
+- Compatibilidad de `full` cuando el sistema pide reducir. Los parciales solo declaran sus animaciones bajo `prefers-reduced-motion: no-preference`, y sus poses reducidas bajo `reduce`. La transformación tiene que conseguir que `full` las active en ese caso. Demostrado en las mismas pruebas de concepto; falta confirmarlo con la implementación.
 
 **Pendiente de `006`:** las reglas de `eureka`/`suspicious`.
 

@@ -545,6 +545,7 @@ El usuario podrá:
 - consultar análisis anteriores;
 - eliminar análisis concretos;
 - borrar todo el historial;
+- borrar todos sus datos locales, con una acción independiente (la interfaz reutiliza el borrado de `003` y el contrato visual de `008`);
 - guardar favoritos;
 - quitar favoritos;
 - reutilizar contexto cuando tenga sentido.

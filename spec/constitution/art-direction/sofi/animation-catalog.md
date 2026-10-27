@@ -56,7 +56,7 @@ El objetivo no es animar por animar. Sofi debe sentirse presente, curiosa, diver
 | 012 | `eureka` | Descubrimiento y apertura de explicación | Una pasada; nunca bloquea resultados | Resultado, 007/008 |
 | 013 | `suspicious` | Curiosidad pícara ante un matiz respaldado | Una pasada; nunca acusa | Resultado, 007/008 |
 | 014 | `uncertain` | Comprensión e incertidumbre aceptada | Una pasada; recuperación tranquila | Sin más contexto y expediente |
-| 015 | `memory-wipe` | Pánico, desaparición en píxeles y reaparición | Una pasada después del borrado completo | Privacidad, 007/008 |
+| 015 | `memory-wipe` | Pánico, desaparición en píxeles y reaparición | Una pasada después del borrado completo | Privacidad, 009/008 |
 
 **Arte y exportaciones:** 001–006 y 008–013 están cerrados artísticamente por la autora; 014 tiene ZIP final según la actualización del 2026-10-21. `memory-wipe` está **terminado y aprobado** (revisión artística final del 2026-10-23); antes se trataba como recurso preparado por petición de la autora. Ninguna revisión técnica autoriza a redibujar, sustituir o alterar el estilo aprobado; una incompatibilidad se informa antes.
 
@@ -201,9 +201,9 @@ En estas fichas, **«al terminar»** designa la transición funcional esperada. 
 - **Qué expresa:** la reacción dramática y absurda de Sofi ante el **borrado completo**: sorpresa → pánico → intenta agarrarse a bordes reales → disolución en píxeles → regresa neutra como si no recordara nada («¿Nos conocemos?»). **Sin maleta**.
 - **Se activa:** **exclusivamente** después de que la persona confirme la acción independiente «Borrar todos mis datos». **Primero se ejecuta el borrado real**, inmediatamente; la animación es una consecuencia visual opcional, nunca una fase que retrasa borrar.
 - **Reproducción:** una pasada; `pixel-dissolve` es un **efecto separado** de CSS/React para la desaparición, con píxeles de la paleta de Sofi y dirección de disolución desde los bordes hacia el centro, según el concepto aprobado. No generar duplicados de fotogramas para un efecto ya separado.
-- **Termina / transición:** vuelve a una Sofi neutral y a una interfaz sin datos recuperados. No rehidratar inadvertidamente estado borrado al remontar componentes ni volver a guardar datos antiguos por efectos pendientes.
+- **Termina / transición:** vuelve a una Sofi neutral y a una interfaz sin datos recuperados. No rehidratar inadvertidamente estado borrado al remontar componentes ni volver a guardar datos antiguos por efectos pendientes. El borrado restablece la preferencia de movimiento a `system`: la reacción mantiene el modo efectivo con el que empezó hasta que termina la confirmación, sin restaurar preferencias ni datos.
 - **Interrupciones:** navegación, cierre de vista, cambio a un estado superior o reducción de movimiento. El borrado no se revierte ni se demora por ninguna de ellas.
-- **Reducido:** borrar inmediatamente, sin temblor, explosión ni disolución; mostrar un estado estático neutro de borrado completado. El resultado funcional debe quedar claro en texto.
+- **Reducido:** borrar inmediatamente, sin temblor, explosión ni disolución; mostrar la pose estática del propio recurso (Sofi aterrorizada con su cartel) hasta que termina la confirmación funcional del borrado (§7.1). Después vuelve a la neutral, sin animación ni temporizador propio. El resultado funcional debe quedar claro en texto.
 - **Particularidades:** **jamás** en la salida rápida; esta oculta el contenido y elimina la consulta temporal de inmediato, sin confirmación ni espectáculo. Tampoco se usa al borrar exclusivamente el expediente, descartar una edición o quitar un favorito. Los bordes deben ser elementos reales de la composición, no una caja ilustrada dentro del asset. La animación no sustituye la confirmación previa de borrado completo.
 
 ## 5. Eventos semánticos y casos de uso por flujo
@@ -334,7 +334,7 @@ Excepción acotada al principio §2.3, solo para `sofing` durante un análisis:
 
 ### 7.2. Movimiento reducido y control de animaciones
 
-**La representación funcional y textual es obligatoria aunque no haya animación.** `prefers-reduced-motion: reduce` y el modo forzado `[data-motion='reduce']` deben producir resultados funcionalmente equivalentes: detener o evitar el movimiento de CSS **y** de controladores JS, limpiar eventos/temporizadores de animación y presentar una pose estática adecuada. No limitarse a congelar el fotograma en que se encuentre.
+**La representación funcional y textual es obligatoria aunque no haya animación.** `prefers-reduced-motion: reduce` y el modo forzado `[data-motion='reduce']` deben producir resultados funcionalmente equivalentes: detener o evitar el movimiento de CSS **y** de controladores JS, limpiar eventos/temporizadores de animación y presentar una pose estática adecuada. No limitarse a congelar el fotograma en que se encuentre. La preferencia propia `full` (`tech-stack.md` §44) es una elección expresa de la persona: con ella Sofi se comporta como sin reducción aunque el sistema la pida.
 
 | Categoría | Con movimiento reducido |
 |---|---|
@@ -346,7 +346,7 @@ Excepción acotada al principio §2.3, solo para `sofing` durante un análisis:
 | `favoriting` | Confirmación estática de favorito guardado, con feedback textual |
 | `poking`/`i-see-you` | Reacción estática muy breve o desactivación del gag; no rastreo animado |
 | `are-u-still-here` | Estado estático o reacción ambiental desactivada; no sobresalto |
-| `memory-wipe` | Borrado inmediato y estado neutral estático; sin disolución |
+| `memory-wipe` | Borrado inmediato y pose estática del propio recurso (Sofi aterrorizada con su cartel) hasta que termina la confirmación del borrado; después, neutral. Sin temblor, disolución, animación ni temporizador propio |
 | Seguridad y salida rápida | Sin animación en cualquier modo |
 
 **Requisitos adicionales:**
@@ -403,9 +403,9 @@ La auditoría del 2026-10-21 detectó, entre otras cosas, CSS duplicado por impo
 |---|---|
 | **002 — Design System** | El Design Lab existente y los contratos de `SofiSpeech`. Su sección `Motion & Sound` se amplía para inspeccionar el conjunto real. |
 | **004 — Partner Profile** | Estados y textos del expediente ya funcionales. No reescribir el formulario; 008 sustituye recursos provisionales según sus estados semánticos. |
-| **007 — Chat Experience** | Emitir estados semánticos, gestionar resultados, seguridad, borrado y privacidad; no acoplar el núcleo de análisis a archivos de sprites ni exigir funcionamiento real de 006 para desarrollar la UI con fakes. |
+| **007 — Chat Experience** | Emitir estados semánticos, gestionar resultados, seguridad, descarte temporal de la consulta, salida rápida y privacidad; no acoplar el núcleo de análisis a archivos de sprites ni exigir funcionamiento real de 006 para desarrollar la UI con fakes. |
 | **008 — Sofi Character & Motion** | Integrar los ZIP y el catálogo en la capa visual, coordinar transiciones, easter eggs, movimiento reducido, rendimiento y pruebas; respetar decisiones visuales del Design Lab. |
-| **009 — Favorites/History** | Emitir evento de favorito guardado al persistirlo realmente; la capa visual puede representarlo con `favoriting`. |
+| **009 — Favorites/History** | Emitir evento de favorito guardado al persistirlo realmente; la capa visual puede representarlo con `favoriting`. Asume el borrado completo, con la interfaz «Borrar todos mis datos», que reutiliza el borrado de 003 y el contrato visual de 008. |
 | **006 — Jev Integration** | Proveedor, calibración y contrato de inferencia; **no** determina por sí solo animaciones. Las reglas de `eureka`/`suspicious` condicionadas a señales validadas esperan su desbloqueo. |
 
 **No iniciar implementación parcial definitiva de 008 hasta disponer del conjunto de spritesheets acordado y haber completado las verificaciones correspondientes**, siguiendo la preferencia expresada por la autora. Pueden trabajarse documentación, simulaciones y Design Lab sin llamadas a proveedores reales.
