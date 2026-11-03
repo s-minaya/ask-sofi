@@ -35,6 +35,15 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // Solo las tiras de Sofi salen siempre como archivo (plan 008 §7): incrustadas en base64,
+    // las pequeñas viajarían duplicadas en el CSS y en el JS de su módulo dueño (E12). El resto
+    // de los assets conserva el límite por defecto de Vite (4096 B).
+    assetsInlineLimit: (file) =>
+      file.replaceAll('\\', '/').includes('/src/styles/sprites/')
+        ? false
+        : undefined,
+  },
   server: {
     // Pre-transforma al arrancar la aplicación y el Design Lab: el primer cliente
     // no paga la carga en frío (3–4 s) mientras varias pruebas piden páginas a la vez.

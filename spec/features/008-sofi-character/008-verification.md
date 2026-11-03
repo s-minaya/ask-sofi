@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -26,6 +26,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T032–T034 — modo efectivo durante `memory-wipe` (A3) | `holdMotion` fija el modo inicial con el único `data-motion` de `<html>`; 11 pruebas con los tres modos de entrada y la coordinación con el proveedor. Contrato remitido en el plan (D-23). Firefox y WebKit pendientes (T046, T073) | §8 |
 | T035–T038 — `SofiSprite` y `SofiPortrait` (A4) | Carga con decodificación previa, pasada única, velocidad y eventos de ciclo; el retrato usa el módulo dueño y obedece a `full` (control de E11, 12 de 12 en Chromium). Firefox y WebKit pendientes (T046, T073) | §9 |
 | T039–T042 y VT3 — habla y controladores (A4) | `onSpeakingChange` avisa solo al cambiar el booleano. `useSofiController` monta los tres controladores reales y los destruye sin residuos (escuchas, observadores, temporizadores, fotogramas, capas y atributos), también con StrictMode; las causas simultáneas no se anulan. 48 pruebas nuevas con sensibilidad comprobada. Navegador real pendiente (VT6) | §10 |
+| T043–T044 — contrato de build y límite de incrustación (A4) | Las 35 tiras de producción salen como archivos (antes, 15 iban incrustadas) y ninguna del Lab llega a la build; 11 chunks diferidos propios, controladores y keyframes únicos fuera de la entrada. CSS de entrada idéntico (9 871 B; +91 B sobre EX1, objetivo provisional sin aplicar); chunks diferidos −36 % de CSS y −77 % de JS. 11 pruebas de build y 4 estáticas con sensibilidad comprobada | §11 |
 
 ---
 
@@ -832,3 +833,88 @@ Fecha: 2026-11-03. Antes de empezar: `main` en `76fc014` (A4, T035–T038), con 
 - **Navegador real:** la limpieza y las causas de pausa en Chromium, Firefox y WebKit van en VT6 (T073–T076) y T046.
 - **Sin consumidor:** nada llama aún a `useSofiController` ni pasa `onSpeakingChange` (T063, T084, T087, T088).
 - **Pregunta abierta para T087/T088 (no bloquea esto):** el adaptador solo congela los tiempos (`pause()`/`resume()`), como fijan el plan §6 y T023. Los controladores documentan además `reset()` + `pause()` para interrumpir (por ejemplo, cuando Sofi tiene que hablar). Con solo `pause()`, un gag a mitad de reacción queda congelado en su estado hasta que desaparecen las causas. Mientras el anfitrión solo exista en escena tranquila el caso es poco probable; si el consumidor monta el gag en una pantalla donde pueden aparecer causas, habrá que decidir si interrumpir equivale a `reset()`.
+
+---
+
+## 11. A4 — Contrato de build y límite de incrustación (T043–T044)
+
+Fecha: 2026-11-03. Antes de empezar: `main` en `1f5f568` y su CI en GitHub Actions terminada en éxito (ejecución nº 21, leída de la API pública del repositorio); árbol de trabajo limpio salvo los 13 ZIP sin versionar.
+
+### 11.1 Qué se hizo
+
+| Tareas | Resultado |
+|---|---|
+| T043 | `e2e/production-build.spec.ts` pasa de 3 a 14 pruebas, sobre la misma compilación compartida, y `src/components/sofi/sprites/staticContract.test.ts` (4 pruebas de Vitest). Vistas fallar antes del cambio: la prueba de tiras incrustadas falló con las 15 tiras de producción pequeñas (`are-u-still-here-fx`, `favoriting-sparkle`, `memory-wipe-dissolve` y otras 9 de `memory-wipe`, `needs-context-question`, `poking-fx`, `rolling-fx`, `talking-mouth`; 17 284 B en total, la mayor de 3 224 B), como anticipaba E12. El resto del contrato ya se cumplía por construcción (carga diferida del bloque A4) y las pruebas son su guarda |
+| T044 | `build.assetsInlineLimit` como función en `vite.config.ts`: `false` si el archivo está en `src/styles/sprites/` y `undefined` (límite por defecto de Vite, 4096 B) para el resto. Los parciales, las tiras y los controladores no se han tocado (`git diff` vacío sobre `src/styles/sprites/`) |
+
+### 11.2 Contrato de build (`production-build.spec.ts`)
+
+Los identificadores no se repiten en la prueba: los recursos diferidos se leen del registro (`load: () => import(…)`), los propietarios de los módulos dueños, y los exclusivos del Lab son los que ni son estáticos ni tienen cargador (deben ser `eureka` y `suspicious`). Las tiras se reconocen por **contenido** (SHA-256 y principio en base64), no por nombre, porque Vite las renombra con un hash.
+
+| Prueba | Qué garantiza |
+|---|---|
+| Ids | Estático: `sofi-blink`; exclusivos del Lab: `eureka` y `suspicious`; toda tira pertenece a un recurso |
+| Tiras como archivo | Las 35 tiras de producción salen como `.webp` y **ninguna** (de las 40) está incrustada en CSS o JS |
+| Exclusivos del Lab | Ni sus 5 tiras, ni su CSS ni su JS están en la build |
+| Chunks diferidos | Cada recurso diferido (11) tiene un chunk de JS y uno de CSS propios, el documento no los carga, y `sofi-blink` no tiene chunk |
+| Entrada y tiras | La entrada (CSS y JS) solo referencia tiras de `sofi-blink` |
+| CSS de entrada | No contiene nada definido por un chunk diferido (clases con hash ni `@keyframes` por nombre local) y sí lleva `sofi-blink` |
+| Keyframes | Los nombres son únicos en todo el CSS, y cada `@keyframes` de un recurso (diferidos y `sofi-blink`) aparece una sola vez por nombre local; ninguno de los exclusivos del Lab |
+| Orden de los gags | Su CSS no está en la hoja del documento (llega después, en sus chunks) y la hoja del documento lleva `sofi-blink` (plan §4.4) |
+| Controladores | `data-poking-layer`, `data-still-here-layer` y `data-i-see-you-layer` no están en el JS de entrada |
+| Objetivos provisionales | Se registran en cada build (anotación `provisional-targets` y salida de consola) y **no se aplican**: solo se comprueba que la medida existe |
+
+Contrato estático (Vitest): no existe `_index.scss` ni nadie lo importa; los estilos globales no mencionan sprites; cada módulo dueño lista solo `/src/styles/sprites/<id>.webp` y `<id>-*.webp`; ningún otro código usa un glob sobre las tiras. La importación de un parcial por otro módulo SCSS ya la cubría `sprites.test.ts`.
+
+**Dos defectos de mis primeras pruebas, hallados al comprobar su sensibilidad** (no estaban en el producto): el análisis de `@keyframes` por nombre local en los parciales no veía `sofi-blink`, cuyo `@keyframes` genera el mixin; y comparar clases por nombre local daba falso positivo con `error` (la aplicación tiene `.error` en tres componentes). Ahora los keyframes se leen de la build y se comparan por su nombre local, que es de cada recurso.
+
+### 11.3 Sensibilidad
+
+Se introdujo a propósito cada regresión y se comprobó que el contrato la detecta (las demás pruebas del archivo, en modo serie, no llegan a ejecutarse tras el primer fallo):
+
+| Regresión | Detectada por |
+|---|---|
+| Revertir `assetsInlineLimit` | tiras como archivo |
+| Importar `sofing` de forma estática desde la entrada | chunks diferidos |
+| Importar `eureka` desde la entrada | exclusivos del Lab |
+| Importar `poking` (CSS) de forma estática | chunks diferidos |
+| Usar el controlador `poking.js` desde la entrada | controladores fuera de la entrada |
+| `@use` del parcial de `sofi-blink` desde otro módulo | keyframes |
+| Una tira de `talking` referenciada desde la entrada (comprobada aislada) | entrada y tiras |
+| `@use` del parcial de `poking` en un módulo de la entrada (aislada) | CSS de entrada, y orden de los gags |
+| `@use` del parcial de `eureka` en la entrada (aislada) | keyframes |
+| `_index.scss` creado; sprite en estilos globales; glob central en un módulo dueño; glob de tiras fuera de los dueños | las 4 pruebas del contrato estático, una cada vez |
+
+Una mutación no era real y no cuenta: `import 'poking.js'` sin usar su exportación se elimina por tree-shaking y la build no cambia; se repitió usándola.
+
+### 11.4 Métricas (build de `HEAD` + T043–T044, `gzipSync` con las opciones fijas de `scripts/loadMetrics.ts`)
+
+| Medida | EX1 / antes | Ahora |
+|---|---|---|
+| CSS de entrada | 9 780 B (EX1); 9 871 B antes de T044 | **49 424 B; 9 871 B gzipSync.** Idéntico antes y después de T044. +91 B (+0,9 %) sobre EX1 |
+| JS de entrada | 344 339 B; 111 105 B (§10.4) | 344 339 B; 111 103 B. Sin cambio (cambia su hash, por el mapa de dependencias) |
+| Objetivo provisional de D-5 (+2 kB sobre 9 780 B) | — | Cumplido por 1 909 B de margen. **No es un umbral aprobado:** solo se registra |
+| `.webp` en `dist/assets` | 29 | **44** (+15, las tiras pequeñas) |
+| Tiras de Sofi como archivo | 20 (las 15 pequeñas iban incrustadas) | **35** (706 748 B); 5 del Lab, ninguna |
+| CSS de los 11 chunks diferidos | 124,5 kB; 32,6 kB gzip (Vite) | **79 985 B** (−36 %); 13 876 B `gzipSync` |
+| JS de los 11 chunks diferidos | 29,5 kB; 20,2 kB gzip (Vite) | **6 679 B** (−77 %); 2 787 B `gzipSync` |
+| Mayor chunk de CSS | `memory-wipe` 36,1 kB (12,9 gzip) | `memory-wipe` 19,1 kB (3,1 gzip) |
+
+Los «antes» de los chunks diferidos son las cifras que imprime Vite (su gzip es otra medida que `gzipSync`, plan §7) y los «ahora» están medidos con `gzipSync`, así que el gzip no es comparable entre columnas; los bytes sí. **No se ha medido FCP, LCP ni descargas por red:** T043–T044 no tienen consumidor en pantalla (la entrada es idéntica en CSS y de igual tamaño en JS, así que el arranque no cambia por construcción), y el protocolo de `measureLoad` queda para EX2–EX4 y el bloque C. Lo que sí cambia, para esas mediciones, es que decodificar `memory-wipe` pasa de 3 a 12 peticiones de tira (E12), con la espera de decodificación previa de `SofiSprite` (E13).
+
+### 11.5 Comprobaciones técnicas
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run typecheck`, `npx eslint .`, `npx prettier --check .` | Sin errores |
+| `npm run build` | Correcta, sin avisos |
+| `npx vitest run` | 98 archivos, 1 721 pruebas (4 nuevas), todas pasan |
+| `npx playwright test` (Chromium) | 181 pruebas (170 anteriores y 11 nuevas del contrato de build), todas pasan |
+| `src/styles/sprites/` | Sin cambios respecto a `HEAD` |
+
+### 11.6 Pendiente y notas
+
+- **Sin consumidor:** el adaptador de gags y `SofiSprite` en pantalla no existen todavía en producción, así que «los controladores no están en la entrada» se cumple también porque ningún código los usa; la prueba pasará a ser decisiva con T088. Mientras tanto no hay chunk de controlador que comprobar.
+- **`talking` y `uncertain`:** el registro los declara diferidos y el contrato lo sigue, sin fijarlo: la decisión es de EX3.
+- **Firefox y WebKit:** sin cambios; T045–T046.
+- **`reset()` frente a `pause()`:** sigue pendiente para T087–T088.
