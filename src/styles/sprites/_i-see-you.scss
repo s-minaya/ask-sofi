@@ -1,0 +1,335 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+
+// «Te veo»: Sofi sigue con la mirada el cursor por toda la página. Si la usuaria se da cuenta y juega con ella, o deja
+// el cursor encima, Sofi se ve pillada («¡oh!»), sonríe con picardía, saca la lengua y se ríe; luego vuelve al reposo.
+// No es un bucle: lo dirige i-see-you.js, que pone el estado en data-i-see-you y la mirada en data-i-see-you-gaze.
+//   idle → watching (mirada: center, left, right, up o down) → idle cuando el cursor se queda quieto
+//   watching → caught («¡!») → smirk → tease (destello) → giggle (risita) → smirk → idle
+//
+// Va encima del sprite de reposo: el anfitrión es el elemento de sofi-blink (class="sofi-blink i-see-you"). Mientras
+// mira o reacciona, el anfitrión se queda en su fotograma 0 (al mirar, parpadea con el 2) y encima va la cara. La capa
+// es un hijo del anfitrión marcado con data-i-see-you-layer (i-see-you.js lo crea si falta). Va por atributo, no por
+// clase, para que funcione igual con CSS Modules.
+//
+// i-see-you.webp (cajas en px de un fotograma de 384, múltiplos de 8):
+//   miradas    al frente (los ojos de talking), izquierda (01), derecha (05), arriba (02) y abajo (03);
+//   reacciones pillada (04), sonrisa pícara (06), troll (06 troll) y risa (07);
+//   efectos    la alerta «!» (arriba a la derecha de la cabeza) y el destello pícaro (junto al ojo, en el borde del pelo).
+// Las caras solo son opacas en lo que cambia más 3 px idénticos al reposo. La nariz es siempre la del reposo.
+// El movimiento es transform y opacity; el sprite se deforma desde el borde de abajo, que no se mueve.
+// Con «reducir movimiento» se ven las mismas miradas y caras, sin parpadeos ni saltos, y los efectos fijos.
+
+$frame: 384;
+$atlas: 336 448;
+
+// Caja en el fotograma (x y ancho alto) y esquina de su celda en el atlas.
+$gazes: (
+  center: (box: 120 160 160 64, at: 0 0),
+  left: (box: 128 168 144 48, at: 0 64),
+  right: (box: 128 160 160 64, at: 0 112),
+  up: (box: 120 128 160 88, at: 0 176),
+  down: (box: 120 144 168 80, at: 0 264),
+);
+$reactions: (
+  caught: (box: 120 144 160 104, at: 168 0),
+  smirk: (box: 120 144 168 112, at: 168 104),
+  tease: (box: 120 144 168 112, at: 168 216),
+  giggle: (box: 120 144 168 120, at: 168 328),
+);
+$fx: (
+  alert: (box: 280 0 96 88, at: 0 344),
+  sparkle: (box: 304 96 56 56, at: 96 344),
+);
+
+// Parpadeo mientras mira (pasos en ms): open, la mirada; closed, el fotograma 2 de sofi-blink (ojos cerrados).
+$blink: (open 2600, closed 130, open 1900, closed 120, open 110, closed 120);
+
+// Duraciones que dependen de TIMING en i-see-you.js: cada efecto dura lo que su estado.
+$caught: 1.1s;
+$tease: 1.3s;
+$giggle: 1.2s;
+
+@function -total($steps) {
+  $t: 0;
+  @each $step in $steps {
+    $t: $t + list.nth($step, 2);
+  }
+  @return $t;
+}
+
+// Porcentaje con 3 decimales, redondeado hacia arriba: si se redondea hacia abajo, a tamaños 1:2 con pixelado el
+// navegador toma el otro píxel de cada pareja en la capa y no en el reposo (comprobado en Edge).
+@function -pct($px, $of: $frame) {
+  @return math.div(math.ceil(math.div($px * 100000, $of)), 1000) * 1%;
+}
+
+// Posición de fondo para ver en una caja de $size la región que empieza en $at de un atlas de $atlas.
+@function -offset($at, $atlas, $size) {
+  @if $atlas == $size {
+    @return 0%;
+  }
+  @return -pct($at, $atlas - $size);
+}
+
+@mixin -box($box) {
+  left: -pct(list.nth($box, 1));
+  top: -pct(list.nth($box, 2));
+  width: -pct(list.nth($box, 3));
+  aspect-ratio: #{list.nth($box, 3)} / #{list.nth($box, 4)};
+}
+
+// Caja en el fotograma y celda del atlas.
+@mixin -cell($cell) {
+  $box: map.get($cell, box);
+  $at: map.get($cell, at);
+  $w: list.nth($box, 3);
+  $h: list.nth($box, 4);
+  @include -box($box);
+  background-size: -pct(list.nth($atlas, 1), $w) -pct(list.nth($atlas, 2), $h);
+  background-position: -offset(list.nth($at, 1), list.nth($atlas, 1), $w) -offset(list.nth($at, 2), list.nth($atlas, 2), $h);
+}
+
+@function -states($states) {
+  $out: ();
+  @each $state in $states {
+    $out: list.append($out, "[data-i-see-you='#{$state}']", $separator: comma);
+  }
+  @return $out;
+}
+
+.i-see-you {
+  position: relative;
+  transform-origin: 50% 100%; // pillada y risita deforman el sprite desde el borde de abajo
+
+  // Mirando o reaccionando, el reposo se queda en su fotograma 0 y la cara va encima.
+  &:is(#{-states(watching caught smirk tease giggle)}) {
+    animation: none;
+    background-position: 0 0;
+  }
+
+  [data-i-see-you-layer] {
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+    background: url('i-see-you.webp') no-repeat;
+  }
+
+  @each $gaze, $cell in $gazes {
+    &[data-i-see-you='watching'][data-i-see-you-gaze='#{$gaze}'] [data-i-see-you-layer='face'] {
+      visibility: visible;
+      @include -cell($cell);
+    }
+  }
+
+  @each $state, $cell in $reactions {
+    &[data-i-see-you='#{$state}'] [data-i-see-you-layer='face'] {
+      visibility: visible;
+      @include -cell($cell);
+    }
+  }
+
+  @each $layer, $cell in $fx {
+    [data-i-see-you-layer='#{$layer}'] {
+      @include -cell($cell);
+    }
+  }
+
+  // La alerta sale de la cabeza (abajo a la izquierda de su caja); el destello, del núcleo de la estrella grande.
+  [data-i-see-you-layer='alert'] {
+    transform-origin: 30% 95%;
+  }
+
+  [data-i-see-you-layer='sparkle'] {
+    transform-origin: 42% 49%;
+  }
+
+  &[data-i-see-you='caught'] [data-i-see-you-layer='alert'],
+  &:is(#{-states(tease giggle)}) [data-i-see-you-layer='sparkle'] {
+    visibility: visible;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    // Mirando: el anfitrión cierra los ojos (fotograma 2) a la vez que la mirada se oculta.
+    &[data-i-see-you='watching'] {
+      animation: i-see-you-blink math.div(-total($blink), 1000) * 1s step-end infinite;
+
+      [data-i-see-you-layer='face'] {
+        animation: i-see-you-lids math.div(-total($blink), 1000) * 1s step-end infinite;
+      }
+    }
+
+    // Pillada: da un respingo y salta la alerta.
+    &[data-i-see-you='caught'] {
+      animation: i-see-you-jolt 0.45s ease-out;
+
+      [data-i-see-you-layer='alert'] {
+        animation: i-see-you-alert $caught ease-out forwards;
+      }
+    }
+
+    // Troll: aparece el destello; en la risita, da saltitos y el destello se va.
+    &[data-i-see-you='tease'] [data-i-see-you-layer='sparkle'] {
+      animation: i-see-you-sparkle-in $tease ease-out forwards;
+    }
+
+    &[data-i-see-you='giggle'] {
+      animation: i-see-you-giggle $giggle ease-in-out;
+
+      [data-i-see-you-layer='sparkle'] {
+        animation: i-see-you-sparkle-out $giggle ease-in forwards;
+      }
+    }
+  }
+}
+
+// Un keyframe por paso de $blink (y el 100 %, igual que el último). El contenido recibe si los ojos están cerrados.
+@mixin -blink-steps {
+  $total: -total($blink);
+  $t: 0;
+  $last: null;
+  @each $eyes, $ms in $blink {
+    #{-pct($t, $total)} {
+      @content ($eyes == closed);
+    }
+    $t: $t + $ms;
+    $last: $eyes;
+  }
+  100% {
+    @content ($last == closed);
+  }
+}
+
+@keyframes i-see-you-blink {
+  @include -blink-steps using ($closed) {
+    @if $closed {
+      background-position-x: 100%;
+    } @else {
+      background-position-x: 0%;
+    }
+  }
+}
+
+@keyframes i-see-you-lids {
+  @include -blink-steps using ($closed) {
+    @if $closed {
+      opacity: 0;
+    } @else {
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes i-see-you-jolt {
+  0% {
+    transform: scale(1.02, 0.96);
+  }
+  22% {
+    transform: scale(0.98, 1.04);
+  }
+  48% {
+    transform: scale(1.008, 0.99);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes i-see-you-alert {
+  0% {
+    opacity: 0;
+    transform: scale(0.35);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  22% {
+    transform: scale(0.94);
+  }
+  32% {
+    transform: none;
+  }
+  72% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8%);
+  }
+}
+
+@keyframes i-see-you-sparkle-in {
+  0%,
+  18% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+  40% {
+    transform: scale(0.9);
+  }
+  50%,
+  70% {
+    transform: none;
+  }
+  80% {
+    transform: scale(0.8);
+  }
+  90%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes i-see-you-sparkle-out {
+  0% {
+    transform: none;
+  }
+  25% {
+    transform: scale(0.8);
+  }
+  40%,
+  70% {
+    opacity: 1;
+    transform: none;
+  }
+  82% {
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+// Risita: tres saltitos, cada vez más pequeños.
+@keyframes i-see-you-giggle {
+  0%,
+  30%,
+  60%,
+  90%,
+  100% {
+    transform: none;
+  }
+  10%,
+  40% {
+    transform: scale(1.012, 0.982);
+  }
+  20%,
+  50% {
+    transform: scale(0.994, 1.012);
+  }
+  70% {
+    transform: scale(1.008, 0.988);
+  }
+  80% {
+    transform: scale(0.996, 1.008);
+  }
+}

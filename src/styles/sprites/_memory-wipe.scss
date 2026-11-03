@@ -1,0 +1,508 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sprite';
+
+// «Memory wipe»: borran la memoria de Sofi y ella lo vive como el fin del mundo. Está en reposo, se da cuenta («¿qué
+// haces?»), entra en pánico («NOT MY LORE!!!») con las manos en la cara, se agarra a los bordes del recuadro para que no
+// se la lleven, se le escapan las manos y se desintegra en píxeles. Tras un instante vacío, vuelve bloque a bloque como si
+// no hubiera pasado nada: se queda un momento en blanco, parpadea y sonríe (6,5 s, una sola pasada).
+// Fotogramas (memory-wipe.webp): 0 reposo, el fotograma 0 de sofi-blink tal cual · 1 pánico (memory-wipe-03) · 2 se
+// resiste (04) · 3 se la llevan (05). 03–05 son dibujos independientes: se recolorearon con los colores de
+// memory-wipe-06 (pelo, piel, jersey, iris y contornos) y el rubio con la escalera del de sofi-blink, y en 04 y 05 se
+// redibujó el choker de 06; la cabeza de 04 y 05 es un 10–15 % menor porque se la llevan hacia atrás.
+// Pieza: la tira; se oculta mientras ::before hace la desintegración y el regreso, y tiembla (translate) con el pánico.
+// ::before: una copia del fotograma 3 (con el cartel) o del 0 con una máscara de bloques de 4 px (memory-wipe-dissolve.webp,
+// una tesela de 96 px en 8 capas desplazadas que entre todas la cubren): cada paso quita o pone 1/8 de los bloques, al azar.
+// No lleva imagen propia: es la misma tira, que el navegador descodifica una sola vez.
+// ::after: las caras, sobre el reposo («¿qué haces?», la de memory-wipe-02; y «está bien», ojos de sofi-blink con la
+// sonrisa de suspicious, las de uncertain), las líneas de impacto, el cartel, las líneas de estrés y el sudor, y las
+// partículas (cuadrados de color dibujados con gradientes, sin imagen) que salen volando al desintegrarse y vuelven al
+// regresar. Cada efecto es su propia imagen porque ::after ocupa el fotograma entero y una capa de fondo no puede mostrar
+// solo un trozo de un atlas. Las caras solo son opacas en lo que cambia más 3 px idénticos al reposo.
+// Todo cambia a saltos (background, máscara y transform) salvo las partículas, que se deslizan: nada cambia el layout.
+// Una sola pasada: acaba en el reposo con la sonrisa y se queda ahí. Empieza en el reposo de sofi-blink, así que al entrar
+// desde ella no salta nada; al volver a sofi-blink solo cambia la boca. Con «reducir movimiento» queda fijo el pánico
+// con el cartel (fotograma 1).
+
+$S: 384; // px de un fotograma
+
+// Momentos (ms).
+$t-shock: 380; // «¿qué haces?»
+$t-panic: 1080; // «NOT MY LORE!!!»
+$t-resist: 2280; // se agarra a los bordes
+$t-taken: 3180; // se le escapan las manos
+$fx-step: 75; // del pánico a la desintegración, un paso cada 75 ms (32 pasos)
+$t-wipe: 3480; // se desintegra: 1/8 de los bloques menos cada $wipe-step
+$wipe-step: 70;
+$t-reboot: 4700; // vuelve: 1/8 más cada $reboot-step
+$reboot-step: 60;
+$t-back: $t-reboot + 7 * $reboot-step; // ya entera: la pieza vuelve a verse (5120)
+$t-blink: 5900; // parpadea y sonríe
+$t-end: 6500;
+
+$timeline: (
+  0 $t-panic, // reposo; desde 380, «¿qué haces?» (cara y líneas de impacto en ::after)
+  1 $t-resist - $t-panic, // pánico, con el cartel, las líneas de estrés y el sudor
+  2 $t-taken - $t-resist, // se agarra a los bordes del recuadro
+  3 $t-reboot - $t-taken, // se la llevan; desde 3480 se desintegra (::before) y no queda nada
+  0 $t-end - $t-reboot, // vuelve bloque a bloque (::before), se queda en blanco, parpadea y sonríe (::after)
+);
+$total: sprite.duration($timeline);
+$duration: math.div($total, 1000) * 1s;
+
+@if $t-wipe != $t-panic + 32 * $fx-step {
+  @error 'memory-wipe: los 32 pasos de efectos deben acabar justo al desintegrarse.';
+}
+
+// Efectos: (imagen ancho alto) en px de un fotograma de 384.
+$banner: url('memory-wipe-banner.webp') 309 103;
+$zig: url('memory-wipe-zig.webp') 36 65;
+$zig-s: url('memory-wipe-zig-s.webp') 23 49;
+$sweat: url('memory-wipe-sweat.webp') 20 35;
+$shock: url('memory-wipe-shock.webp') 105 36;
+$shock-r: url('memory-wipe-shock-r.webp') 105 36;
+$sprite: url('memory-wipe.webp');
+$tile: url('memory-wipe-dissolve.webp');
+
+// Caras: la caja (x y ancho alto), múltiplos de 8, y una imagen por cara.
+$face-box: 112 120 184 136;
+$face-shock: url('memory-wipe-face-shock.webp');
+$face-closed: url('memory-wipe-face-closed.webp');
+$face-half: url('memory-wipe-face-half.webp');
+$face-smile: url('memory-wipe-face-smile.webp');
+
+// Máscara: la tesela (96 px) desplazada en px de 384, en el orden en que se quitan las capas (tile15.js).
+$tile-size: 96;
+$tile-offsets: (0 0, 36 12, 72 24, 12 36, 48 48, 84 60, 24 72, 60 84);
+
+// Partículas: (x y vx vy lado color nace vive), en px de 384 y pasos de $wipe-step; salen de la silueta del fotograma 3
+// hacia arriba y hacia fuera (particles15.js). Crecen al nacer y se encogen al irse.
+$pink: #fc9cb0;
+$rose: #e483a5;
+$hot: #fa4978;
+$purple: #8e429a;
+$lilac: #db8dea;
+$ink: #0c0218;
+$white: #fdfbed;
+$particles: (
+  (220 196 9.4 -12.8 12 $hot 0 6),
+  (260 208 10.3 -10 12 $pink 0 8),
+  (212 48 0.1 -15 16 $purple 1 9),
+  (228 152 4.7 -15.3 16 $lilac 1 9),
+  (196 112 1.1 -15.7 12 $purple 2 6),
+  (128 276 -4.7 -11.1 12 $hot 2 6),
+  (340 280 8.4 -5.8 8 $pink 2 8),
+  (252 44 1.5 -18.1 16 $purple 3 7),
+  (156 64 -1.9 -20.4 8 $pink 3 8),
+  (296 316 5.3 -8.7 16 $hot 3 7),
+  (160 336 -2.9 -8.9 8 $pink 3 9),
+  (128 140 -6.5 -15.1 8 $pink 4 6),
+  (296 140 11.2 -16.8 12 $white 4 6),
+  (52 172 -9.4 -11.6 8 $purple 4 9),
+  (164 184 -12.8 -14.7 16 $rose 4 9),
+  (308 192 13.3 -12 12 $hot 4 6),
+  (104 212 -10.1 -13.6 8 $ink 4 7),
+  (72 252 -5.8 -7.9 8 $lilac 4 8),
+  (76 112 -7.3 -12.2 8 $lilac 5 7),
+  (320 228 9.9 -10.4 8 $ink 5 8),
+  (272 276 8.8 -6.7 12 $white 5 8),
+  (240 292 5.6 -4.2 12 $rose 5 6),
+  (252 80 3.5 -18.6 8 $pink 6 6),
+  (112 176 -8.8 -14.5 8 $pink 6 8),
+);
+// Pasos en los que se fija dónde está cada partícula; entre uno y otro va en línea recta (y crece o se encoge).
+$particle-keys: (0, 2, 4, 6, 9, 12, 14);
+
+@function -pct($ms) {
+  @return math.div(math.round(math.div($ms * 100000, $total)), 1000) * 1%;
+}
+
+// Medida en % del fotograma, con $d decimales (las partículas no necesitan más de 2).
+@function -len($px, $d: 3) {
+  $k: math.pow(10, $d);
+  @return math.div(math.round(math.div($px * 100 * $k, $S)), $k) * 1%;
+}
+
+// background-position que pone el borde izquierdo (o el de arriba) de una capa de $w px en $x px del fotograma.
+@function -pos($x, $w, $d: 3) {
+  @if $w == $S {
+    @return 0%;
+  }
+  $k: math.pow(10, $d);
+  @return math.div(math.round(math.div($x * 100 * $k, $S - $w)), $k) * 1%;
+}
+
+// Igual, redondeado hacia arriba (como en i-see-you, needs-context, error, eureka, suspicious y uncertain): las caras
+// tienen que caer en los mismos píxeles que la tira; redondeando hacia abajo, a 1:2 con pixelado el navegador toma el
+// otro píxel de cada pareja.
+@function -pos-up($x, $w) {
+  @return math.div(math.ceil(math.div($x * 100000, $S - $w)), 1000) * 1%;
+}
+
+$hidden: -1000% -1000%; // fuera del fotograma: la capa no pinta nada
+
+// Capa de efecto (imagen ancho alto) en (x, y): su tamaño y su posición.
+@function -fx-size($fx, $k: 1) {
+  @return -len(list.nth($fx, 2) * $k) -len(list.nth($fx, 3) * $k);
+}
+@function -fx-at($fx, $x, $y, $k: 1) {
+  @return -pos($x, list.nth($fx, 2) * $k) -pos($y, list.nth($fx, 3) * $k);
+}
+
+$face-size: -len(list.nth($face-box, 3)) -len(list.nth($face-box, 4));
+$face-at: -pos-up(list.nth($face-box, 1), list.nth($face-box, 3)) -pos-up(list.nth($face-box, 2), list.nth($face-box, 4));
+
+// Pánico y resistencia (::after), paso $k de 32: (cartel, estrés izq. grande, izq. pequeño, der. grande, der. pequeño,
+// sudor izq., sudor der.). El cartel cae en el paso 1 un 20 % más grande; todo lo demás cambia cada 2 pasos: las líneas
+// de estrés tiemblan alternando y cae una gota por cada lado en cada pose. Con el fotograma 3 (pasos 28–31) solo queda el
+// cartel.
+$panic-steps: (0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30);
+$panic-images: list.nth($banner, 1), list.nth($zig, 1), list.nth($zig-s, 1), list.nth($zig, 1), list.nth($zig-s, 1),
+  list.nth($sweat, 1), list.nth($sweat, 1);
+// Gota que sale en los pasos $starts y baja en 3 tramos de 2 pasos desde (x, y), (dx, dy) por tramo.
+@function -sweat-at($k, $starts, $x, $y, $dx, $dy) {
+  @each $s in $starts {
+    @if $k >= $s and $k < $s + 6 {
+      $a: math.floor(math.div($k - $s, 2));
+      @return -fx-at($sweat, $x + $dx * $a, $y + $dy * $a);
+    }
+  }
+  @return $hidden;
+}
+@function -on($show, $at) {
+  @if $show {
+    @return $at;
+  }
+  @return $hidden;
+}
+@function -panic-at($k) {
+  $taken: $k >= 28;
+  $a: math.floor(math.div($k, 2)) % 2 == 0;
+  // pánico (03): a los lados de la cabeza, arriba y abajo; se resiste (04): solo arriba, que abajo están los puños, y la
+  // grande y la pequeña se turnan en el mismo sitio
+  $zl: 6 118;
+  $zsl: 14 198;
+  $zr: 342 112;
+  $zsr: 346 196;
+  @if $k >= 16 {
+    $zl: 2 104;
+    $zsl: 12 112;
+    $zr: 346 100;
+    $zsr: 350 108;
+  }
+  $banner-at: -fx-at($banner, 38, 4);
+  @if $k == 0 {
+    $banner-at: $hidden;
+  } @else if $k == 1 {
+    $banner-at: -fx-at($banner, 7, -6.5, 1.2);
+  }
+  @return (
+    $banner-at,
+    -on(not $taken and $a, -fx-at($zig, list.nth($zl, 1), list.nth($zl, 2))),
+    -on(not $taken and not $a, -fx-at($zig-s, list.nth($zsl, 1), list.nth($zsl, 2))),
+    -on(not $taken and not $a, -fx-at($zig, list.nth($zr, 1), list.nth($zr, 2))),
+    -on(not $taken and $a, -fx-at($zig-s, list.nth($zsr, 1), list.nth($zsr, 2))),
+    -on(not $taken, -sweat-at($k, (2, 18), 68, 94, -14, 20)),
+    -on(not $taken, -sweat-at($k, (6, 22), 294, 86, 14, 20))
+  );
+}
+@function -panic-size($k) {
+  $banner-size: -fx-size($banner);
+  @if $k == 1 {
+    $banner-size: -fx-size($banner, 1.2);
+  }
+  @return ($banner-size, -fx-size($zig), -fx-size($zig-s), -fx-size($zig), -fx-size($zig-s), -fx-size($sweat),
+    -fx-size($sweat));
+}
+
+// Partícula en el paso $s de la desintegración: (x y lado). Sube cada vez más deprisa; antes de nacer está quieta en su
+// sitio con lado 0 y, al irse, se queda donde acabó con lado 0. Si $full, con su lado aunque no esté viva.
+@function -particle($p, $s, $full: false) {
+  $b: list.nth($p, 7);
+  $l: list.nth($p, 8);
+  $a: math.clamp(0, $s - $b, $l);
+  $side: 0;
+  @if $full or ($s >= $b and $s < $b + $l) {
+    $side: list.nth($p, 5);
+  }
+  @return (list.nth($p, 1) + list.nth($p, 3) * $a) (list.nth($p, 2) + list.nth($p, 4) * $a - $a * $a) $side;
+}
+@if list.nth($particle-keys, 1) != 0 {
+  @error 'memory-wipe: las partículas empiezan en el paso 0.';
+}
+@each $p in $particles {
+  @if list.nth($p, 7) + list.nth($p, 8) > list.nth($particle-keys, -1) {
+    @error 'memory-wipe: una partícula sigue viva después del último paso de $particle-keys.';
+  }
+}
+@if $t-wipe + list.nth($particle-keys, -1) * $wipe-step >= $t-reboot {
+  @error 'memory-wipe: las partículas tienen que haberse ido antes de que vuelva.';
+}
+$particle-images: ();
+@each $p in $particles {
+  $c: list.nth($p, 6);
+  $particle-images: list.append($particle-images, linear-gradient($c, $c), comma);
+}
+// Tamaño y posición de todas las partículas: en el paso $s de la desintegración o, al regresar, donde acabaron (con su
+// lado) o de vuelta en su sitio (lado 0).
+@mixin -particles($s: null, $back: null) {
+  $sizes: ();
+  $positions: ();
+  @each $p in $particles {
+    $q: null;
+    @if $back == null {
+      $q: -particle($p, $s);
+    } @else if $back == 0 {
+      $q: -particle($p, list.nth($particle-keys, -1), true);
+    } @else {
+      $q: list.nth($p, 1) list.nth($p, 2) 0;
+    }
+    $side: list.nth($q, 3);
+    $sizes: list.append($sizes, -len($side, 2) -len($side, 2), comma);
+    $positions: list.append($positions, -pos(list.nth($q, 1), $side, 2) -pos(list.nth($q, 2), $side, 2), comma);
+  }
+  background-size: $sizes;
+  background-position: $positions;
+}
+
+// Máscara: las capas de la tesela que siguen puestas son las $on últimas del orden.
+$tile-images: ();
+$tile-positions: ();
+@each $o in $tile-offsets {
+  $tile-images: list.append($tile-images, $tile, comma);
+  $tile-positions: list.append($tile-positions, -pos(list.nth($o, 1), $tile-size) -pos(list.nth($o, 2), $tile-size), comma);
+}
+@function -tile-sizes($on) {
+  $sizes: ();
+  @for $i from 1 through list.length($tile-offsets) {
+    @if $i > list.length($tile-offsets) - $on {
+      $sizes: list.append($sizes, -len($tile-size) -len($tile-size), comma);
+    } @else {
+      $sizes: list.append($sizes, 0% 0%, comma);
+    }
+  }
+  @return $sizes;
+}
+
+// Temblor de la pieza: desplazamientos en unidades del paso, que se repiten.
+$jitter: (-1 0, 1 -0.6, -0.6 0.6, 0.8 0.4, -1 -0.4, 0.6 0);
+@function -shake($k, $amp) {
+  $j: list.nth($jitter, $k % list.length($jitter) + 1);
+  @return translate(list.nth($j, 1) * $amp * 1%, list.nth($j, 2) * $amp * 1%);
+}
+
+.memory-wipe {
+  position: relative; // ::before y ::after se colocan respecto a la pieza; cualquier position que no sea static vale
+  @include sprite.animation(
+    $name: memory-wipe,
+    $image: $sprite,
+    $frames: 4,
+    $size: $S $S,
+    $timeline: $timeline,
+  );
+  @media (prefers-reduced-motion: no-preference) {
+    animation:
+      memory-wipe $duration step-end 1 forwards,
+      memory-wipe-hide $duration step-end 1 forwards,
+      memory-wipe-shake $duration step-end 1 forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    background-position-x: math.div(1, 3) * 100%; // el pánico (fotograma 1)…
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-repeat: no-repeat;
+  }
+
+  // La máscara está siempre, con las 8 capas a tamaño 0 (no deja ver nada): la animación solo cambia mask-size. Fuera
+  // de la desintegración y el regreso, ::before tampoco tiene fondo.
+  &::before {
+    mask-image: $tile-images;
+    mask-position: $tile-positions;
+    mask-repeat: repeat;
+    mask-size: -tile-sizes(0);
+    @media (prefers-reduced-motion: no-preference) {
+      animation: memory-wipe-dissolve $duration step-end 1 forwards;
+    }
+  }
+
+  &::after {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: memory-wipe-fx $duration step-end 1 forwards;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      background-image: list.nth($banner, 1); // …con el cartel
+      background-size: -fx-size($banner);
+      background-position: -fx-at($banner, 38, 4);
+    }
+  }
+}
+
+// La pieza no se ve mientras ::before se desintegra y vuelve.
+@keyframes memory-wipe-hide {
+  0% {
+    background-size: 400% 100%;
+  }
+  #{-pct($t-wipe)} {
+    background-size: 0% 0%;
+  }
+  #{-pct($t-back)} {
+    background-size: 400% 100%;
+  }
+  100% {
+    background-size: 400% 100%;
+  }
+}
+
+// Saltito al darse cuenta y temblor cada vez más fuerte: pánico, resistencia, se la llevan y se desintegra.
+@keyframes memory-wipe-shake {
+  0% {
+    transform: none;
+  }
+  #{-pct($t-shock)} {
+    transform: translate(0, -1.5%);
+  }
+  #{-pct($t-shock + 80)} {
+    transform: none;
+  }
+  @for $k from 0 through 38 {
+    $ms: $t-panic + $k * $fx-step;
+    $amp: 0.8; // se desintegra
+    @if $ms < $t-resist {
+      $amp: 0.5;
+    } @else if $ms < $t-taken {
+      $amp: 1;
+    } @else if $ms < $t-wipe {
+      $amp: 1.5;
+    }
+    #{-pct($ms)} {
+      transform: -shake($k, $amp);
+    }
+  }
+  #{-pct($t-wipe + 7 * $wipe-step)} {
+    transform: none;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+// ::before: la desintegración (el fotograma 3 con el cartel) y el regreso (el reposo), con la máscara de bloques.
+@keyframes memory-wipe-dissolve {
+  0% {
+    background-image: none;
+    mask-size: -tile-sizes(0);
+  }
+  @for $s from 0 through 6 {
+    #{-pct($t-wipe + $s * $wipe-step)} {
+      @if $s == 0 {
+        background-image: list.nth($banner, 1), $sprite;
+        background-size: -fx-size($banner), 400% 100%;
+        background-position: -fx-at($banner, 38, 4), 100% 0;
+      }
+      mask-size: -tile-sizes(7 - $s);
+    }
+  }
+  #{-pct($t-wipe + 7 * $wipe-step)} {
+    background-image: none;
+    mask-size: -tile-sizes(0);
+  }
+  @for $s from 0 through 6 {
+    #{-pct($t-reboot + $s * $reboot-step)} {
+      @if $s == 0 {
+        background-image: $sprite;
+        background-size: 400% 100%;
+        background-position: 0 0;
+      }
+      mask-size: -tile-sizes($s + 1);
+    }
+  }
+  #{-pct($t-back)} {
+    background-image: none;
+    mask-size: -tile-sizes(0);
+  }
+  100% {
+    background-image: none;
+    mask-size: -tile-sizes(0);
+  }
+}
+
+// ::after: caras, efectos y partículas.
+@keyframes memory-wipe-fx {
+  0% {
+    background-image: none;
+  }
+  // «¿qué haces?»: la cara de 02 y las líneas de impacto, que llegan desde fuera
+  #{-pct($t-shock)} {
+    background-image: list.nth($shock, 1), list.nth($shock-r, 1), $face-shock;
+    background-size: -fx-size($shock), -fx-size($shock-r), $face-size;
+    background-position: -fx-at($shock, -8, 4), -fx-at($shock-r, 287, 4), $face-at;
+  }
+  #{-pct($t-shock + 60)} {
+    background-position: -fx-at($shock, 4, 12), -fx-at($shock-r, 275, 12), $face-at;
+  }
+  #{-pct($t-shock + 540)} {
+    background-position: $hidden, $hidden, $face-at;
+  }
+  // «NOT MY LORE!!!» y se resiste
+  @each $k in $panic-steps {
+    #{-pct($t-panic + $k * $fx-step)} {
+      @if $k == 0 {
+        background-image: $panic-images;
+      }
+      @if $k <= 2 {
+        background-size: -panic-size($k);
+      }
+      background-position: -panic-at($k);
+    }
+  }
+  // se desintegra: las partículas. Las imágenes cambian aquí, a saltos (el tramo de background-image sigue en step-end
+  // hasta las caras); desde 1 ms después, cada tramo entre pasos de $particle-keys es lineal: se mueven, crecen y se
+  // encogen sin saltos. Al final quedan todas con lado 0 hasta que vuelve.
+  #{-pct($t-wipe)} {
+    background-image: $particle-images;
+    @include -particles(0);
+  }
+  @each $k in $particle-keys {
+    $ms: $t-wipe + $k * $wipe-step;
+    @if $k == 0 {
+      $ms: $ms + 1;
+    }
+    #{-pct($ms)} {
+      @include -particles($k);
+      @if $k != list.nth($particle-keys, -1) {
+        animation-timing-function: linear;
+      }
+    }
+  }
+  // vuelve: las partículas regresan en línea recta a donde salieron y desaparecen cuando ya está entera
+  #{-pct($t-reboot)} {
+    @include -particles($back: 0);
+    animation-timing-function: linear;
+  }
+  #{-pct($t-back)} {
+    @include -particles($back: 1);
+  }
+  // en blanco… parpadea y sonríe: «está bien»
+  #{-pct($t-blink)} {
+    background-image: $face-closed;
+    background-size: $face-size;
+    background-position: $face-at;
+  }
+  #{-pct($t-blink + 100)} {
+    background-image: $face-half;
+  }
+  #{-pct($t-blink + 170)} {
+    background-image: $face-smile;
+  }
+  100% {
+    background-image: $face-smile;
+    background-size: $face-size;
+    background-position: $face-at;
+  }
+}

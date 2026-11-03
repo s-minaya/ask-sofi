@@ -1,0 +1,210 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sprite';
+
+// «¡Eureka!»: la transición entre «Sofi termina de pensar» y «Sofi empieza a explicar». Está pensando con el dedo en la
+// barbilla, le hace «clic» (abre mucho los ojos con una «o»), se le iluminan los ojos, y en el momento ¡eureka! levanta la
+// cabeza con una sonrisa enorme, da un saltito y le sale un destello. Luego se calma: cierra los ojos sonriendo, baja la
+// mano y te mira, lista para explicártelo (3 s, una sola pasada).
+// Fotogramas (eureka.webp): 0 pensando (nmc-03; es el fotograma 2 de needs-context tal cual) · 1 ¡eureka! (eureka-03,
+// con el choker de sofi-blink) · 2 lista para explicar: el fotograma 0 de talking (ojos al frente) con la sonrisa de
+// eureka-04, simétrica y en los colores de las bocas de talking.
+// Caras (eureka-face.webp, celdas de 184×192): 0 «clic» (eureka-01) y 1 ojos con estrellas (eureka-02), sobre el
+// fotograma 0 · 2 ojos entrecerrados y 3 cerrados (los de talking) con la sonrisa, sobre el fotograma 2. ::before las
+// pone encima; solo son opacas en lo que cambia más 3 px idénticos al fotograma de debajo, así que no se ve la junta.
+// Destello (eureka-spark.webp, celdas de 72×80): 0 con todos sus brillos · 1 sin las crucecitas ni los puntos sueltos.
+// ::after lo hace estallar con el ¡eureka!, centellear y marcharse flotando antes de que se calme. Va aparte del
+// personaje: para quitarlo, content: none en ::after; para ponerlo en otro sitio (junto a la explicación, por ejemplo),
+// quítalo ahí y usa .eureka-spark en otro elemento, que va al mismo compás si empiezan a la vez.
+// La pieza se mueve con translate y el destello con transform y opacity; las caras cambian a saltos: nada cambia el layout.
+// Una sola pasada: acaba en el fotograma 2 y se queda ahí. Fuera de la boca es idéntico al fotograma 0 de talking, así que
+// al cambiar a talking (al acabar o cuando la web quiera) solo cambia la boca. Para verla en bucle,
+// animation-iteration-count: infinite en la pieza y en sus ::before y ::after.
+// Con «reducir movimiento» queda fijo el ¡eureka! (1) con el destello.
+
+$timeline: (
+  0 1200, // pensando; encima, el «clic» (desde 600) y los ojos con estrellas (desde 1020) en ::before
+  1 1000, // ¡eureka!: destello y saltito
+  2 800, // se calma: cierra y abre los ojos sonriendo (::before) y te mira, lista para explicar
+);
+$total: sprite.duration($timeline);
+$duration: math.div($total, 1000) * 1s;
+
+// Caras de ::before: (celda ms). Fuera de los tramos visibles (ver $face-show) la celda da igual.
+$face: (
+  0 1020, // «clic» (visible desde 600)
+  1 180, // ojos con estrellas
+  0 1000,
+  3 100, // cierra los ojos mientras baja la mano…
+  2 70, // …y los abre
+  0 630,
+);
+// Cuándo se ve ::before: (ms opacidad).
+$face-show: (0 0, 600 1, 1200 0, 2200 1, 2370 0);
+// Centelleo del destello: (celda ms).
+$twinkle: (0 1420, 1 160, 0 160, 1 160, 0 1100);
+
+@each $name, $steps in (caras: $face, destello: $twinkle) {
+  @if sprite.duration($steps) != $total {
+    @error 'eureka: #{$name} dura #{sprite.duration($steps)} ms y la tira #{$total} ms; deben ir sincronizados.';
+  }
+}
+
+// Estallido del destello: (ms opacidad desplazamiento vertical giro escala curva hasta el siguiente punto).
+// Llega a escala 1 sin girar y así se queda mientras está quieto, para que el pixel art se vea nítido.
+$pop: (
+  0 0 0% -60deg 0.2 linear,
+  1200 0 0% -60deg 0.2 cubic-bezier(0.3, 0, 0.4, 1), // ¡eureka!: estalla y se pasa un poco
+  1290 1 0% 10deg 1.2 ease-in-out,
+  1400 1 0% 0deg 1 linear,
+  1960 1 0% 0deg 1 ease-in, // se va flotando
+  2240 0 -12% 25deg 0.6 linear,
+);
+
+// Movimiento de la pieza: (ms desplazamiento vertical curva hasta el siguiente punto), en px de un fotograma de 384.
+$move: (
+  0 0 linear,
+  600 0 cubic-bezier(0.2, 0.8, 0.4, 1), // «clic»: se yergue un poco
+  680 -4 ease-in,
+  800 0 linear,
+  1200 0 cubic-bezier(0.2, 0.8, 0.4, 1), // ¡eureka!: saltito con rebote
+  1320 -8 ease-in,
+  1460 0 ease-out,
+  1530 -2 ease-in,
+  1600 0 linear,
+);
+
+// Cajas en px de un fotograma de 384 (x y ancho alto), múltiplos de 8: a 96, 192 o 384 px caen en píxeles enteros.
+$face-box: 112 120 184 192;
+$spark-box: 296 0 72 80;
+$spark-origin: 48.7% 52.3%; // el núcleo de la estrella grande: estalla y gira sobre él
+
+@function -pct($ms) {
+  @return math.div(math.round(math.div($ms * 100000, $total)), 1000) * 1%;
+}
+
+// Porcentaje de la caja redondeado hacia arriba (como en i-see-you, needs-context y error): redondeando hacia abajo, a
+// tamaños 1:2 con pixelado el navegador toma el otro píxel de cada pareja en la capa y no en el fotograma.
+@function -pos($px, $of: 384) {
+  @return math.div(math.ceil(math.div($px * 100000, $of)), 1000) * 1%;
+}
+
+// px de un fotograma de 384 → % del lado de la pieza (translate se mide sobre ella).
+@function -px($px) {
+  @return math.div(math.round(math.div($px * 100000, 384)), 1000) * 1%;
+}
+
+@mixin -box($box) {
+  left: -pos(list.nth($box, 1));
+  top: -pos(list.nth($box, 2));
+  width: -pos(list.nth($box, 3));
+}
+
+// Lo común al destello de ::after y al suelto: centelleo en pasos (los @keyframes los pone el suelto) y estallido.
+@mixin -spark-motion {
+  pointer-events: none;
+  transform-origin: $spark-origin;
+  opacity: 0; // fuera de la animación no se ve, salvo con reducir movimiento
+  @media (prefers-reduced-motion: no-preference) {
+    animation: eureka-twinkle $duration step-end 1 forwards, eureka-pop $duration 1 forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    opacity: 1;
+  }
+}
+
+.eureka {
+  position: relative; // ::before y ::after se colocan respecto a la pieza; cualquier position que no sea static vale
+  @include sprite.animation(
+    $name: eureka,
+    $image: url('eureka.webp'),
+    $frames: 3,
+    $size: 384 384,
+    $timeline: $timeline,
+  );
+  @media (prefers-reduced-motion: no-preference) {
+    animation: eureka $duration step-end 1 forwards, eureka-move $duration 1 forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    background-position-x: 50%; // el ¡eureka!
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+  }
+
+  &::before {
+    @include -box($face-box);
+    @include sprite.animation(
+      $name: eureka-face,
+      $image: url('eureka-face.webp'),
+      $frames: 4,
+      $size: list.nth($face-box, 3) list.nth($face-box, 4),
+      $timeline: $face,
+    );
+    opacity: 0;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: eureka-face $duration step-end 1 forwards, eureka-face-show $duration step-end 1 forwards;
+    }
+  }
+
+  &::after {
+    @include -box($spark-box);
+    aspect-ratio: #{list.nth($spark-box, 3)} / #{list.nth($spark-box, 4)};
+    background: url('eureka-spark.webp') 0 0 / 200% 100% no-repeat;
+    @include -spark-motion;
+  }
+}
+
+// El destello suelto, para otro elemento: mide 72×80 en la escala de un fotograma de 384 (18,75 % de su ancho).
+.eureka-spark {
+  @include sprite.animation(
+    $name: eureka-twinkle,
+    $image: url('eureka-spark.webp'),
+    $frames: 2,
+    $size: list.nth($spark-box, 3) list.nth($spark-box, 4),
+    $timeline: $twinkle,
+  );
+  @include -spark-motion;
+}
+
+@keyframes eureka-face-show {
+  @each $ms, $opacity in $face-show {
+    #{-pct($ms)} {
+      opacity: $opacity;
+    }
+  }
+  100% {
+    opacity: list.nth(list.nth($face-show, -1), 2);
+  }
+}
+
+@keyframes eureka-pop {
+  @each $ms, $opacity, $dy, $angle, $scale, $ease in $pop {
+    #{-pct($ms)} {
+      opacity: $opacity;
+      transform: translateY($dy) rotate($angle) scale($scale);
+      animation-timing-function: $ease;
+    }
+  }
+  $last: list.nth($pop, -1);
+  100% {
+    opacity: list.nth($last, 2);
+    transform: translateY(list.nth($last, 3)) rotate(list.nth($last, 4)) scale(list.nth($last, 5));
+  }
+}
+
+@keyframes eureka-move {
+  @each $ms, $y, $ease in $move {
+    #{-pct($ms)} {
+      translate: 0 -px($y);
+      animation-timing-function: $ease;
+    }
+  }
+  100% {
+    translate: 0;
+  }
+}

@@ -1,0 +1,71 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sprite';
+
+// Sofi habla mirando a la usuaria: la boca sigue un ritmo de sílabas con pausas entre palabras y frases,
+// y parpadea de vez en cuando, una vez sola y otra doble (bucle de 6,41 s).
+// Fotogramas (talking.webp): 0 reposo, mirando al frente · 1 ojos entrecerrados · 2 cerrados. Los tres con la boca cerrada.
+// Bocas (talking-mouth.webp, celdas de 48×40): 0 cerrada · 1 pequeña · 2 mediana · 3 muy abierta («a»)
+// · 4 sonrisa pequeña («e») · 5 redondeada («o»).
+// Todas las bocas son simétricas y comparten eje con la cara (x = 202 de 384, bajo la nariz). Al abrirse, el labio
+// de arriba apenas sube y la boca crece hacia abajo, como si bajara la mandíbula.
+// ::after pinta todas las bocas, también la cerrada (la de la tira queda debajo, tapada, y sirve de respaldo y para las
+// miniaturas). Cada celda solo es opaca en las bocas y en un margen de piel idéntica a la tira; lo demás es
+// transparente. Así no hay junta a ningún tamaño, y al ir todas en la misma caja tampoco hay saltos entre ellas.
+// Fuera de la boca y los ojos, la tira es idéntica a sofi-blink.
+
+$mouth: (
+  // arranca enseguida
+  0 80,
+  // frase 1, un saludo: redondea la «o» antes de abrir
+  5 90, 3 160, 2 90, 0 70, 4 110, 2 180, 4 80, 0 260,
+  // frase 2, más larga
+  2 110, 1 90, 4 120, 0 60, 5 100, 2 130, 3 170, 2 80, 4 100, 1 90, 0 80,
+  5 120, 4 100, 2 150, 1 90, 0 420,
+  // frase 3, una pregunta
+  4 100, 2 120, 0 70, 1 90, 3 150, 1 80, 5 130, 4 110, 0 90, 2 160, 4 90, 0 300,
+  // frase 4: acaba con una sonrisa
+  1 90, 5 110, 4 90, 0 70, 2 100, 3 180, 2 90, 1 80, 0 80, 2 120, 4 260, 0 520,
+);
+
+// Parpadeo simple en la pausa de la frase 1 y doble al acabar la 3; cada parpadeo, como en sofi-blink.
+$eyes: (
+  0 840, 1 100, 2 100, 1 100,
+  0 3160, 1 100, 2 100, 1 100, 0 100, 1 100, 2 100, 1 100,
+  0 1410,
+);
+
+@if sprite.duration($eyes) != sprite.duration($mouth) {
+  @error 'talking: los ojos (#{sprite.duration($eyes)} ms) y la boca (#{sprite.duration($mouth)} ms) deben durar lo mismo para ir sincronizados.';
+}
+
+// Capa de la boca, en px de un fotograma de 384.
+$cell: 48 40;
+$box: 176 224; // esquina superior izquierda; múltiplos de 8: a 96, 192 o 384 px cae en píxeles enteros
+
+.talking {
+  position: relative; // ::after se coloca respecto a la pieza; cualquier position que no sea static vale
+  @include sprite.animation(
+    $name: talking,
+    $image: url('talking.webp'),
+    $frames: 3,
+    $size: 384 384,
+    $timeline: $eyes,
+  );
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: math.div(list.nth($box, 1), 384) * 100%;
+    top: math.div(list.nth($box, 2), 384) * 100%;
+    width: math.div(list.nth($cell, 1), 384) * 100%;
+    pointer-events: none;
+    @include sprite.animation(
+      $name: talking-mouth,
+      $image: url('talking-mouth.webp'),
+      $frames: 6,
+      $size: $cell,
+      $timeline: $mouth,
+    );
+  }
+}

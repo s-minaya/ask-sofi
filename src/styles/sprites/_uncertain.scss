@@ -1,0 +1,105 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sprite';
+
+// «No lo sé… y no pasa nada»: Sofi reconoce con cariño que falta información (un «no lo sé» o un «depende» en el
+// onboarding, o cuando no se puede dar más contexto en un análisis). Está en reposo, ladea la cabeza con una sonrisa
+// insegura y empieza a encogerse de hombros, completa el gesto con las palmas hacia arriba y una sonrisa tímida, y al
+// soltarlo cierra los ojos sonriendo («está bien») y se queda tranquila y sonriente, lista para seguir (4,38 s, una sola
+// pasada). Honesta y cálida, nunca culpable ni frustrada.
+// Fotogramas (uncertain.webp): 0 reposo, el fotograma 0 de sofi-blink tal cual · 1 «mmm… no sé» (uncertain-01: cabeza
+// ladeada, cejas preocupadas y los hombros empezando a subir) · 2 el encogimiento de hombros con las palmas hacia arriba
+// (uncertain-02, con el choker de sofi-blink redibujado).
+// Caras (uncertain-face.webp, celdas de 184×128), «está bien» sobre el fotograma 0: los ojos de sofi-blink con la sonrisa
+// de suspicious, 0 cerrados · 1 entrecerrados · 2 abiertos. ::before las pone encima; solo son opacas en lo que cambia más
+// 3 px idénticos al reposo, así que no se ve la junta. Los ojos cerrados tapan el cambio de pose al bajar los hombros.
+// Una sola pasada: acaba en el reposo con la sonrisa y se queda ahí. Empieza en el reposo de sofi-blink, así que al entrar
+// desde ella no salta nada; al volver a sofi-blink (al acabar o cuando la web quiera) solo cambia la boca. Para verla en
+// bucle, animation-iteration-count: infinite en la pieza y en su ::before. Todo cambia a saltos (background-position y
+// opacity): nada cambia el layout.
+// Con «reducir movimiento» queda fijo el encogimiento de hombros (fotograma 2).
+
+$timeline: (
+  0 400, // reposo
+  1 800, // «mmm… no sé»: ladea la cabeza y empieza a encogerse de hombros
+  2 1600, // se encoge de hombros con las palmas hacia arriba y una sonrisa tímida
+  0 1580, // «está bien» (::before): cierra los ojos sonriendo, los abre y se queda sonriendo
+);
+$total: sprite.duration($timeline);
+$duration: math.div($total, 1000) * 1s;
+$smile: $total - list.nth(list.nth($timeline, -1), 2); // ms: baja los hombros y empieza «está bien»
+
+// Caras de ::before: (celda ms). Antes de $smile no se ve (ver $face-show) y la celda da igual.
+$face: (
+  0 $smile + 300, // cierra los ojos sonriendo…
+  1 80, // …los entreabre…
+  2 1200, // …y se queda sonriendo
+);
+// Cuándo se ve ::before: (ms opacidad).
+$face-show: (0 0, $smile 1);
+
+@if sprite.duration($face) != $total {
+  @error 'uncertain: las caras duran #{sprite.duration($face)} ms y la tira #{$total} ms; deben ir sincronizadas.';
+}
+
+// Caja en px de un fotograma de 384 (x y ancho alto), múltiplos de 8: a 96, 192 o 384 px cae en píxeles enteros.
+$face-box: 112 120 184 128;
+
+@function -pct($ms) {
+  @return math.div(math.round(math.div($ms * 100000, $total)), 1000) * 1%;
+}
+
+// Porcentaje de la caja redondeado hacia arriba (como en i-see-you, needs-context, error, eureka y suspicious):
+// redondeando hacia abajo, a tamaños 1:2 con pixelado el navegador toma el otro píxel de cada pareja en la capa y no en
+// el fotograma.
+@function -pos($px, $of: 384) {
+  @return math.div(math.ceil(math.div($px * 100000, $of)), 1000) * 1%;
+}
+
+.uncertain {
+  position: relative; // ::before se coloca respecto a la pieza; cualquier position que no sea static vale
+  @include sprite.animation(
+    $name: uncertain,
+    $image: url('uncertain.webp'),
+    $frames: 3,
+    $size: 384 384,
+    $timeline: $timeline,
+  );
+  @media (prefers-reduced-motion: no-preference) {
+    animation: uncertain $duration step-end 1 forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    background-position-x: 100%; // el fotograma 2, el encogimiento de hombros
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -pos(list.nth($face-box, 1));
+    top: -pos(list.nth($face-box, 2));
+    width: -pos(list.nth($face-box, 3));
+    pointer-events: none;
+    @include sprite.animation(
+      $name: uncertain-face,
+      $image: url('uncertain-face.webp'),
+      $frames: 3,
+      $size: list.nth($face-box, 3) list.nth($face-box, 4),
+      $timeline: $face,
+    );
+    opacity: 0;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: uncertain-face $duration step-end 1 forwards, uncertain-face-show $duration step-end 1 forwards;
+    }
+  }
+}
+
+@keyframes uncertain-face-show {
+  @each $ms, $opacity in $face-show {
+    #{-pct($ms)} {
+      opacity: $opacity;
+    }
+  }
+  100% {
+    opacity: list.nth(list.nth($face-show, -1), 2);
+  }
+}

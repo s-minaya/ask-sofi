@@ -1,0 +1,352 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+
+// «¿Sigues ahí?»: si la usuaria lleva un rato sin hacer nada, a Sofi le entra sueño, da cabezadas y se duerme con un
+// Zzz encima. Cuando vuelve, se despierta de un susto, pone cara de no haber hecho nada y vuelve a la normalidad.
+// No es un bucle: lo dirige are-u-still-here.js, que pone el estado en data-still-here.
+//   idle → drowsy (párpados pesados) → nodding (cabezada) → drowsy (se espabila) → nodding → asleep (Zzz)
+//   asleep → startled (susto y estallido) → guilty (pillada) → idle · desde drowsy o nodding vuelve directa a idle
+//
+// Va encima del sprite de reposo: el anfitrión es el elemento de sofi-blink (class="sofi-blink are-u-still-here").
+// Somnolienta usa sus ojos: el anfitrión enseña el fotograma 1 de sofi-blink (entrecerrados) o el 2 (cerrados, en los
+// parpadeos lentos), y encima van los párpados cada vez más bajos y la boca de 01. En los demás estados se oculta el
+// reposo. Las capas son hijos del anfitrión marcados con data-still-here-layer (are-u-still-here.js los crea si
+// faltan). Van por atributo, no por clase, para que funcionen igual con CSS Modules.
+//
+// Imágenes (cajas en px de un fotograma de 384, todas múltiplos de 8):
+//   are-u-still-here.webp     poses recortadas a su caja útil: cabezada (02), dormida (03) y susto (04); los párpados
+//                             de somnolienta, 4 y 6 px más bajos que los entrecerrados (sobre el fotograma 1); la boca
+//                             de 01 y la cara de pillada (05, sobre 04). Párpados, boca y cara solo son opacos en lo
+//                             que cambia más 3 px idénticos a lo de debajo.
+//   are-u-still-here-fx.webp  Zzz (z, Z y Z, cada una con sus destellos) y estallido del susto.
+// Todo el movimiento es transform y opacity. El cuerpo se deforma desde el borde de abajo, que no se mueve.
+// Con «reducir movimiento» se ven los mismos estados, sin parpadeos ni desplazamientos, y el Zzz y el estallido fijos.
+
+$frame: 384;
+$atlas: 1152 304;
+$fx-atlas: 248 96;
+
+// Caja en el fotograma (x y ancho alto) y esquina de su celda en el atlas.
+$poses: (
+  nodding: (box: 48 80 304 304, at: 0 0),
+  asleep: (box: 48 96 328 288, at: 304 0),
+  startled: (box: 32 80 344 304, at: 632 0),
+);
+$lids: (box: 112 176 176 40, heavy: 976 0, heavier: 976 40);
+$mouth: (box: 176 232 40 24, at: 976 80);
+$guilty: (box: 136 200 168 120, at: 976 104);
+$fx: (
+  z1: (box: 256 56 40 48, at: 0 0),
+  z2: (box: 288 40 40 48, at: 40 0),
+  z3: (box: 312 8 64 64, at: 80 0),
+  burst: (box: 152 0 104 96, at: 144 0),
+);
+
+// Somnolienta: los ojos a lo largo de un ciclo (pasos en ms). half: entrecerrados (fotograma 1 de sofi-blink) ·
+// heavy y heavier: párpados 4 y 6 px más bajos · closed: cerrados (fotograma 2), un parpadeo lento.
+// Los párpados pesan cada vez más. La segunda vez (2,6 s) se corta con la cabezada antes del segundo parpadeo.
+$drowsy-cycle: 4200;
+$drowsy-eyes: (half 300, heavy 1100, closed 380, heavy 520, heavier 780, closed 620, heavier 500);
+// Zzz: cada letra aparece, flota y se desvanece; la siguiente, con retraso.
+$zzz-cycle: 3.6s;
+$zzz-delays: (z1: 0.6s, z2: 1.1s, z3: 1.6s);
+
+@function -pct($px, $of: $frame) {
+  @return math.div(math.round(math.div($px * 100000, $of)), 1000) * 1%;
+}
+
+// Posición de fondo para ver en una caja de $size la región que empieza en $at de un atlas de $atlas.
+@function -offset($at, $atlas, $size) {
+  @if $atlas == $size {
+    @return 0%;
+  }
+  @return -pct($at, $atlas - $size);
+}
+
+@mixin -box($box) {
+  left: -pct(list.nth($box, 1));
+  top: -pct(list.nth($box, 2));
+  width: -pct(list.nth($box, 3));
+  aspect-ratio: #{list.nth($box, 3)} / #{list.nth($box, 4)};
+}
+
+// Tamaño y posición del atlas para ver su celda $at en una caja $box.
+@mixin -cell($atlas, $box, $at) {
+  $w: list.nth($box, 3);
+  $h: list.nth($box, 4);
+  background-size: -pct(list.nth($atlas, 1), $w) -pct(list.nth($atlas, 2), $h);
+  background-position: -offset(list.nth($at, 1), list.nth($atlas, 1), $w) -offset(list.nth($at, 2), list.nth($atlas, 2), $h);
+}
+
+@function -lids-y($at) {
+  @return -offset(list.nth($at, 2), list.nth($atlas, 2), list.nth(map.get($lids, box), 4));
+}
+
+.are-u-still-here {
+  position: relative;
+
+  // Somnolienta: el reposo con los ojos entrecerrados (fotograma 1 de sofi-blink); encima, párpados y boca.
+  &[data-still-here='drowsy'] {
+    animation: none;
+    background-position: 50% 0;
+  }
+
+  // Lo demás tapa el reposo con su propia pose.
+  &:is([data-still-here='nodding'], [data-still-here='asleep'], [data-still-here='startled'], [data-still-here='guilty']) {
+    animation: none;
+    background-image: none;
+  }
+
+  [data-still-here-layer] {
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  // Pose, cara y boca se mueven juntas; el borde de abajo (el corte del busto) queda fijo.
+  [data-still-here-layer='body'] {
+    inset: 0;
+    visibility: visible;
+    transform-origin: 50% 100%;
+  }
+
+  :is([data-still-here-layer='pose'], [data-still-here-layer='face'], [data-still-here-layer='mouth']) {
+    background: url('are-u-still-here.webp') no-repeat;
+  }
+
+  // Pillada usa la pose del susto (05 es una edición de 04: solo cambia la cara).
+  @each $state, $pose in $poses {
+    $sel: "[data-still-here='#{$state}']";
+    @if $state == startled {
+      $sel: "[data-still-here='startled'], [data-still-here='guilty']";
+    }
+    &:is(#{$sel}) [data-still-here-layer='pose'] {
+      visibility: visible;
+      @include -box(map.get($pose, box));
+      @include -cell($atlas, map.get($pose, box), map.get($pose, at));
+    }
+  }
+
+  // Somnolienta: la cara son los párpados más bajos (quietos, los de 4 px); la boca de 01 no cambia.
+  &[data-still-here='drowsy'] {
+    [data-still-here-layer='face'] {
+      visibility: visible;
+      @include -box(map.get($lids, box));
+      @include -cell($atlas, map.get($lids, box), map.get($lids, heavy));
+    }
+
+    [data-still-here-layer='mouth'] {
+      visibility: visible;
+      @include -box(map.get($mouth, box));
+      @include -cell($atlas, map.get($mouth, box), map.get($mouth, at));
+    }
+  }
+
+  &[data-still-here='guilty'] [data-still-here-layer='face'] {
+    visibility: visible;
+    @include -box(map.get($guilty, box));
+    @include -cell($atlas, map.get($guilty, box), map.get($guilty, at));
+  }
+
+  @each $layer, $fx-cell in $fx {
+    [data-still-here-layer='#{$layer}'] {
+      @include -box(map.get($fx-cell, box));
+      background: url('are-u-still-here-fx.webp') no-repeat;
+      @include -cell($fx-atlas, map.get($fx-cell, box), map.get($fx-cell, at));
+    }
+  }
+
+  // Las letras salen de la cabeza; el estallido, de donde converge (encima del pelo).
+  :is([data-still-here-layer='z1'], [data-still-here-layer='z2'], [data-still-here-layer='z3']) {
+    transform-origin: 0% 100%;
+  }
+
+  [data-still-here-layer='burst'] {
+    transform-origin: 50% 90%;
+  }
+
+  &[data-still-here='asleep'] :is([data-still-here-layer='z1'], [data-still-here-layer='z2'], [data-still-here-layer='z3']),
+  &[data-still-here='startled'] [data-still-here-layer='burst'] {
+    visibility: visible;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    // Somnolienta: el anfitrión cambia entre entrecerrados y cerrados; los párpados más bajos, a la vez.
+    &[data-still-here='drowsy'] {
+      animation: still-here-eyes math.div($drowsy-cycle, 1000) * 1s step-end infinite;
+
+      [data-still-here-layer='face'] {
+        animation: still-here-lids math.div($drowsy-cycle, 1000) * 1s step-end infinite;
+      }
+    }
+
+    // Cabezada: la cabeza cae y se asienta.
+    &[data-still-here='nodding'] [data-still-here-layer='body'] {
+      animation: still-here-nod 0.36s ease-out;
+    }
+
+    @each $layer, $delay in $zzz-delays {
+      &[data-still-here='asleep'] [data-still-here-layer='#{$layer}'] {
+        animation: still-here-zzz $zzz-cycle $delay ease-in-out infinite backwards;
+      }
+    }
+
+    // Susto: da un respingo y tiembla; el estallido salta encima de la cabeza.
+    &[data-still-here='startled'] {
+      [data-still-here-layer='body'] {
+        animation: still-here-jolt 0.5s ease-out;
+      }
+
+      [data-still-here-layer='burst'] {
+        animation: still-here-burst 0.9s ease-out forwards;
+      }
+    }
+
+    // Pillada: se balancea un poco, como quien disimula.
+    &[data-still-here='guilty'] [data-still-here-layer='body'] {
+      animation: still-here-sway 1.3s 0.35s ease-in-out;
+    }
+  }
+}
+
+// Un keyframe por paso de $drowsy-eyes (y el 100 %, igual que el último). El contenido recibe qué ojos tocan.
+@mixin -drowsy-steps {
+  $t: 0;
+  $last: null;
+  @each $eyes, $ms in $drowsy-eyes {
+    #{-pct($t, $drowsy-cycle)} {
+      @content ($eyes);
+    }
+    $t: $t + $ms;
+    $last: $eyes;
+  }
+  100% {
+    @content ($last);
+  }
+}
+
+// Somnolienta, en el anfitrión: el fotograma 1 de sofi-blink (entrecerrados) o el 2 (cerrados)…
+@keyframes still-here-eyes {
+  @include -drowsy-steps using ($eyes) {
+    @if $eyes == closed {
+      background-position-x: 100%;
+    } @else {
+      background-position-x: 50%;
+    }
+  }
+}
+
+// …y en la capa face, encima del 1, los párpados más bajos; con entrecerrados o cerrados no se ve.
+@keyframes still-here-lids {
+  @include -drowsy-steps using ($eyes) {
+    @if $eyes == heavy or $eyes == heavier {
+      opacity: 1;
+      background-position-y: -lids-y(map.get($lids, $eyes));
+    } @else {
+      opacity: 0;
+      background-position-y: -lids-y(map.get($lids, heavy));
+    }
+  }
+}
+
+@keyframes still-here-nod {
+  0% {
+    transform: scale(1, 1.035);
+  }
+  45% {
+    transform: scale(1.01, 0.975);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes still-here-zzz {
+  0% {
+    opacity: 0;
+    transform: translate(-12%, 14%) scale(0.6);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  16% {
+    transform: none;
+  }
+  40% {
+    transform: translateY(-7%);
+  }
+  62% {
+    opacity: 1;
+    transform: none;
+  }
+  80%,
+  100% {
+    opacity: 0;
+    transform: translate(8%, -18%);
+  }
+}
+
+@keyframes still-here-jolt {
+  0% {
+    transform: scale(1.02, 0.95);
+  }
+  16% {
+    transform: scale(0.97, 1.06);
+  }
+  32% {
+    transform: scale(1.01, 0.98);
+  }
+  48% {
+    transform: none;
+  }
+  58% {
+    transform: translateX(-1.2%);
+  }
+  68% {
+    transform: translateX(1.2%);
+  }
+  78% {
+    transform: translateX(-0.6%);
+  }
+  88% {
+    transform: translateX(0.3%);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes still-here-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+  34% {
+    transform: scale(0.96);
+  }
+  46% {
+    transform: none;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes still-here-sway {
+  25% {
+    transform: translateX(-0.7%);
+  }
+  75% {
+    transform: translateX(0.7%);
+  }
+}

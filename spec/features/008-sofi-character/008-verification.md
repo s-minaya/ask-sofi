@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -17,6 +17,9 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 |---|---|---|
 | T001 — arnés de medición | Entregado y validado con el criterio revisado de `008-tasks.md`: pruebas de las funciones puras (92), validación de las peticiones y comprobación mínima del protocolo A/B (§1.8). **E2 no se reprodujo,** ni siquiera con el guion que la produjo (§1.4): EX1 la sustituye como línea base | §1 |
 | EX1 — línea base de HEAD y su dispersión | Medido y registrado. El margen provisional de +50 ms de FCP con Slow 4G + CPU 4× **no se distingue del ruido** (§2.3) y se retira (plan §11.2). CSS de entrada de partida: 9 780 B con `gzipSync` (§2.4) | §2 |
+| T002 — inventario de los 13 ZIP | Completo frente al catálogo §3 y a las fuentes de `17aca4f`; `_sprite.scss` idéntico en los 13; controladores `006`, `008` y `009` con sus tipos. Sin ausencias | §3.2 |
+| T003 — verificación de los ZIP | Los 7 actualizados coinciden con los SHA-256 del informe de correcciones; los 6 restantes, byte a byte con las fuentes de `17aca4f` | §3.3 |
+| T004–T008 y VT1 — integración e integridad | Recursos integrados: 61 de 61 idénticos a `17aca4f`; T005–T008 hechas. Completados tras corregir `serverBoundary.test.ts` (§4.4); suite completa en verde | §4 |
 
 ---
 
@@ -373,3 +376,113 @@ Esta deriva forma parte de la dispersión de §2.3 y es una razón más para com
 - **Objetivos tras integrar** (EX4), **`rolling`** (EX2) y **`talking`/`uncertain`** (EX3): no se han ejecutado.
 - **Otro equipo, otro navegador, otro DPR y CPU sin red (o al revés)**: no medidos.
 - **Pantallas en frío por separado** (T091, EX4): el recorrido secuencial no las sustituye.
+
+---
+
+## 3. T002 y T003 — Inventario y verificación de los 13 ZIP
+
+### 3.1 Entorno y método
+
+| | |
+|---|---|
+| Fecha | 2026-11-03 |
+| ZIP verificados | Los 13 de `spec/features/007-ask-sofi-chat/` (sin modificar; siguen sin seguimiento en Git) |
+| Extracción | Una carpeta nueva y vacía por ZIP, en el directorio temporal de la sesión, **fuera del repositorio** (`Expand-Archive`) |
+| Fuente de referencia | Repositorio de spritesheets, commit `17aca4f` (`catálogo §1`; `asset-provenance.md` §7–§8). Árbol de trabajo limpio y `main` sincronizado con `origin/main` en el momento de la comprobación. Los archivos se leyeron con `git show 17aca4f:<ruta>`, no del disco |
+| Hashes de referencia | Cierre (§11) de `auditorias/2026-10-22-correcciones-artisticas/informe.md`, mismo repositorio |
+| Comparación | SHA-256 de los ZIP; byte a byte (`Buffer.compare`) de cada archivo extraído contra su fuente en `17aca4f` |
+
+### 3.2 T002 — Inventario
+
+El catálogo §3 lista 14 recursos: `001` sin ZIP (integrado), `007` reservado e inexistente y 13 ZIP.
+
+| Comprobación | Resultado |
+|---|---|
+| ZIP presentes | 13 de 13: 002–006 y 008–015. `001` y `007` no tienen ZIP, como corresponde |
+| Estructura | Todos con un único directorio raíz `sprites/` y 71 archivos en total |
+| Archivos de cada ZIP frente a la fuente de `17aca4f` | Para cada recurso, todos los `.webp`, `.scss`, `.js` y `.d.ts` de su carpeta fuente (salvo los `demo.js`, que no se exportan) están en su ZIP, y el ZIP no trae nada que no esté en la fuente (más el `_sprite.scss`). Sin ausencias ni sobrantes |
+| `_sprite.scss` | Idéntico en los 13 ZIP (2 142 B, SHA-256 `332e7a88…af76cc`) y byte a byte igual a `scss/_sprite.scss` de `17aca4f` |
+| Controladores y tipos | `006` (`poking.js` + `poking.d.ts`), `008` (`are-u-still-here.js` + `.d.ts`) y `009` (`i-see-you.js` + `.d.ts`): cada controlador trae sus tipos. Ningún otro ZIP trae controlador |
+
+Archivos por ZIP: 002 (3), 003 (4), 004 (4), 005 (5), 006 (8), 008 (6), 009 (5), 010 (5), 011 (4), 012 (5), 013 (4), 014 (4), 015 (14).
+
+### 3.3 T003 — Verificación
+
+**Los siete actualizados, frente al cierre del informe de correcciones** (SHA-256 completo y tamaño):
+
+| ZIP | Bytes | SHA-256 | Informe |
+|---|---|---|---|
+| 002-sofing | 121 095 | `3D3F6B40649C4A795CC2CCE1974E104BC6387753B464B5D78B7B0237C03B594B` | coincide |
+| 003-rolling | 64 397 | `0085D65C74C1B8AB5199C7E30FA03F45FEA0B5A0E4D6C607C97520B9A061728F` | coincide |
+| 005-favoriting | 59 779 | `E4126C9117CD136C5DD29E3040470C814181F38FF3B3DB9A3166AA43F06BA7F7` | coincide |
+| 008-are-u-still-here | 68 749 | `ABAE8750266DA9BFE9A080E2FB94510B9BF049E23BE61EEA4B50DDB99E7924A9` | coincide |
+| 012-eureka | 84 971 | `21AA468A402205F3DD649C7110FD395AAE2251B54477B96AB8B3DD356A3B1380` | coincide |
+| 013-suspicious | 66 613 | `EDA6C768FD14484F7AA2F04C3D4C80310931029644A2CF3568863E9675820DB6` | coincide |
+| 015-memory-wipe | 113 463 | `FFFBF3973C09DE5EEB911285F0C81FAD706108B4138479AAA2E2D4C0BDDFAD3B` | coincide |
+
+**Los seis restantes, por contenido frente a los recursos fuente de `17aca4f`** (no tienen hash de referencia, `asset-provenance.md` §8): 004, 006, 009, 010, 011 y 014. Todos los archivos extraídos son byte a byte iguales a su fuente. SHA-256 de los ZIP, registrados como referencia a partir de hoy (no son una referencia anterior):
+
+| ZIP | Bytes | SHA-256 |
+|---|---|---|
+| 004-talking | 20 300 | `4739B6BE39C8FB8A4478D51143F03E83EF108B21798290C93342EE095238B39D` |
+| 006-poking | 62 430 | `16CD383800F47CC971ACB90DCF51A6C091412F0D2772AD1F6F60334304D98C5A` |
+| 009-i-see-you | 35 560 | `3ECF26C16490E4657B80FB2818A601F29C4036F60B68A79A5FEB8379B5040DFF` |
+| 010-needs-context | 92 744 | `74FB39FE5FA6AAFF2196CB69A8A31C5A7B533057D1DC04A523C0533765A71D44` |
+| 011-error | 49 653 | `7CF6366CCE7445AD1AA82D443842A7CBA2544708BE30AF95EEED1BACAAAE451D` |
+| 014-uncertain | 65 171 | `D659E365C1DD0BD9DD85CF5CAC8A4FADBF39393590CF6681ECA7F4BF15EFB3FB` |
+
+**Comprobación adicional (no exigida por T003):** el contenido de los siete ZIP actualizados también coincide byte a byte con las fuentes de `17aca4f`.
+
+### 3.4 Observaciones y límites
+
+- **ZIP frente a `dist/` del repositorio de spritesheets.** Los ZIP de 002, 003, 005, 008, 012, 013 y 015 son byte a byte iguales a los de `dist/` (en `dist/` el de eureka se llama `012-eureka-new.zip`). Los de 004, 006, 009, 010, 011 y 014 **no** lo son. No se ha investigado la causa ni se ha comparado el contenido de esos `dist/` con la fuente: el criterio de T003 para esos seis es el contenido frente a `17aca4f`, que se cumple. `asset-provenance.md` §5 decía que los 14 coincidían byte a byte el 2026-10-21; hoy eso no se cumple para esos seis.
+- **Alcance de «igual a la fuente».** Garantiza que el ZIP contiene lo que `17aca4f` publica; no valida el arte (ver `asset-provenance.md` §6) ni la integridad de cada WebP más allá de su igualdad byte a byte. La integridad funcional de los recursos (decodificación, dimensiones, rutas del SCSS, etc.) es VT1 y no se ha ejecutado.
+- **Sin discrepancias:** ausencias, sobrantes, hashes y diferencias de contenido: ninguno. No se ha integrado ni modificado nada; T004 y VT1 no se han iniciado.
+
+---
+
+## 4. T004–T008 y VT1 — Integración de los recursos y comprobación de integridad
+
+### 4.1 Qué se hizo
+
+| Tarea | Resultado |
+|---|---|
+| T004 | Contenido de los 13 ZIP copiado tal cual a `src/styles/sprites/` (extraídos fuera del repositorio, §3.1). Cambian solo `sofing.webp` y `rolling.webp`; `_sprite.scss`, `_sofing.scss` y `_rolling.scss` ya eran iguales a los de los ZIP. `sofi-blink` se conserva. 61 archivos: 40 `.webp`, 14 parciales + `_sprite.scss`, 3 `.js` y 3 `.d.ts` (`poking`, `are-u-still-here`, `i-see-you`) |
+| T005 | `_index.scss` retirado. Ningún archivo de `src`, `scripts`, `e2e`, `evals`, `index.html` ni `vite.config.ts` lo importaba |
+| T006–T008 | 14 módulos dueños en `src/components/sofi/sprites/` (`<id>.module.scss` y `<id>.ts`): lote 1 (`sofi-blink`, `sofing`, `rolling`, `talking`, `favoriting`, `needs-context`, `error`, `uncertain`, `memory-wipe`), lote 2 (`poking`, `are-u-still-here`, `i-see-you`) y lote 3 (`eureka`, `suspicious`). Cada `.module.scss` es solo el `@use` relativo de su parcial; cada `.ts` exporta `className` y `strips` (glob ansioso limitado a su prefijo). Los controladores no se importan |
+
+Prueba escrita antes que los módulos (RED con 43 fallos y 14 aciertos) y luego en verde: `src/components/sofi/sprites/sprites.test.ts`, 57 pruebas. Comprueba que cada parcial tiene su módulo y viceversa; que el `.module.scss` es solo el `@use` de su parcial; que todas las tiras que usa el parcial existen y llevan el prefijo de su recurso (ninguna sale de él); que `strips` contiene exactamente las tiras de ese prefijo; y que, compilado con Sass y CSS Modules mediante `preprocessCSS` y la configuración real de Vite, expone la clase del recurso con las URL de las tiras rebasadas desde el módulo.
+
+### 4.2 VT1 — Identidad con el commit `17aca4f`
+
+Fuente: repositorio de spritesheets en `17aca4f` (HEAD, árbol limpio). Se compararon los 61 archivos de `src/styles/sprites/`, incluido `001` (`sofi-blink.webp` y `_sofi-blink.scss`, sin ZIP) y `_sprite.scss` (frente a `scss/_sprite.scss`).
+
+| Comprobación | Resultado |
+|---|---|
+| Contenido byte a byte | 61 de 61 idénticos. Además, `git hash-object` de cada archivo coincide con el blob de `17aca4f` (la comparación no depende de la conversión de saltos de línea) |
+| Recursos fuente sin integrar | Ninguno. Cada `.webp`, parcial, `.js` y `.d.ts` de 001–006 y 008–015 (salvo `demo.js`, que no se exporta) está integrado |
+| Archivos sin fuente | Ninguno |
+| Decodificación | Los 40 `.webp` decodifican con sharp (comprobación adicional) |
+| `sofing.webp` y `rolling.webp` frente al HEAD anterior | Mismas dimensiones (2304×384 y 1920×384). Alfa distinto en 0 píxeles. RGB distinto en 211 309 de 884 736 y 106 534 de 737 280 píxeles. Es el cambio que describe `asset-provenance.md` §8 (armonización cromática de 002 y 003); aquí solo se registra la medida |
+| `git status` | Solo recursos integrados, `_index.scss` eliminado, los 14 módulos dueños con su prueba y los dos documentos; los 13 ZIP siguen sin versionar |
+| `asset-provenance.md` | Conserva el commit `17aca4f` (3 menciones) y la remisión a `auditorias/` (§7) |
+
+### 4.3 Comprobaciones técnicas
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run typecheck` | Sin errores |
+| `npx eslint .` | Sin errores |
+| `npx prettier --check .` | Sin diferencias (la carpeta de sprites queda fuera por `.prettierignore`; el resto, incluidos los módulos nuevos, cumple) |
+| `npm run build` | Correcta. Los archivos de entrada conservan el nombre con hash de la línea base (`index-D8OyO5bk.css`, `index-BF--mqqv.js`) y el mismo tamaño; `dist/assets` no contiene tiras de `sofing`, `rolling`, `poking`, `memory-wipe` ni `eureka`, porque nada importa aún los módulos |
+| `npx vitest run` | Primera ejecución: 1 372 de 1 377; las 5 que fallaban eran de `src/server/serverBoundary.test.ts` (§4.4). Tras la corrección: **81 archivos y 1 377 pruebas, todas pasan**; `typecheck`, `eslint`, `prettier --check` y `build` repetidos sin cambios (mismos archivos de entrada) |
+
+### 4.4 Incidencia: los `.d.ts` de los controladores rompen `serverBoundary.test.ts`
+
+Los tres `.d.ts` que T004 manda importar tal cual (`poking.d.ts`, `are-u-still-here.d.ts`, `i-see-you.d.ts`) coinciden con el glob `import.meta.glob('/src/**/*.{ts,tsx}', { query: '?raw' })` de esa prueba, y para ellos Vite devuelve `undefined` en lugar del texto. La prueba falla con `Cannot read properties of undefined (reading 'replace')` en cinco de sus once casos: las guardas de la frontera cliente/servidor, que dejan de ejecutarse. Comprobado con una sonda: exactamente esos tres archivos devuelven un valor que no es texto, de 226. **Corrección autorizada (2026-11-03):** `read()` excluye solo los `.d.ts`; el resto de las guardas (código ejecutable de `src` y `api`) no cambia. Se añade una regresión en «encuentra los ficheros que protege»: todas las fuentes leídas son texto y ninguna es un `.d.ts`. Los recursos y controladores no se tocaron y no se amplió el alcance de 006.
+
+### 4.5 Notas
+
+- `eureka` y `needs-context` definen además una clase suelta (`.eureka-spark`, `.needs-context-question`) que el catálogo, la spec y el plan no mencionan; los módulos dueños no la exportan. Queda anotado por si 008 la necesita.
+- `SofiPortrait.module.scss` sigue importando el parcial de `sofi-blink` directamente; pasa al módulo dueño en la capa visual (plan §5.4), no en estas tareas. Mientras tanto hay dos módulos que importan ese parcial, sin que ninguno cargue el nuevo.
+- Con §4.4 resuelta, T004 y VT1 cumplen sus criterios.

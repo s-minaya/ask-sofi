@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved — 2026-10-27. Ningún bloque está abierto. T001 y EX1 están completados; la siguiente tarea es T002.
+Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1 y T002–T008 con VT1 están completados; la siguiente tarea es T009.
 
 ## Cómo leer este desglose
 
@@ -48,14 +48,14 @@ Approved — 2026-10-27. Ningún bloque está abierto. T001 y EX1 están complet
 
 Fuentes locales comprobadas al preparar este desglose: repositorio de spritesheets en `../spritesheets/spritesheet` (commit `17aca4f` presente) e informes de correcciones en `../spritesheets/auditorias`. Los ZIP siguen en `spec/features/007-ask-sofi-chat/`, sin versionar.
 
-- [ ] **T002** — Inventario previo (catálogo §1, §13): extraer los 13 ZIP en una carpeta nueva y vacía **fuera del repositorio**, listar su contenido y contrastarlo con el catálogo §3 (14 recursos; `001` sin ZIP; `007` inexistente). Comprobar también que el `_sprite.scss` de todos los ZIP es el mismo y que cada controlador trae sus tipos. Comunicar ausencias o discrepancias **antes** de integrar; no sustituir nada en silencio. No integra nada.
-- [ ] **T003** — Verificar los ZIP: SHA-256 de los siete actualizados (002, 003, 005, 008, 012, 013, 015) frente al cierre del informe de correcciones; por contenido, frente a los recursos fuente de `17aca4f`, los seis restantes (004, 006, 009, 010, 011, 014). Registrar el resultado en `008-verification.md`.
-- [ ] **T004** — Integrar en `src/styles/sprites/` (§46.1, paso 1): `_sprite.scss` de los ZIP, parciales, tiras y controladores con sus tipos, tal cual. Se actualizan `sofing` y `rolling`; `sofi-blink` se conserva. Sin reprocesar ni tocar el arte. Comprobar que `format`, `lint` y `typecheck` no reescriben ni rechazan lo importado (Prettier ya ignora la carpeta; ESLint solo mira `.ts/.tsx`).
-- [ ] **T005** — Retirar `src/styles/sprites/_index.scss` (D-13) y comprobar que nada lo importa.
-- [ ] **T006** — Módulos dueños, lote 1, en `src/components/sofi/sprites/`: `sofi-blink` y los recursos de flujo (`sofing`, `rolling`, `talking`, `favoriting`, `needs-context`, `error`, `uncertain`, `memory-wipe`). Cada `<id>.module.scss` es el único `@use` relativo de su parcial; cada `<id>.ts` exporta la clase y las URL de sus tiras con el `import.meta.glob` ansioso limitado a su prefijo (plan §5.4). Nunca un glob central. Si un parcial referencia una tira fuera de su prefijo, se informa antes de seguir.
-- [ ] **T007** — Módulos dueños, lote 2: los gags `poking`, `are-u-still-here` e `i-see-you`, igual que T006. Sus controladores no se importan aquí: los carga `useSofiController`.
-- [ ] **T008** — Módulos dueños, lote 3: `eureka` y `suspicious`, que solo importará el Lab (spec §2).
-- [ ] **VT1** — Integridad de los recursos: cada recurso original importado (tiras, parciales, mixin y controladores; `001` sin ZIP) es idéntico por contenido a su fuente en `17aca4f`; ningún fotograma alterado; `git status` muestra solo recursos integrados y los ZIP siguen sin versionar; `asset-provenance.md` conserva commit de origen y remisión al informe. Registrar la evidencia en `008-verification.md`. **Sin VT1 no se empieza A2 ni A3** (catálogo §10).
+- [x] **T002** — Inventario previo (catálogo §1, §13): extraer los 13 ZIP en una carpeta nueva y vacía **fuera del repositorio**, listar su contenido y contrastarlo con el catálogo §3 (14 recursos; `001` sin ZIP; `007` inexistente). Comprobar también que el `_sprite.scss` de todos los ZIP es el mismo y que cada controlador trae sus tipos. Comunicar ausencias o discrepancias **antes** de integrar; no sustituir nada en silencio. No integra nada.
+- [x] **T003** — Verificar los ZIP: SHA-256 de los siete actualizados (002, 003, 005, 008, 012, 013, 015) frente al cierre del informe de correcciones; por contenido, frente a los recursos fuente de `17aca4f`, los seis restantes (004, 006, 009, 010, 011, 014). Registrar el resultado en `008-verification.md`.
+- [x] **T004** — Integrar en `src/styles/sprites/` (§46.1, paso 1): `_sprite.scss` de los ZIP, parciales, tiras y controladores con sus tipos, tal cual. Se actualizan `sofing` y `rolling`; `sofi-blink` se conserva. Sin reprocesar ni tocar el arte. Comprobar que `format`, `lint` y `typecheck` no reescriben ni rechazan lo importado (Prettier ya ignora la carpeta; ESLint solo mira `.ts/.tsx`).
+- [x] **T005** — Retirar `src/styles/sprites/_index.scss` (D-13) y comprobar que nada lo importa.
+- [x] **T006** — Módulos dueños, lote 1, en `src/components/sofi/sprites/`: `sofi-blink` y los recursos de flujo (`sofing`, `rolling`, `talking`, `favoriting`, `needs-context`, `error`, `uncertain`, `memory-wipe`). Cada `<id>.module.scss` es el único `@use` relativo de su parcial; cada `<id>.ts` exporta la clase y las URL de sus tiras con el `import.meta.glob` ansioso limitado a su prefijo (plan §5.4). Nunca un glob central. Si un parcial referencia una tira fuera de su prefijo, se informa antes de seguir.
+- [x] **T007** — Módulos dueños, lote 2: los gags `poking`, `are-u-still-here` e `i-see-you`, igual que T006. Sus controladores no se importan aquí: los carga `useSofiController`.
+- [x] **T008** — Módulos dueños, lote 3: `eureka` y `suspicious`, que solo importará el Lab (spec §2).
+- [x] **VT1** — Integridad de los recursos: cada recurso original importado (tiras, parciales, mixin y controladores; `001` sin ZIP) es idéntico por contenido a su fuente en `17aca4f`; ningún fotograma alterado; `git status` muestra solo recursos integrados y los ZIP siguen sin versionar; `asset-provenance.md` conserva commit de origen y remisión al informe. Registrar la evidencia en `008-verification.md`. **Sin VT1 no se empieza A2 ni A3** (catálogo §10).
 
 ### A2. Movimiento (D-1, D-2, D-9; plan §4)
 

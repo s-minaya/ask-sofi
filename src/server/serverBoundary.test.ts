@@ -6,8 +6,12 @@ import { resolve } from 'node:path'
 // Guardas de la frontera cliente/servidor (006-plan §2 y §7). Leen el código
 // fuente como texto: el cliente nunca debe poder importar el servidor ni los
 // adaptadores reales, y solo `api/` toca el entorno del proceso.
+// Los .d.ts (tipos de los controladores de sprites) no tienen código ejecutable y
+// Vite no devuelve su texto con ?raw.
 const read = (files: Record<string, string>) =>
-  Object.entries(files).filter(([path]) => !/\.test\.tsx?$/.test(path))
+  Object.entries(files).filter(
+    ([path]) => !/\.test\.tsx?$/.test(path) && !/\.d\.ts$/.test(path),
+  )
 
 const sourceFiles = read(
   import.meta.glob<string>('/src/**/*.{ts,tsx}', {
@@ -73,6 +77,11 @@ describe('detector de las guardas', () => {
 describe('frontera cliente / servidor', () => {
   it('encuentra los ficheros que protege', () => {
     expect(sourceFiles.length).toBeGreaterThan(50)
+    // Regresión: los .d.ts de src/styles/sprites no deben colarse sin texto.
+    expect(sourceFiles.every(([, source]) => typeof source === 'string')).toBe(
+      true,
+    )
+    expect(sourceFiles.some(([path]) => path.endsWith('.d.ts'))).toBe(false)
     expect(apiFiles.map(([path]) => path)).toContain('/api/interpret.ts')
     expect(
       sourceFiles.some(([path]) => path === '/src/server/interpretHandler.ts'),

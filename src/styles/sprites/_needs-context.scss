@@ -1,0 +1,174 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sprite';
+
+// «Falta contexto» (needs_context): Sofi no se ha quedado en blanco, solo quiere una pista más. Ladea la cabeza con un
+// «¿mm?» y le sale la interrogación, se lleva el dedo a la barbilla, se lo pone en los labios con una sonrisa pícara (ya
+// sabe qué le falta) y te mira sonriendo, como diciendo «cuéntame un poco más» (bucle de 6,28 s).
+// Fotogramas (needs-context.webp): 0 reposo, el fotograma 0 de sofi-blink tal cual · 1 «¿mm?», cabeza ladeada (02)
+// · 2 dedo en la barbilla (03) · 3 dedo en los labios, sonrisa pícara (04).
+// La mano de 2 es la derecha de la imagen y la de 3 la izquierda: entre los dos va un instante el 1, que no lleva manos.
+// Cara invitadora (needs-context-face.webp, celdas de 184×128): los ojos al frente de talking con una sonrisa cerrada,
+// 0 abiertos · 1 entrecerrados · 2 cerrados. ::before la pone sobre el fotograma 0 en el último tramo y parpadea con ella.
+// Solo es opaca en lo que cambia más 3 px idénticos al reposo, así que no se ve la junta.
+// Interrogación (needs-context-question.webp, celdas de 80×88): 0 con todos sus destellos · 1 sin los sueltos.
+// ::after la hace saltar al ladear la cabeza, brincar con la sonrisa pícara, centellear y marcharse antes de volver al
+// reposo. Va aparte del personaje: para quitarla, content: none en ::after; para ponerla en otro sitio (junto a la
+// pregunta, por ejemplo), quítala ahí y usa .needs-context-question en otro elemento, que va al mismo compás si empiezan
+// a la vez. Todo el movimiento es transform y opacity, y nada sale de la caja de 384.
+// Se puede cambiar de animación en cualquier momento: es solo CSS y el fotograma 0 es el reposo de sofi-blink, así que
+// al entrar no salta nada. Para una sola pasada, animation-iteration-count: 1 en la pieza y en sus ::before y ::after:
+// acaba en el reposo y sin interrogación. Con «reducir movimiento» queda fija la sonrisa pícara (3) con la interrogación.
+
+$timeline: (
+  0 420, // reposo: acaba de leer el mensaje
+  1 1100, // «¿mm?»: ladea la cabeza y salta la interrogación
+  2 900, // dedo en la barbilla
+  1 160, // baja esa mano; en el siguiente sube la otra
+  3 1300, // dedo en los labios, sonrisa pícara
+  0 2400, // te mira y sonríe (la cara va en ::before)
+);
+$total: sprite.duration($timeline);
+$duration: math.div($total, 1000) * 1s;
+$smile: $total - list.nth(list.nth($timeline, -1), 2); // ms: empieza la cara invitadora
+
+// Cara invitadora: (celda ms). Mientras no se ve se queda en la 0; parpadea como sofi-blink.
+$blink: (0 800, 1 100, 2 120, 1 100);
+$face: list.join((0 $smile,), list.append($blink, 0 $total - $smile - sprite.duration($blink), $separator: comma));
+// Destellos de la interrogación: (celda ms).
+$twinkle: (0 1100, 1 180, 0 900, 1 180, 0 1400, 1 180, 0 $total - 3940);
+
+@each $name, $steps in (cara: $face, destellos: $twinkle) {
+  @if sprite.duration($steps) != $total {
+    @error 'needs-context: #{$name} dura #{sprite.duration($steps)} ms y la tira #{$total} ms; deben ir sincronizados.';
+  }
+}
+
+// Salto de la interrogación: (ms opacidad desplazamiento vertical giro escala curva hasta el siguiente punto).
+// Llega a escala 1 sin girar y así se queda mientras está quieta, para que el pixel art se vea nítido.
+$hop: (
+  0 0 0% -20deg 0.3 linear,
+  420 0 0% -20deg 0.3 cubic-bezier(0.25, 1.5, 0.5, 1), // salta con el ladeo y se pasa un poco
+  720 1 0% 0deg 1 linear,
+  2580 1 0% 0deg 1 ease-out, // brinco con la sonrisa pícara
+  2700 1 -8% -7deg 1 ease-in,
+  2820 1 0% 3deg 1 ease-out,
+  2920 1 -3% 0deg 1 ease-in,
+  3020 1 0% 0deg 1 linear,
+  5300 1 0% 0deg 1 ease-in, // se va flotando
+  5650 0 -10% 0deg 0.6 linear,
+);
+
+// Cajas en px de un fotograma de 384 (x y ancho alto), múltiplos de 8: a 96, 192 o 384 px caen en píxeles enteros.
+$face-box: 112 120 184 128;
+$question-box: 280 8 80 88;
+$question-origin: 35% 93%; // abajo a la izquierda del punto: sale de la cabeza
+
+@function -pct($ms) {
+  @return math.div(math.round(math.div($ms * 100000, $total)), 1000) * 1%;
+}
+
+// Porcentaje de la caja redondeado hacia arriba (como en i-see-you): redondeando hacia abajo, a tamaños 1:2 con pixelado
+// el navegador toma el otro píxel de cada pareja en la capa y no en el reposo.
+@function -pos($px, $of: 384) {
+  @return math.div(math.ceil(math.div($px * 100000, $of)), 1000) * 1%;
+}
+
+@mixin -box($box) {
+  left: -pos(list.nth($box, 1));
+  top: -pos(list.nth($box, 2));
+  width: -pos(list.nth($box, 3));
+}
+
+// Lo común a la interrogación de ::after y a la suelta: centelleo en pasos (los @keyframes los pone la suelta) y salto.
+@mixin -question-motion {
+  pointer-events: none;
+  transform-origin: $question-origin;
+  opacity: 0; // fuera de la animación no se ve, salvo con reducir movimiento
+  @media (prefers-reduced-motion: no-preference) {
+    animation: needs-context-twinkle $duration step-end infinite, needs-context-hop $duration infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    opacity: 1;
+  }
+}
+
+.needs-context {
+  position: relative; // ::before y ::after se colocan respecto a la pieza; cualquier position que no sea static vale
+  @include sprite.animation(
+    $name: needs-context,
+    $image: url('needs-context.webp'),
+    $frames: 4,
+    $size: 384 384,
+    $timeline: $timeline,
+  );
+  @media (prefers-reduced-motion: reduce) {
+    background-position-x: 100%; // la sonrisa pícara
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+  }
+
+  &::before {
+    @include -box($face-box);
+    pointer-events: none;
+    @include sprite.animation(
+      $name: needs-context-face,
+      $image: url('needs-context-face.webp'),
+      $frames: 3,
+      $size: list.nth($face-box, 3) list.nth($face-box, 4),
+      $timeline: $face,
+    );
+    opacity: 0;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: needs-context-face $duration step-end infinite, needs-context-smile $duration step-end infinite;
+    }
+  }
+
+  &::after {
+    @include -box($question-box);
+    aspect-ratio: #{list.nth($question-box, 3)} / #{list.nth($question-box, 4)};
+    background: url('needs-context-question.webp') 0 0 / 200% 100% no-repeat;
+    @include -question-motion;
+  }
+}
+
+// La interrogación suelta, para otro elemento: mide 80×88 en la escala de un fotograma de 384 (20,834 % de su ancho).
+.needs-context-question {
+  @include sprite.animation(
+    $name: needs-context-twinkle,
+    $image: url('needs-context-question.webp'),
+    $frames: 2,
+    $size: list.nth($question-box, 3) list.nth($question-box, 4),
+    $timeline: $twinkle,
+  );
+  @include -question-motion;
+}
+
+@keyframes needs-context-smile {
+  0% {
+    opacity: 0;
+  }
+  #{-pct($smile)},
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes needs-context-hop {
+  @each $ms, $opacity, $dy, $angle, $scale, $ease in $hop {
+    #{-pct($ms)} {
+      opacity: $opacity;
+      transform: translateY($dy) rotate($angle) scale($scale);
+      animation-timing-function: $ease;
+    }
+  }
+  $last: list.nth($hop, -1);
+  100% {
+    opacity: list.nth($last, 2);
+    transform: translateY(list.nth($last, 3)) rotate(list.nth($last, 4)) scale(list.nth($last, 5));
+  }
+}

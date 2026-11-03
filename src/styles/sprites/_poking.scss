@@ -1,0 +1,504 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+
+// «¡Deja de pincharme!»: cada pinchazo enfada un poco más a Sofi hasta que se esconde detrás del borde real de su
+// contenedor y se asoma con cautela. No es un bucle: lo dirige poking.js, que pone el estado en data-poking.
+//   idle → curious (signo de interrogación) → skeptical → stop (palma y vena) → offended (brazos cruzados) → hide → peek (→ nope) → return
+//
+// Va encima del sprite de reposo: el anfitrión es el elemento de sofi-blink (class="sofi-blink poking"). En las tres
+// primeras reacciones solo cambian la cara y la palma, que se pintan sobre su fotograma 0; en las demás se oculta.
+// Las capas son hijos del anfitrión marcados con data-poking-layer (poking.js los crea si faltan). Van por atributo,
+// no por clase, para que funcionen igual con CSS Modules.
+//
+// Imágenes (coordenadas en px de un fotograma de 384):
+//   poking-face.webp  celdas de 176×128 en (120, 120): 0 «¿mm?» · 1 «¿puedo ayudarte?» · 2 «¡quieto!»; y la palma de
+//                     «¡quieto!» (136×160 en (40, 224)). Solo son opacas en lo que cambia más 3 px idénticos al reposo.
+//   poking.webp       «ofendida», fotograma entero.
+//   poking-hide.webp  cabeza escondida (05) y asomada (06) en celdas de 296×208 apoyadas en el borde, y sus manos.
+//                     Hay 2 px transparentes entre celdas (al escalar, una fila opaca vecina se colaría como una línea tenue).
+//   poking-fx.webp    «?» y vena.
+//
+// El borde: --poking-edge es la altura a la que queda el borde superior del contenedor, medida desde arriba en % de
+// la pieza (100 %: justo debajo, como en el escenario de la web). Todo lo de Sofi se recorta ahí y las manos se agarran
+// a él por delante. Tiene que quedar por debajo de la barbilla (≳ 75 %) para que esconderse tenga sentido.
+// Durante la broma la pieza sube por encima del contenedor (--poking-z, 1 por defecto) para que las manos lo tapen; el
+// cuerpo nunca lo pisa.
+// Con «reducir movimiento» se ven los mismos estados, sin desplazamientos.
+
+$frame: 384;
+$edge: var(--poking-edge, 100%);
+
+// Cajas (x y ancho alto) y celdas de atlas.
+$face: (box: 120 120 176 128, atlas: 664 160, cells: 0 176 352);
+$palm: (box: 40 224 136 160, at: 528 0);
+$head: (x: 40, w: 296, h: 208, atlas: 296 486, at06: 0, at05: 210); // fila 0 del borde = abajo del todo; 2 px de hueco entre celdas
+$hands: (x: 96, top: -24, w: 208, h: 32, at05: 420, at06: 454); // del borde, 24 px por encima a 8 por debajo
+$question: (box: 300 8 76 80, at: 0 0, atlas: 146 80);
+$vein: (box: 248 44 70 68, at: 76 0, atlas: 146 80);
+$atlas-h: 486; // alto de poking-hide.webp; las celdas llevan 2 px transparentes entre sí para que no se cuelen unas en otras al escalar
+$vein-hidden: 240 -176; // la vena junto a la cabeza escondida: x y fila desde el borde
+// Asomada parte con los ojos donde los tiene escondida: 31,6 px más abajo (sobre 208).
+$peek-start: 15.19%;
+
+@function -pct($px, $of: $frame) {
+  @return math.div(math.round(math.div($px * 100000, $of)), 1000) * 1%;
+}
+
+// Posición de fondo para ver en una caja de $size la región que empieza en $at de un atlas de $atlas.
+@function -offset($at, $atlas, $size) {
+  @if $atlas == $size {
+    @return 0%;
+  }
+  @return -pct($at, $atlas - $size);
+}
+
+@mixin -box($box) {
+  left: -pct(list.nth($box, 1));
+  top: -pct(list.nth($box, 2));
+  width: -pct(list.nth($box, 3));
+  aspect-ratio: #{list.nth($box, 3)} / #{list.nth($box, 4)};
+}
+
+@mixin -atlas($image, $atlas, $w, $h) {
+  background: $image no-repeat;
+  background-size: -pct(list.nth($atlas, 1), $w) -pct(list.nth($atlas, 2), $h);
+}
+
+.poking {
+  position: relative;
+  container-type: inline-size; // ya no hay medidas en cqw; se conserva para no cambiar la contención de la pieza
+  touch-action: manipulation; // sin espera ni zoom por doble toque al pinchar seguido
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+
+  // Mientras dura la broma, por encima del contenedor (manos y bocadillo lo pisan). En reposo no se eleva, para no
+  // pasar por delante de cabeceras fijas y similares.
+  &[data-poking]:not([data-poking='idle']) {
+    z-index: var(--poking-z, 1);
+  }
+
+  // Reacciones de pie: el reposo, quieto en su fotograma 0, y la cara encima.
+  &:is([data-poking='curious'], [data-poking='skeptical'], [data-poking='stop']) {
+    animation: none;
+    background-position: 0 0;
+  }
+
+  // Lo demás no usa el reposo.
+  &:is([data-poking='offended'], [data-poking='hide'], [data-poking='peek'], [data-poking='nope'], [data-poking='return']) {
+    animation: none;
+    background-image: none;
+  }
+
+  // Escondida, solo se la puede pinchar donde se la ve: cabeza y manos.
+  &:is([data-poking='hide'], [data-poking='peek'], [data-poking='nope']) {
+    pointer-events: none;
+
+    [data-poking-layer='head'],
+    [data-poking-layer='hands'] {
+      pointer-events: auto;
+    }
+  }
+
+  [data-poking-layer] {
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  // Todo lo de Sofi, recortado en el borde.
+  [data-poking-layer='body'] {
+    inset: 0;
+    visibility: visible;
+    clip-path: inset(-50% -50% calc(100% - #{$edge}) -50%);
+  }
+
+  [data-poking-layer='face'] {
+    @include -box(map.get($face, box));
+    @include -atlas(url('poking-face.webp'), map.get($face, atlas), 176, 128);
+  }
+
+  @each $state, $cell in (curious: 1, skeptical: 2, stop: 3) {
+    &[data-poking='#{$state}'] [data-poking-layer='face'] {
+      visibility: visible;
+      background-position: -offset(list.nth(map.get($face, cells), $cell), 664, 176) 0;
+    }
+  }
+
+  [data-poking-layer='palm'] {
+    @include -box(map.get($palm, box));
+    @include -atlas(url('poking-face.webp'), map.get($face, atlas), 136, 160);
+    background-position: -offset(528, 664, 136) 0;
+  }
+
+  [data-poking-layer='pose'] {
+    inset: 0;
+    background: url('poking.webp') 0 0 / 100% 100% no-repeat;
+  }
+
+  [data-poking-layer='head'] {
+    left: -pct(map.get($head, x));
+    top: calc(#{$edge} - #{-pct(map.get($head, h))});
+    width: -pct(map.get($head, w));
+    aspect-ratio: #{map.get($head, w)} / #{map.get($head, h)};
+    @include -atlas(url('poking-hide.webp'), map.get($head, atlas), map.get($head, w), map.get($head, h));
+    background-position: 0 -offset(map.get($head, at05), $atlas-h, 208);
+  }
+
+  [data-poking-layer='hands'] {
+    left: -pct(map.get($hands, x));
+    top: calc(#{$edge} - #{-pct(-1 * map.get($hands, top))});
+    width: -pct(map.get($hands, w));
+    aspect-ratio: #{map.get($hands, w)} / #{map.get($hands, h)};
+    @include -atlas(url('poking-hide.webp'), map.get($head, atlas), map.get($hands, w), map.get($hands, h));
+    background-position: 0 -offset(map.get($hands, at05), $atlas-h, 32);
+    transform-origin: 50% 75%; // el borde, donde se agarra
+  }
+
+  [data-poking-layer='question'] {
+    @include -box(map.get($question, box));
+    @include -atlas(url('poking-fx.webp'), map.get($question, atlas), 76, 80);
+    background-position: 0 0;
+    transform-origin: 20% 90%; // las rayitas, del lado de la cabeza
+  }
+
+  [data-poking-layer='vein'] {
+    @include -box(map.get($vein, box));
+    @include -atlas(url('poking-fx.webp'), map.get($vein, atlas), 70, 68);
+    background-position: 100% 0;
+  }
+
+  // Vista de cada estado (con «reducir movimiento» se queda así).
+  &[data-poking='curious'] [data-poking-layer='question'],
+  &[data-poking='stop'] :is([data-poking-layer='palm'], [data-poking-layer='vein']),
+  &[data-poking='offended'] [data-poking-layer='pose'],
+  &[data-poking='return'] [data-poking-layer='pose'],
+  &:is([data-poking='hide'], [data-poking='peek'], [data-poking='nope']) :is([data-poking-layer='head'], [data-poking-layer='hands']),
+  &[data-poking='nope'] [data-poking-layer='vein'] {
+    visibility: visible;
+  }
+
+  &[data-poking='peek'] {
+    [data-poking-layer='head'] {
+      background-position-y: -offset(map.get($head, at06), $atlas-h, 208);
+    }
+
+    [data-poking-layer='hands'] {
+      background-position-y: -offset(map.get($hands, at06), $atlas-h, 32);
+    }
+  }
+
+  &[data-poking='nope'] {
+    [data-poking-layer='vein'] {
+      left: -pct(list.nth($vein-hidden, 1));
+      top: calc(#{$edge} - #{-pct(-1 * list.nth($vein-hidden, 2))});
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &[data-poking='curious'] {
+      transform-origin: 50% $edge;
+      animation: poking-hop 0.3s ease-out;
+
+      [data-poking-layer='question'] {
+        animation: poking-pop 0.38s ease-out backwards, poking-bob 1.6s 0.38s ease-in-out infinite;
+      }
+    }
+
+    &[data-poking='skeptical'] {
+      animation: poking-flinch 0.26s ease-out;
+    }
+
+    &[data-poking='stop'] {
+      animation: poking-jolt 0.32s linear;
+
+      [data-poking-layer='vein'] {
+        animation: poking-pop 0.3s ease-out backwards, poking-throb 0.7s 0.3s ease-in-out infinite;
+      }
+    }
+
+    &[data-poking='offended'] [data-poking-layer='pose'] {
+      animation: poking-huff 0.42s ease-out;
+    }
+
+    // Se agacha de golpe, se agarra al borde y se asoma.
+    &[data-poking='hide'] {
+      [data-poking-layer='pose'] {
+        animation: poking-duck 0.15s cubic-bezier(0.5, 0, 0.9, 0.5) forwards;
+      }
+
+      [data-poking-layer='head'] {
+        animation: poking-hide-rise 0.38s backwards;
+      }
+
+      [data-poking-layer='hands'] {
+        animation: poking-grab 0.32s backwards;
+      }
+    }
+
+    // Sube con cautela, en dos tiempos, y mira a un lado y a otro.
+    &[data-poking='peek'] [data-poking-layer='head'] {
+      animation: poking-peek-rise 1.45s backwards, poking-look 3.2s 1.7s ease-in-out infinite;
+    }
+
+    // «¡NOPE!»: abajo de golpe.
+    &[data-poking='nope'] {
+      [data-poking-layer='head'] {
+        animation: poking-nope-cell 0.23s step-end backwards, poking-nope-drop 0.23s backwards;
+      }
+
+      [data-poking-layer='hands'] {
+        animation: poking-nope-hands 0.23s step-end backwards;
+      }
+
+      [data-poking-layer='vein'] {
+        animation: poking-pop 0.3s 0.09s ease-out backwards, poking-throb 0.7s 0.39s ease-in-out infinite;
+      }
+    }
+
+    // Se suelta, desaparece y vuelve a subir, aún ofendida (luego poking.js la deja en reposo).
+    &[data-poking='return'] {
+      [data-poking-layer='head'] {
+        visibility: visible;
+        animation: poking-let-go 0.12s cubic-bezier(0.5, 0, 0.9, 0.5) forwards;
+      }
+
+      [data-poking-layer='hands'] {
+        visibility: visible;
+        animation: poking-gone 0.12s step-end forwards;
+      }
+
+      [data-poking-layer='pose'] {
+        animation: poking-climb 0.64s backwards;
+      }
+    }
+
+  }
+}
+
+// Brinco de sorpresa, sin despegarse del borde.
+@keyframes poking-hop {
+  35% {
+    transform: scale(0.97, 1.035);
+  }
+  70% {
+    transform: scale(1.015, 0.985);
+  }
+}
+
+@keyframes poking-flinch {
+  30% {
+    transform: translateX(-1.2%);
+  }
+  65% {
+    transform: translateX(0.6%);
+  }
+}
+
+@keyframes poking-jolt {
+  15% {
+    transform: translateX(1.6%);
+  }
+  32% {
+    transform: translateX(-1.6%);
+  }
+  50% {
+    transform: translateX(1.1%);
+  }
+  68% {
+    transform: translateX(-0.8%);
+  }
+  85% {
+    transform: translateX(0.4%);
+  }
+}
+
+// Bufido: hunde los hombros y vuelve (lo de abajo queda bajo el borde).
+@keyframes poking-huff {
+  40% {
+    transform: translateY(2.2%);
+  }
+}
+
+@keyframes poking-pop {
+  0% {
+    transform: scale(0) rotate(-25deg);
+  }
+  60% {
+    transform: scale(1.15) rotate(8deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes poking-bob {
+  50% {
+    transform: translateY(-6%);
+  }
+}
+
+@keyframes poking-throb {
+  50% {
+    transform: scale(1.14);
+  }
+}
+
+@keyframes poking-duck {
+  0% {
+    visibility: visible;
+    transform: none;
+  }
+  100% {
+    visibility: hidden;
+    transform: translateY(105%);
+  }
+}
+
+// Las manos llegan antes que la cabeza: lo que había detrás de los nudillos nunca se ve.
+@keyframes poking-grab {
+  0%,
+  43% {
+    visibility: hidden;
+    transform: scale(1.12, 0.55);
+  }
+  43.1% {
+    visibility: visible;
+    transform: scale(1.12, 0.55);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes poking-hide-rise {
+  0%,
+  36.8% {
+    visibility: hidden;
+    transform: translateY(82%);
+  }
+  36.9% {
+    visibility: visible;
+    transform: translateY(82%);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+  }
+  79% {
+    transform: translateY(-3%);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes poking-peek-rise {
+  0% {
+    transform: translateY($peek-start);
+    animation-timing-function: ease-in-out;
+  }
+  31%,
+  65.5% {
+    transform: translateY(9%);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes poking-look {
+  0%,
+  100% {
+    transform: none;
+  }
+  12%,
+  38% {
+    transform: translateX(1.6%);
+  }
+  50%,
+  78% {
+    transform: translateX(-1.2%);
+  }
+  88% {
+    transform: none;
+  }
+}
+
+@keyframes poking-nope-cell {
+  0% {
+    background-position-y: -offset(map.get($head, at06), $atlas-h, 208);
+  }
+  39% {
+    background-position-y: -offset(map.get($head, at05), $atlas-h, 208);
+  }
+}
+
+// Baja la asomada hasta los ojos de la escondida, cambia y rebota al aterrizar.
+@keyframes poking-nope-drop {
+  0% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5);
+  }
+  39% {
+    transform: translateY($peek-start);
+  }
+  39.1% {
+    transform: none;
+    animation-timing-function: ease-out;
+  }
+  65% {
+    transform: translateY(4%);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes poking-nope-hands {
+  0% {
+    background-position-y: -offset(map.get($hands, at06), $atlas-h, 32);
+  }
+  39% {
+    background-position-y: -offset(map.get($hands, at05), $atlas-h, 32);
+  }
+}
+
+@keyframes poking-let-go {
+  0% {
+    transform: none;
+  }
+  100% {
+    visibility: hidden;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes poking-gone {
+  100% {
+    visibility: hidden;
+  }
+}
+
+@keyframes poking-climb {
+  0%,
+  31% {
+    visibility: hidden;
+    transform: translateY(100%);
+  }
+  31.1% {
+    visibility: visible;
+    transform: translateY(100%);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+  }
+  81% {
+    transform: translateY(-1.5%);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: none;
+  }
+}
+

@@ -1,0 +1,205 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sprite';
+
+// «Error» (fallo técnico recuperable): un microglitch pilla a Sofi desprevenida. La imagen se corta en franjas y da unos
+// tirones, ella abre mucho los ojos con una «o» y da un respingo, parpadea y se rasca la nuca con una sonrisa forzada
+// (aquí no ha pasado nada), y vuelve a su calma de siempre (bucle de 8,4 s). Volver al reposo es solo visual: no da a
+// entender que el error se haya arreglado.
+// Fotogramas (error.webp): 0 reposo, el fotograma 0 de sofi-blink tal cual · 1 recuperación avergonzada (error-03, con
+// el choker de sofi-blink y la boca redibujada).
+// Caras (error-face.webp, celdas de 184×128): 0 sorpresa (los ojos de la «pillada» de i-see-you y una «o») · 1 ojos
+// entrecerrados · 2 cerrados (los de sofi-blink). ::before las pone sobre el fotograma 0; solo son opacas en lo que
+// cambia más 3 px idénticos al reposo, así que no se ve la junta.
+// Microglitch (::after): una copia del fotograma 0 recortada en franjas horizontales (clip-path), con la imagen desplazada
+// y un filo magenta y cian (los canales que se desfasan), mientras la pieza da tirones de unos píxeles. No lleva imagen
+// propia: es la misma tira, que el navegador descodifica una sola vez. Fuera del glitch, ::after no pinta nada.
+// La pieza se mueve con translate; las caras y el glitch cambian con opacity, background-position y clip-path, a saltos:
+// nada cambia el layout.
+// Se puede cambiar de animación en cualquier momento: es solo CSS y el fotograma 0 es el reposo de sofi-blink, así que al
+// entrar no salta nada. Para una sola pasada, animation-iteration-count: 1 en la pieza y en sus ::before y ::after: acaba
+// en el reposo. Con «reducir movimiento» queda fija la recuperación avergonzada (1), sin glitch.
+
+$timeline: (
+  0 2370, // reposo; encima, el glitch, la sorpresa y el parpadeo de ::before
+  1 2000, // se rasca la nuca con una sonrisa forzada
+  0 4030, // vuelve a la calma (cierra los ojos, los abre) y parpadea una vez
+);
+$total: sprite.duration($timeline);
+$duration: math.div($total, 1000) * 1s;
+
+// Caras de ::before: (celda ms). Fuera de los tramos visibles (ver $face-show) la celda da igual.
+$face: (
+  0 2200, // sorpresa (visible desde 1220)
+  1 70,
+  2 100, // parpadea antes de rascarse la nuca
+  0 2000,
+  2 100, // vuelve: ojos cerrados…
+  1 70, // …y entreabiertos
+  0 2000,
+  1 70, // parpadeo
+  2 100,
+  1 70,
+  0 1620,
+);
+// Cuándo se ve ::before: (ms opacidad).
+$face-show: (0 0, 1220 1, 2370 0, 4370 1, 4540 0, 6540 1, 6780 0);
+
+@if sprite.duration($face) != $total {
+  @error 'error: las caras duran #{sprite.duration($face)} ms y la tira #{$total} ms; deben ir sincronizadas.';
+}
+
+// Microglitch: (ms franjas desplazamiento). Franjas como (y0 y1) en px de un fotograma de 384, y el desplazamiento de la
+// imagen de la copia en px (positivo, a la derecha); múltiplos de 4, para que a 96, 192, 288 o 384 px caigan en píxeles
+// enteros. Sin franjas, no se ve.
+$glitch: (
+  (900, ((148 188),), 12), // los ojos
+  (960, ((64 92), (228 256)), -12), // el pelo y la boca
+  (1010, (), 0),
+  (1050, ((156 176), (272 292)), 8), // otra vez los ojos y el choker
+  (1130, (), 0),
+);
+@each $ms, $bands, $dx in $glitch {
+  @if $dx < -24 {
+    @error 'error: a #{$ms} ms la copia se desplaza #{$dx} px; más allá de −24 asoma el fotograma 1 por la derecha.';
+  }
+}
+
+// Tirones y respingo de la pieza: (ms x y curva hasta el siguiente punto), en px de un fotograma de 384.
+$move: (
+  0 0 0 step-end,
+  960 4 0 step-end,
+  1010 0 0 step-end,
+  1050 -4 0 step-end,
+  1130 0 0 step-end,
+  1220 0 0 cubic-bezier(0.2, 0.8, 0.4, 1), // respingo al verlo
+  1300 0 -8 ease-in,
+  1420 0 0 linear,
+);
+
+// Caja de las caras en px de un fotograma de 384 (x y ancho alto), múltiplos de 8.
+$face-box: 112 120 184 128;
+
+@function -pct($ms) {
+  @return math.div(math.round(math.div($ms * 100000, $total)), 1000) * 1%;
+}
+
+// Porcentaje de la caja redondeado hacia arriba (como en i-see-you y needs-context): redondeando hacia abajo, a tamaños 1:2
+// con pixelado el navegador toma el otro píxel de cada pareja en la capa y no en el reposo.
+@function -pos($px, $of: 384) {
+  @return math.div(math.ceil(math.div($px * 100000, $of)), 1000) * 1%;
+}
+
+// px de un fotograma de 384 → % del lado de la pieza (translate, clip-path y el desplazamiento de la copia se miden sobre
+// ella).
+@function -px($px) {
+  @return math.div(math.round(math.div($px * 100000, 384)), 1000) * 1%;
+}
+
+@function -bands($bands) {
+  @if list.length($bands) == 0 {
+    @return inset(0 0 100% 0);
+  }
+  $points: ();
+  @each $y0, $y1 in $bands {
+    $points: list.append($points, 0% -px($y0), $separator: comma);
+    $points: list.append($points, 100% -px($y0), $separator: comma);
+    $points: list.append($points, 100% -px($y1), $separator: comma);
+    $points: list.append($points, 0% -px($y1), $separator: comma);
+  }
+  @return polygon($points);
+}
+
+.error {
+  position: relative; // ::before y ::after se colocan respecto a la pieza; cualquier position que no sea static vale
+  @include sprite.animation(
+    $name: error,
+    $image: url('error.webp'),
+    $frames: 2,
+    $size: 384 384,
+    $timeline: $timeline,
+  );
+  @media (prefers-reduced-motion: no-preference) {
+    animation: error $duration step-end infinite, error-move $duration infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    background-position-x: 100%; // la recuperación avergonzada
+  }
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+  }
+
+  &::before {
+    left: -pos(list.nth($face-box, 1));
+    top: -pos(list.nth($face-box, 2));
+    width: -pos(list.nth($face-box, 3));
+    @include sprite.animation(
+      $name: error-face,
+      $image: url('error-face.webp'),
+      $frames: 3,
+      $size: list.nth($face-box, 3) list.nth($face-box, 4),
+      $timeline: $face,
+    );
+    opacity: 0;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: error-face $duration step-end infinite, error-face-show $duration step-end infinite;
+    }
+  }
+
+  &::after {
+    inset: 0;
+    background: url('error.webp') 0 0 / 200% 100% no-repeat; // el fotograma 0
+    clip-path: inset(0 0 100% 0); // fuera del glitch no se ve
+    filter: drop-shadow(-2px 0 0 #ff2bd6) drop-shadow(2px 0 0 #2bf0ff); // filo magenta y cian: el desfase de los canales
+    @media (prefers-reduced-motion: no-preference) {
+      animation: error-glitch $duration step-end infinite;
+    }
+  }
+}
+
+@keyframes error-face-show {
+  @each $ms, $opacity in $face-show {
+    #{-pct($ms)} {
+      opacity: $opacity;
+    }
+  }
+  100% {
+    opacity: list.nth(list.nth($face-show, -1), 2);
+  }
+}
+
+// La imagen mide el doble que la capa (dos fotogramas): con background-position-x: p, se desplaza −p × su ancho. Al
+// desplazarla a la izquierda asoma por la derecha el principio del fotograma 1, que está vacío en sus 24 primeras columnas:
+// no pases de −24 px.
+@keyframes error-glitch {
+  0% {
+    clip-path: inset(0 0 100% 0);
+    background-position-x: 0%;
+  }
+  @each $ms, $bands, $dx in $glitch {
+    #{-pct($ms)} {
+      clip-path: -bands($bands);
+      background-position-x: -px(-$dx);
+    }
+  }
+  100% {
+    clip-path: inset(0 0 100% 0);
+    background-position-x: 0%;
+  }
+}
+
+@keyframes error-move {
+  @each $ms, $x, $y, $ease in $move {
+    #{-pct($ms)} {
+      translate: -px($x) -px($y);
+      animation-timing-function: $ease;
+    }
+  }
+  100% {
+    translate: 0;
+  }
+}

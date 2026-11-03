@@ -1,0 +1,114 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'sprite';
+
+// «Mmm… ya veo»: Sofi nota un matiz entre líneas (un posible sarcasmo o una indirecta) y se dispone a explicarlo. Está en
+// reposo, parpadea y, al abrir los ojos, ladea la cabeza y mira de reojo con una ceja levantada («mmm, interesante»);
+// se le escapa una sonrisa cómplice y entorna los ojos («ya veo lo que has hecho»), te vuelve a mirar con una sonrisa
+// cálida y, en un parpadeo, se endereza lista para explicártelo (3,5 s, una sola pasada). Pícara, nunca burlona.
+// Fotogramas (suspicious.webp): 0 reposo, el fotograma 0 de sofi-blink tal cual · 1 «mmm, interesante» (suspicious-01:
+// cabeza ladeada, mirada de reojo, ceja levantada y un ojo entornado) · 2 «te lo explico» (la cabeza de suspicious-03 sobre
+// el cuerpo de 01, con los ojos del fotograma 3 girados como la cabeza: te mira con una sonrisa cálida, aún ladeada) ·
+// 3 lista para explicar: el fotograma 0 de talking (ojos al frente) con la sonrisa de suspicious-03, enderezada,
+// simétrica y en los colores de las bocas de talking.
+// Caras (suspicious-face.webp, celdas de 184×128): 0 ojos cerrados de sofi-blink, sobre el fotograma 0 · 1 paso
+// intermedio (los ojos de 01 con el párpado a medio bajar y ya la sonrisa de 02) y 2 «ya veo lo que has hecho» (la cara de
+// suspicious-02: sonrisa cómplice y asimétrica, ojos entornados), sobre el 1: entorna los ojos en dos pasos · 3 cerrados y
+// 4 entrecerrados con la sonrisa (los de talking), sobre el 3. ::before las pone encima; solo son opacas en lo que cambia
+// más 3 px idénticos al fotograma de debajo, así que no se ve la junta. Los fotogramas 1 y 2 comparten cuello, choker y
+// jersey byte a byte: entre ellos solo se mueve la cabeza.
+// Una sola pasada: acaba en el fotograma 3 y se queda ahí. Fuera de la boca es idéntico al fotograma 0 de talking, así que
+// al cambiar a talking (al acabar o cuando la web quiera) solo cambia la boca; por eso va en la tira y no en una capa,
+// que al reescalar suaviza distinto. Empieza en el reposo de sofi-blink, así que al entrar desde ella no salta nada. Para
+// verla en bucle, animation-iteration-count: infinite en la pieza y en su ::before. Todo cambia a saltos
+// (background-position y opacity): nada cambia el layout.
+// Con «reducir movimiento» queda fija la sonrisa cómplice (fotograma 1 con la cara 2).
+
+$timeline: (
+  0 480, // reposo; al final, un parpadeo rápido (ojos cerrados en ::before)
+  1 1900, // «mmm, interesante»: ladea la cabeza y mira de reojo; desde 1130, «ya veo lo que has hecho» (::before)
+  2 650, // «te lo explico»: te vuelve a mirar con una sonrisa cálida
+  3 470, // parpadea con la sonrisa (::before), se endereza y se queda lista para explicarlo
+);
+$total: sprite.duration($timeline);
+$duration: math.div($total, 1000) * 1s;
+
+// Caras de ::before: (celda ms). Fuera de los tramos visibles (ver $face-show) la celda da igual.
+$face: (
+  0 1130, // ojos cerrados (visibles de 400 a 480)
+  1 80, // sonríe y baja un poco los párpados…
+  2 1820, // …y entorna los ojos: sonrisa cómplice (visible hasta 2380)
+  3 100, // cierra los ojos mientras se endereza…
+  4 370, // …y los entreabre (visibles hasta 3200)
+);
+// Cuándo se ve ::before: (ms opacidad).
+$face-show: (0 0, 400 1, 480 0, 1130 1, 2380 0, 3030 1, 3200 0);
+
+@if sprite.duration($face) != $total {
+  @error 'suspicious: las caras duran #{sprite.duration($face)} ms y la tira #{$total} ms; deben ir sincronizadas.';
+}
+
+// Caja en px de un fotograma de 384 (x y ancho alto), múltiplos de 8: a 96, 192 o 384 px cae en píxeles enteros.
+$face-box: 112 120 184 128;
+
+@function -pct($ms) {
+  @return math.div(math.round(math.div($ms * 100000, $total)), 1000) * 1%;
+}
+
+// Porcentaje de la caja redondeado hacia arriba (como en i-see-you, needs-context, error y eureka): redondeando hacia
+// abajo, a tamaños 1:2 con pixelado el navegador toma el otro píxel de cada pareja en la capa y no en el fotograma.
+@function -pos($px, $of: 384) {
+  @return math.div(math.ceil(math.div($px * 100000, $of)), 1000) * 1%;
+}
+
+.suspicious {
+  position: relative; // ::before se coloca respecto a la pieza; cualquier position que no sea static vale
+  @include sprite.animation(
+    $name: suspicious,
+    $image: url('suspicious.webp'),
+    $frames: 4,
+    $size: 384 384,
+    $timeline: $timeline,
+  );
+  @media (prefers-reduced-motion: no-preference) {
+    animation: suspicious $duration step-end 1 forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    background-position-x: math.div(1, 3) * 100%; // el fotograma 1, «mmm, interesante»…
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -pos(list.nth($face-box, 1));
+    top: -pos(list.nth($face-box, 2));
+    width: -pos(list.nth($face-box, 3));
+    pointer-events: none;
+    @include sprite.animation(
+      $name: suspicious-face,
+      $image: url('suspicious-face.webp'),
+      $frames: 5,
+      $size: list.nth($face-box, 3) list.nth($face-box, 4),
+      $timeline: $face,
+    );
+    opacity: 0;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: suspicious-face $duration step-end 1 forwards, suspicious-face-show $duration step-end 1 forwards;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      opacity: 1;
+      background-position-x: math.div(2, 4) * 100%; // …con la cara 2, la sonrisa cómplice
+    }
+  }
+}
+
+@keyframes suspicious-face-show {
+  @each $ms, $opacity in $face-show {
+    #{-pct($ms)} {
+      opacity: $opacity;
+    }
+  }
+  100% {
+    opacity: list.nth(list.nth($face-show, -1), 2);
+  }
+}
