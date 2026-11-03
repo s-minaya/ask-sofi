@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -22,6 +22,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T004–T008 y VT1 — integración e integridad | Recursos integrados: 61 de 61 idénticos a `17aca4f`; T005–T008 hechas. Completados tras corregir `serverBoundary.test.ts` (§4.4); suite completa en verde | §4 |
 | T009–T016 y VT2 — movimiento (A2) | Preferencia `motion`, estado efectivo de los seis modos, `u.reduced-motion` sin especificidad y plugin PostCSS de sprites. VT2 sobre los 14 módulos reales: 62 bloques transformados y parciales intactos. Lab en modo forzado: 0 diferencias en 11 224 estados | §5 |
 | T017–T026 — `presentationGate`, `select`, `ambient`, `activityLabels` (A3) | Cuatro módulos puros con 71 pruebas, cada pareja vista fallar antes del código. Decisiones D-17 a D-22 aprobadas y comprobadas (§6.3) | §6 |
+| T027–T031 — registro, velocidades y estáticas (A3) | `SOFI_REGISTRY` contrastado con el catálogo y los parciales (74 pruebas), `rateFor` con sobrescritura de sesión (8) y rutas de estáticas movidas al registro sin cambiar `visualFor`. Entrada de la build: CSS idéntico, JS +189 B | §7 |
 
 ---
 
@@ -597,3 +598,63 @@ La autora aprobó el 2026-11-03 las seis decisiones de diseño de esta parte; su
 
 - El registro (T027–T028), las velocidades (T029–T030), `sofiVisuals` (T031), el modo durante `memory-wipe` (T032–T033) y la remisión en el plan (T034) no se han hecho.
 - La conexión de `selectVisual` con `SofiSprite`, con `SofiSpeech.speaking` y con las señales de `009` es de A4 y de las features emisoras.
+
+---
+
+## 7. A3 — Capa visual pura, parte 2 (T027–T031)
+
+Fecha: 2026-11-03. Antes de empezar: A2 y T017–T026 cerradas y publicadas (`d57acc5` y `f17e162`). Su CI en GitHub Actions terminó en éxito (ejecución de `f17e162`, la única que lanzó el push de los dos commits). `gh` no está autenticado en esta máquina; el estado se leyó de la API pública del repositorio.
+
+### 7.1 Qué se hizo
+
+| Tareas | Resultado |
+|---|---|
+| T027–T028 | `visual/registry.ts`: tabla `SOFI_REGISTRY` de los 14 recursos con `playback` (`loop`, `once` o `machine`, catálogo §3), `reducedPose`, `maskStrips`, `singlePassClass` donde el parcial lo pide y `load`, el cargador `import()` de su módulo dueño. `eureka` y `suspicious` no tienen cargador. Incluye `SOFI_STATICS`, el catálogo de las seis estáticas aprobadas, que pasa a ser el único sitio con sus rutas |
+| T029–T030 | `visual/rates.ts`: `rateFor(id)` (1× por defecto), `PRODUCTION_RATES` (tabla única, hoy vacía hasta AV3) y la sobrescritura de sesión en memoria (`setSessionRate`, `clearSessionRates`) |
+| T031 | `sofiVisuals.ts` conserva `SOFI_VISUALS` y `visualFor` y toma las rutas de `SOFI_STATICS`. Solo cambian sus importaciones; sus pruebas de 004 no se tocaron |
+
+Las pruebas se vieron fallar antes del código (el registro y las velocidades no existían; el catálogo de estáticas ya lo incumplía `sofiVisuals.ts`, que aún importaba las imágenes).
+
+### 7.2 Pruebas
+
+`registry.test.ts` (74) contrasta el registro con el catálogo y con los parciales de los ZIP, que son la fuente de verdad:
+
+- los 14 recursos y su tipo de reproducción, escritos aparte desde el catálogo §3;
+- su tira principal existe y, para cada cargador, el módulo dueño exporta exactamente las tiras de su prefijo;
+- pose reducida: la del parcial (compilado con Sass) anula la animación base bajo `reduce`; los tres gags solo se mueven bajo `no-preference`; una desviación solo puede apuntar a un fotograma existente de otro recurso;
+- `singlePassClass` coincide con los parciales que piden `animation-iteration-count: 1` para una pasada (`favoriting`, `error`, `needs-context`), y los demás `once` ya llegan como una sola pasada;
+- `maskStrips` coincide con las tiras que el parcial usa en `mask`/`mask-image` (hoy solo `memory-wipe-dissolve.webp`);
+- `eureka` y `suspicious` sin cargador y sin ninguna mención en el código del registro;
+- las entradas no llevan duraciones;
+- `SOFI_STATICS` coincide con los `.webp` de `src/assets/sofi/` y ningún otro archivo de `src` los importa.
+
+`rates.test.ts` (8): 1× para los 14, tabla de producción de factores válidos, sobrescritura de sesión que solo cambia el recurso indicado, no persiste (sin `localStorage` ni `sessionStorage`) y rechaza 0, negativos, `NaN` e infinito conservando el valor anterior.
+
+Sensibilidad: se quitó a propósito `singlePassClass` de `error`, la tira de máscara de `memory-wipe` y el tipo de `poking`; fallaron seis pruebas y se restauró.
+
+### 7.3 Efecto en la build
+
+| | Antes de T031 | Ahora |
+|---|---|---|
+| CSS de entrada | 49 006 B; `gzipSync` 9 806 B | Idéntico (mismo archivo, `index-Dl-0FquU.css`) |
+| JS de entrada | 336 657 B; `gzipSync` 108 186 B | 336 846 B (+189); `gzipSync` 108 210 B (+24) |
+| `.webp` en `dist/assets` | 10 | 29 |
+
+La entrada no referencia ninguna tira de los recursos diferidos ni ningún `import()`: `SOFI_REGISTRY` no tiene aún consumidores y el bundler lo descarta. Sin embargo, al entrar los módulos dueños en el grafo, Vite emite sus tiras como archivos, así que `dist` lleva 19 `.webp` que nadie pide todavía. No se descargan; pasan a estar referenciados por los chunks diferidos cuando `SofiSprite` use el registro (T035–T037). `eureka` y `suspicious`: 0 tiras en la build.
+
+### 7.4 Comprobaciones técnicas
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run typecheck`, `npx eslint .`, `npx prettier --check .` | Sin errores |
+| `npm run build` | Correcta |
+| `npx vitest run` | 92 archivos, 1 629 pruebas, todas pasan |
+| `npx playwright test` | 158 pruebas; en la primera pasada falló una (`a11y`, Design Lab · foundations, claro: la navegación del Lab no apareció en 5 s). Repetido `e2e/a11y.spec.ts`: 42 de 42 |
+
+Los fallos de esa pasada (esa y ocho pruebas de Vitest con tiempos de ~5 s) coinciden con haber lanzado a la vez Vitest y Playwright, que comparten CPU en este equipo (la primera carga del Lab en frío tarda 3–4 s por sí sola). Repetidos por separado, todo pasa; no se subió ningún tiempo límite.
+
+### 7.5 Notas
+
+- **Cuando `SofiPortrait` pase al módulo dueño de `sofi-blink` (T038)**, ese módulo estará a la vez en la entrada y detrás del cargador del registro; Vite lo avisará como importación dinámica ineficaz. Se decide en T038: o `sofi-blink` sin cargador, o se acepta el aviso.
+- **`PRODUCTION_RATES` está vacía** hasta AV3 (T082). No hay suscripción a cambios de velocidad: `SofiSprite` (T037) decide cómo se entera el Lab.
+- **Textos que mencionan a `sofiVisuals.ts` como único sitio con rutas** (`004-plan.md` §6, descripción de la sección del expediente en el Lab) describen el estado anterior. Con T031 las rutas están en el registro y la correspondencia sigue en `sofiVisuals.ts`; no se tocaron, el Lab por no introducir cambios visuales.

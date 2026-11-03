@@ -1,14 +1,10 @@
-import approved from '../../assets/sofi/sofi-approved.webp'
-import neutral from '../../assets/sofi/sofi-neutral.webp'
-import peek from '../../assets/sofi/sofi-peek.webp'
-import smug from '../../assets/sofi/sofi-smug.webp'
-import surprised from '../../assets/sofi/sofi-surprised.webp'
-import thinking from '../../assets/sofi/sofi-thinking.webp'
 import type { SofiFrame } from '../../components/sofi/SofiPortrait/SofiPortrait'
+import { SOFI_STATICS } from '../../components/sofi/visual/registry'
 import type { SofiMood } from './sofiGuide'
 
-// Cómo se ve cada estado de Sofi. Es el único sitio con rutas de imágenes:
-// cuando lleguen los spritesheets definitivos (008) se cambia aquí, no en el cuestionario.
+// Cómo se ve cada estado de Sofi: correspondencia estados del expediente → imágenes. Las
+// rutas viven en el registro de la capa visual (`SOFI_STATICS`, 008); cuando lleguen los
+// spritesheets definitivos se cambia esta tabla, no el cuestionario.
 export type SofiVisual =
   // Spritesheet de parpadeo: bucle o un fotograma fijo.
   | { kind: 'sprite'; frame: SofiFrame }
@@ -29,15 +25,15 @@ const image = (
 
 // Correspondencia provisional aprobada (004-plan §6). Una imagen puede servir a varios estados.
 export const SOFI_VISUALS: Record<SofiMood, SofiVisual> = {
-  inviting: image(peek, 'blink', 0.875),
+  inviting: image(SOFI_STATICS['sofi-peek'], 'blink', 0.875),
   asking: { kind: 'sprite', frame: 'blink' },
   waiting: { kind: 'sprite', frame: 'blink' },
-  acknowledging: image(smug, 'blink'),
-  uncertain: image(thinking, 1),
-  saved: image(approved, 'blink'),
-  validationError: image(surprised, 2),
-  deleting: image(thinking, 1),
-  deleted: image(neutral, 'blink'),
+  acknowledging: image(SOFI_STATICS['sofi-smug'], 'blink'),
+  uncertain: image(SOFI_STATICS['sofi-thinking'], 1),
+  saved: image(SOFI_STATICS['sofi-approved'], 'blink'),
+  validationError: image(SOFI_STATICS['sofi-surprised'], 2),
+  deleting: image(SOFI_STATICS['sofi-thinking'], 1),
+  deleted: image(SOFI_STATICS['sofi-neutral'], 'blink'),
 }
 
 // Con movimiento reducido no hay bucles: el parpadeo se queda en su primer fotograma.
