@@ -53,7 +53,7 @@ Pruebas de concepto aisladas, del 2026-10-23, salvo E13 y la puerta A0, del 2026
 | # | Qué se probó | Resultado | Límite |
 |---|---|---|---|
 | E1 | Build de producción actual | JS 336,34 kB (109,33 gzip), CSS 48,29 kB (9,82 gzip). Solo se emite `sofi-blink.webp`. CSS Modules aplica hash también a los keyframes | — |
-| E2 | Arranque de la build con `vite preview`: 390×844, caché fría, mediana de 5 | FCP: 536 ms sin limitar · 1728 ms con Fast 4G + CPU 4× · 2712 ms con Slow 4G + CPU 4× | Chromium, servidor local |
+| E2 | Arranque de la build con `vite preview`: 390×844, caché fría, mediana de 5 | FCP: 536 ms sin limitar · 1728 ms con Fast 4G + CPU 4× · 2712 ms con Slow 4G + CPU 4× | Chromium, servidor local. Evidencia histórica del 2026-10-23: EX1 no la reprodujo, ni con su propio guion, y la sustituye como línea base (§11.2; `008-verification.md`) |
 | E3 | Peso de los 14 recursos | CSS 66,2 kB (13,6 gzip) · controladores 31,9 kB (11,6 gzip) · WebP 830,2 kB, que solo se descargan al pintarse | — |
 | E5 | Web Animations sobre los parciales | El subárbol incluye pseudoelementos. La pasada única desde fuera funciona. Velocidad común sin deriva, reaplicada en `animationstart`. `animationiteration` marca el primer ciclo (6440 ms el de `sofing`) | Chromium; A0 lo repite en Firefox y WebKit |
 | E6–E7 | Controladores, y React 19 en StrictMode | `destroy` no deja listeners, capas ni atributos; montar–destruir–montar no duplica capas; la agregación de causas corrige `attachPoking`; React no emite avisos | Chromium y jsdom; A0 repite E6 en Firefox y WebKit |
@@ -228,9 +228,9 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
 
 ## 7. Rendimiento y carga (D-5, D-6)
 
-**Objetivos provisionales de D-5**, frente a E1 y E2. No son presupuestos aprobados: se confirman o se corrigen con las mediciones de este apartado, y solo entonces pasan a umbral de prueba:
-- CSS de entrada con como mucho +2 kB gzip;
-- FCP sin empeorar más de 50 ms con Slow 4G + CPU 4×. E2 es una mediana de 5: antes de fijar este margen se mide la dispersión de la línea base.
+**Objetivos provisionales de D-5**, frente a la línea base de EX1 (`008-verification.md`). E1 sigue valiendo para los tamaños de la build. No son presupuestos aprobados: se confirman o se corrigen con las mediciones de este apartado, y solo entonces pasan a umbral de prueba:
+- **CSS de entrada:** como mucho +2 kB gzip sobre la referencia inicial de **9780 B**. Se mide con `gzipSync` de Node y las opciones fijas de `scripts/loadMetrics.ts`, no con el «gzip» del informe de Vite 8, que es otra medida (9,82 kB). El margen de +2 kB sigue siendo provisional.
+- **FCP, LCP y disponibilidad funcional:** sin umbral automático. El margen provisional de +50 ms de FCP se retiró: con Slow 4G + CPU 4×, dos medianas de la misma build lo superan con frecuencia por ruido (EX1). EX4 fija los criterios definitivos con comparaciones A/B (más abajo) y la autora los confirma.
 
 | Recurso | Carga |
 |---|---|
@@ -253,12 +253,19 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
 - **Incrustación de Vite (aprobado):** solo las tiras de Sofi (`src/styles/sprites/`) se excluyen de la incrustación en base64. El resto de assets conserva el límite por defecto (4096 B). Mecanismo: `build.assetsInlineLimit` como función en `vite.config.ts`, que devuelve `false` para esos archivos y `undefined` para los demás. Sin la exclusión, 16 de las 40 tiras (15 en producción) viajan duplicadas en el CSS y en el JS de su dueño. En E12 deja el CSS de entrada del arnés en 1,05 kB gzip (1,90 con incrustación), a cambio de más peticiones pequeñas: al decodificar `memory-wipe`, sus 12 tiras frente a 3.
 - **Conexiones lentas (E13):** la exclusión no empeora la reproducción. Las animaciones medidas avanzan y el hueco entre el arranque y la llegada de las tiras es el mismo con y sin ella, porque lo domina la tira grande. Para que ese hueco sea 0, las tiras se decodifican antes de aplicar la clase (§5.4) y, entretanto, se ve el respaldo estático. Las tiras que un parcial usa como máscara se precargan con `crossOrigin = 'anonymous'`: sin él se piden dos veces, en los tres motores.
 
-**Protocolo de medición** (el de E2):
+**Protocolo de medición** (el de E2, con el arnés `scripts/measureLoad.ts`):
 - build en una carpeta temporal y `vite preview`;
-- perfiles de CDP (sin limitar, Fast 4G + CPU 4×, Slow 4G + CPU 4×), caché fría, mediana de 5;
+- perfiles de CDP (sin limitar, Fast 4G + CPU 4×, Slow 4G + CPU 4×), caché fría, mediana de 5. El plan solo los nombra: sus parámetros constan en `008-verification.md`;
 - se miden FCP, LCP, bytes transferidos, CSS de entrada y descargas de tiras por pantalla;
+- **una muestra solo es válida si todas sus peticiones tuvieron éxito y todo lo que `index.html` referencia se descargó por la red.** El CSS de entrada es el que referencia `index.html`, no el que se descargó, y el arnés contrasta ambos. Una petición fallida, una respuesta que no sea 2xx o un recurso con el tipo de contenido equivocado aborta la medición, sin reintentar ni descartar en silencio. El caso traicionero: `vite preview` responde `200` con `index.html` a una ruta que no existe, y la página se mediría sin ese recurso;
 - se mide antes y después del bloque C;
 - las cifras obtenidas se registran en `008-verification.md`; este plan conserva solo los objetivos provisionales.
+
+**Comparaciones A/B** (EX2 a EX4). La máquina deriva, así que una mediana de hoy no se compara con la de otro día (EX1). Toda comparación entre dos versiones usa el mismo arnés y:
+- **Intercalado:** las dos versiones se sirven a la vez, con el mismo servidor, navegador, perfiles y configuración, y se cargan alternadas en bloques ABBA y BAAB, en igual número;
+- **Calentamiento predefinido:** un número fijo de bloques completos, iguales para A y B, antes de los medidos (`WARMUP_BLOCKS`, en `scripts/loadMetrics.ts`). Es una constante del protocolo, no una opción por ejecución;
+- **Todas las muestras se conservan,** también las de calentamiento, que el análisis excluye por regla y no por su valor. No se recorta ningún valor por parecer atípico;
+- **Análisis emparejado:** la diferencia B − A de cada bloque, con su media, el intervalo del 95 % y en cuántos bloques B es más lenta. Una diferencia cuyo intervalo contiene el 0 no se distingue del ruido de esa medición.
 
 **`rolling` (D-6):** se evalúan por separado el arranque inicial y las vistas diferidas, con las mismas métricas.
 - **Métricas, con el protocolo de arriba:**
@@ -284,7 +291,7 @@ Además de las métricas de `rolling`, se mide por pantalla el tiempo hasta que 
   - la revisión de `PROVISIONAL_SLOW_THRESHOLD_MS`.
 - El experimento de `rolling` en el arranque y, cuando exista, en una vista diferida.
 - El experimento de carga de `talking` y `uncertain`, que no depende de Jev.
-- Los objetivos provisionales después de integrar, para confirmarlos o corregirlos, y la dispersión de la línea base.
+- Los objetivos provisionales después de integrar, para confirmarlos o corregirlos (EX4).
 - Las descargas efectivas de WebP de cada pantalla con los recursos integrados (E12 es previo a la integración).
 - Los renderizados de `talking` con React Profiler.
 
@@ -371,7 +378,7 @@ Cada punto se aprueba expresamente y se registra en su fuente de verdad (§8).
 | D-2 | Poses del propio parcial. `memory-wipe` conserva la suya (catálogo, ficha 015) |
 | D-3 | Sprites decorativos, sin textos de gesto |
 | D-4 | Registro, selección, pintura y adaptador separados; pantallas sin recursos; Lab fuera de producción; selección y prioridades puras en la capa visual, no en el dominio. Lógica del expediente separada; APIs conservadas; sin abstracciones innecesarias |
-| D-5 | Carga estática de `sofi-blink` y diferida de gags y flujo (§7); `talking` y `uncertain` quedan pendientes de un experimento. +2 kB gzip de CSS de entrada y +50 ms de FCP son objetivos provisionales, no presupuestos aprobados |
+| D-5 | Carga estática de `sofi-blink` y diferida de gags y flujo (§7); `talking` y `uncertain` quedan pendientes de un experimento. +2 kB gzip de CSS de entrada es un objetivo provisional, no un presupuesto aprobado; el margen de FCP se retiró y EX4 fija los criterios con comparaciones A/B (§7, §11.2) |
 | D-6 | `rolling` solo tras el experimento, que mide por separado el arranque inicial y las vistas diferidas (§7) |
 | D-7 | Velocidad centralizada y reaplicada |
 | D-8 | Indicador reconocible para quien usa Claude Code: progresión de glifos, ida y vuelta y etiquetas dinámicas, con acabado de píxel de Sofi. Sin logotipos ni código de Claude. Las etiquetas reflejan estados reales y respetan el movimiento reducido |
@@ -406,6 +413,10 @@ Cada punto se aprueba expresamente y se registra en su fuente de verdad (§8).
 | D-15 | `009` es dueña de la interfaz «Borrar todos mis datos», que reutiliza `003` y el contrato visual de `008`. Su contrato exige verificar el borrado efectivo antes de anunciar el éxito o activar `memory-wipe` (§5.2) |
 | D-16 | Con movimiento reducido, `memory-wipe` muestra la pose aterrorizada estática hasta que termina la confirmación funcional del borrado. Después vuelve a neutral, sin animación ni temporizador (§4.4). El borrado restablece la preferencia a `system`, pero la reacción mantiene el modo con el que empezó hasta el fin de la confirmación (§5.2) |
 | Design Lab | Sigue siendo experimental: sus prototipos no son aprobaciones visuales (§8) |
+| Línea base de carga | EX1 sustituye a E2 como línea base reproducible. E2 conserva sus cifras históricas y consta que no se reprodujo (§2; `008-verification.md`) |
+| Margen de FCP | Se retira +50 ms como umbral automático. FCP, LCP y disponibilidad funcional siguen siendo relevantes, y EX4 fija sus criterios definitivos con comparaciones A/B (§7) |
+| gzip del CSS de entrada | `gzipSync` de Node con opciones fijas. Referencia inicial: 9780 B. El margen de +2 kB sigue siendo provisional (§7) |
+| Comparaciones entre versiones | Protocolo A/B intercalado (ABBA/BAAB) con calentamiento predefinido y equivalente, todas las muestras conservadas, análisis de diferencias emparejadas con su incertidumbre y la misma configuración para las dos versiones (§7) |
 
 ## 12. Riesgos y pendientes
 

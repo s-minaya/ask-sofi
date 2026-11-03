@@ -16,6 +16,7 @@
     "eval:jev": "node --experimental-strip-types evals/jev/runner/start.ts",
     "eval:sheets": "node --experimental-strip-types evals/jev/fixtures/writeSheets.ts",
     "verify:bundle": "node --experimental-strip-types scripts/verifyClientBundle.ts",
+    "measure:load": "node --experimental-strip-types scripts/measureLoad.ts",
     "assets:sofi": "node --experimental-strip-types scripts/processSofiStatics.ts"
   },
   "dependencies": {
