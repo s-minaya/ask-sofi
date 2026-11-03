@@ -1,0 +1,19 @@
+.root {
+  display: block;
+  flex: none;
+}
+
+// La estática es el fotograma de reposo de sofi-blink, quieto. La clase del parcial llega
+// por otro módulo (y las del resto de recursos, por un chunk que se carga después), así que
+// aquí se gana por especificidad, no por orden en la cascada.
+.root.fallback {
+  animation: none;
+}
+
+// Una sola pasada: el parcial sale con `infinite` y pide `animation-iteration-count: 1` en la
+// pieza y en sus ::before y ::after. Una cifra sola se repite para cada animación de la lista.
+.root.singlePass,
+.root.singlePass::before,
+.root.singlePass::after {
+  animation-iteration-count: 1;
+}

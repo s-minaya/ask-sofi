@@ -190,9 +190,10 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
 ### 5.4 Pintura
 
 - **`SofiSprite`:**
-  - carga el módulo dueño con `import()`;
+  - carga el módulo dueño con `import()`; `sofi-blink`, estática (§7), se importa directamente y no tiene cargador en el registro;
   - mantiene el fotograma de `sofi-blink` hasta que el módulo carga y las tiras se decodifican. Las URL de las tiras las exporta cada módulo dueño (`sprites/<id>.ts`) con un `import.meta.glob` ansioso limitado a su prefijo, por ejemplo `import.meta.glob(['/src/styles/sprites/poking.webp', '/src/styles/sprites/poking-*.webp'], { query: '?url', import: 'default', eager: true })`; `export.mjs` garantiza ese prefijo. **Nunca un glob central de `*.webp`:** referenciaría desde la entrada todas las tiras, también las del Lab (E12). Una referencia no descarga nada: la tira se pide al pintarse o al decodificarse (§7). La clase del recurso se aplica cuando sus tiras están decodificadas, sin hueco con la animación en marcha (E13). Las que el parcial usa como máscara se precargan con `crossOrigin = 'anonymous'` y el registro las declara (hoy, solo `memory-wipe-dissolve`);
   - aplica la clase de pasada única (la que indican los propios parciales) y la velocidad;
+  - se entera de los cambios de velocidad del Lab por `subscribeToRates` (`visual/rates`), no volviendo a pintar;
   - emite `onFirstCycle` y `onEnd`;
   - es siempre decorativo (D-3);
   - sin Web Animations (jsdom) degrada: sin velocidad ni eventos de ciclo.

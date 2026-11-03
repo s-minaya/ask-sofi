@@ -20,6 +20,21 @@ const COVERED_BY_PARENT: Record<string, string> = {
   TickerPlayIcon: 'TickerPauseButton',
 }
 
+// Excepciones temporales: componentes que aún NO se ven en el Lab. No los cubre ningún otro
+// componente; la deuda se salda al mostrarlos. SofiSprite: inspector de recursos (T058 de
+// 008-tasks.md). Al mostrarlo, la última prueba obliga a retirar la excepción.
+const PENDING_IN_LAB: Record<string, string> = {
+  SofiSprite: 'T058',
+}
+
+const mentionedInLab = (name: string) =>
+  new RegExp(`\\b${name}\\b`).test(
+    Object.entries(labSources)
+      .filter(([file]) => !/\.test\./.test(file))
+      .map(([, source]) => source)
+      .join('\n'),
+  )
+
 function exportedComponents(): Array<{ name: string; file: string }> {
   const found: Array<{ name: string; file: string }> = []
   for (const [file, source] of Object.entries(components)) {
@@ -42,9 +57,18 @@ describe('Design Lab coverage', () => {
         name: COVERED_BY_PARENT[name] ?? name,
         file,
       }))
+      .filter(({ name }) => !(name in PENDING_IN_LAB))
       .filter(({ name }) => !new RegExp(`\\b${name}\\b`).test(lab))
       .map(({ name, file }) => `${name} (${file})`)
     expect(missing).toEqual([])
+  })
+
+  it('retira las excepciones temporales cuando el componente ya se ve en el Lab', () => {
+    const names = new Set(exportedComponents().map(({ name }) => name))
+    const stale = Object.entries(PENDING_IN_LAB)
+      .filter(([name]) => !names.has(name) || mentionedInLab(name))
+      .map(([name, task]) => `${name} (${task})`)
+    expect(stale).toEqual([])
   })
 
   it('does not keep parent exceptions for components that no longer exist', () => {

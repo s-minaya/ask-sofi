@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; T032–T034 (modo efectivo durante `memory-wipe`) también; la siguiente tarea es T035.
+Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; T032–T034 (modo efectivo durante `memory-wipe`) también; T035–T038 (`SofiSprite` y `SofiPortrait`) también; la siguiente tarea es T039.
 
 ## Cómo leer este desglose
 
@@ -96,10 +96,10 @@ Requiere VT1. Todo en `src/components/sofi/visual/`, sin React ni archivos, salv
 
 ### A4. Pintura y controladores (plan §5.4–5.5, §6)
 
-- [ ] **T035** — RED de `SofiSprite`, carga: mantiene el fotograma de `sofi-blink` hasta que carga el módulo dueño y se decodifican las tiras; conserva la estática si falla; aplica la clase del recurso solo con las tiras decodificadas; precarga con `crossOrigin='anonymous'` las tiras de máscara declaradas; decorativo (`aria-hidden`, sin `role="img"`).
-- [ ] **T036** — RED de `SofiSprite`, ciclo: pasada única; `playbackRate` sobre el subárbol, reaplicado en `animationstart`; `onFirstCycle` y `onEnd`; degrada sin velocidad ni eventos de ciclo cuando no hay Web Animations (jsdom). Con Web Animations simuladas; el comportamiento real va en VT4 y VT6.
-- [ ] **T037** — GREEN de `SofiSprite` (`src/components/sofi/SofiSprite/`).
-- [ ] **T038** — `SofiPortrait`: gana la propiedad `animation`, usa el módulo dueño `sprites/sofi-blink` en lugar de importar el parcial y conserva recorte, contorno y tamaño. Es el control de E11: debe dejar de fallar con `full`.
+- [x] **T035** — RED de `SofiSprite`, carga: mantiene el fotograma de `sofi-blink` hasta que carga el módulo dueño y se decodifican las tiras; conserva la estática si falla; aplica la clase del recurso solo con las tiras decodificadas; precarga con `crossOrigin='anonymous'` las tiras de máscara declaradas; decorativo (`aria-hidden`, sin `role="img"`).
+- [x] **T036** — RED de `SofiSprite`, ciclo: pasada única; `playbackRate` sobre el subárbol, reaplicado en `animationstart`; `onFirstCycle` y `onEnd`; degrada sin velocidad ni eventos de ciclo cuando no hay Web Animations (jsdom). Con Web Animations simuladas; el comportamiento real va en VT4 y VT6.
+- [x] **T037** — GREEN de `SofiSprite` (`src/components/sofi/SofiSprite/`).
+- [x] **T038** — `SofiPortrait`: gana la propiedad `animation`, usa el módulo dueño `sprites/sofi-blink` en lugar de importar el parcial y conserva recorte, contorno y tamaño. Es el control de E11: debe dejar de fallar con `full`.
 - [ ] **T039** — RED de `SofiSpeech.onSpeakingChange` (D-12): avisa solo cuando cambia el booleano; el estado por carácter no provoca re-render del consumidor; el contrato actual de `onStateChange` no cambia.
 - [ ] **T040** — GREEN.
 - [ ] **T041** — RED de `useSofiController(kind, host, opciones)` con los controladores reales: carga diferida y sin modificar; monta solo con escena tranquila, estado efectivo no reducido, anfitrión montado y tiras decodificadas; destruye en la limpieza, también con montar–destruir–montar de StrictMode; pasa el umbral de inactividad (no el del controlador) y la velocidad con `setRate`; agrega las causas de `visual/ambient` también con `attachPoking`; pasar a reducido lo destruye. Las escuchas y los temporizadores se cuentan con instrumentación instalada por la propia prueba (envoltorio de `addEventListener`, `setTimeout` y `setInterval` en el entorno de prueba), incluido el montar–destruir–montar de StrictMode. No se modifica ni se instrumenta producción.
@@ -133,7 +133,7 @@ Depende de A. Se amplía `Motion & Sound` sin crear un segundo laboratorio. Los 
 - [ ] **T055** — Antes de cada capacidad del inspector que se adapte, releer la parte correspondiente del playground del repositorio de spritesheets (`playground/`, solo lectura; ese repositorio no se modifica) y contrastarla con la tabla de plan §8. Registrar las divergencias, si las hay, en `008-verification.md` sin presuponer que lo demás sea reutilizable.
 - [ ] **T056** — RED del estado de sesión del inspector (`motionLab.ts`): velocidad, pausa, tamaño, fondo y pixelado por recurso, conservados al cambiar de entrada, sin tocar preferencias públicas ni las velocidades de producción.
 - [ ] **T057** — GREEN.
-- [ ] **T058** — Inspector de los 14 recursos: selector y ficha (nombre, intención, bucle/pasada/máquina, estado de activación); reproducir, pausar, reiniciar y comparar con 1×; velocidad individual sobre todas las capas y el controlador; bucle frente a pasada única; reinicio por nuevo evento; cancelación a mitad de transición. Reutiliza `LabRange`, `LabChoice`, `LabCheck` y `LabStage`.
+- [ ] **T058** — Inspector de los 14 recursos: selector y ficha (nombre, intención, bucle/pasada/máquina, estado de activación); reproducir, pausar, reiniciar y comparar con 1×; velocidad individual sobre todas las capas y el controlador; bucle frente a pasada única; reinicio por nuevo evento; cancelación a mitad de transición. Reutiliza `LabRange`, `LabChoice`, `LabCheck` y `LabStage`. **Al mostrar `SofiSprite` aquí, retirar su excepción temporal `PENDING_IN_LAB` de `src/design-lab/coverage.test.ts` (la propia prueba lo exige).**
 - [ ] **T059** — Tamaño, fondos y pixelado, y contenedores representativos: escenario entero, insignia, busto apoyado en borde, layouts ancho y estrecho, ambos temas.
 - [ ] **T060** — Línea de tiempo por fotograma con `getKeyframes()`, miniaturas y desplazamiento manual. 4.4 conserva `BLINK_TIMELINE` y su test de contrato.
 - [ ] **T061** — Peso y memoria decodificada por recurso (sirve a EX1–EX4).

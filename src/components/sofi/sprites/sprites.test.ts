@@ -52,6 +52,13 @@ const owners = import.meta.glob<{
 const SPRITES_DIR = '/src/styles/sprites/'
 const MODULES_DIR = '/src/components/sofi/sprites/'
 
+// Todo el SCSS de la app: para comprobar que nadie más importa un parcial.
+const allStyles = import.meta.glob<string>('/src/**/*.scss', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+
 // Las URL de las tiras que usa un parcial, sin los comentarios de línea.
 function stripsUsedBy(partial: string): string[] {
   const code = partial.replace(/^\s*\/\/.*$/gm, '')
@@ -71,6 +78,24 @@ describe('módulos dueños de los parciales de sprites', () => {
         .map((path) => path.slice(MODULES_DIR.length, -'.module.scss'.length))
         .sort(),
     ).toEqual([...IDS].sort())
+  })
+
+  // D-1: la transformación de movimiento solo alcanza a esta carpeta. Un parcial importado
+  // desde otro módulo se escaparía de ella y no obedecería a `data-motion='full'` (E11).
+  it('ningún otro módulo SCSS importa un parcial de sprites', () => {
+    const importsPartial =
+      /@(?:use|forward|import)\s+['"][^'"]*sprites(?:\/[^'"]*)?['"]/
+    const offenders = Object.entries(allStyles)
+      .filter(
+        ([path]) =>
+          !path.startsWith(MODULES_DIR) && !path.startsWith(SPRITES_DIR),
+      )
+      .filter(([, source]) =>
+        importsPartial.test(source.replace(/^\s*\/\/.*$/gm, '')),
+      )
+      .map(([path]) => path)
+
+    expect(offenders).toEqual([])
   })
 
   describe.each(IDS)('%s', (id) => {

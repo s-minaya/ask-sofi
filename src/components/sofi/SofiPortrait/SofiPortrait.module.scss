@@ -1,6 +1,4 @@
 @use 'utilities' as u;
-// Solo el parcial del parpadeo: el índice de sprites arrastraría las demás animaciones al CSS de cada pantalla.
-@use '../../../styles/sprites/sofi-blink';
 
 .sprite {
   display: block;
@@ -11,18 +9,19 @@
   }
 }
 
-// Fotogramas fijos: 0 abiertos · 1 entrecerrados · 2 cerrados.
-.frame0,
-.frame1,
-.frame2 {
+// Fotogramas fijos: 0 abiertos · 1 entrecerrados · 2 cerrados. El parcial del parpadeo llega
+// por su módulo dueño, que es otro CSS: aquí se gana por especificidad, no por orden.
+.sprite.frame0,
+.sprite.frame1,
+.sprite.frame2 {
   animation: none;
 }
 
-.frame1 {
+.sprite.frame1 {
   background-position-x: 50%;
 }
 
-.frame2 {
+.sprite.frame2 {
   background-position-x: 100%;
 }
 

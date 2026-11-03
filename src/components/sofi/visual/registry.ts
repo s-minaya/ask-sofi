@@ -49,6 +49,8 @@ export type RegistryEntry = {
   singlePassClass?: true
   // Carga diferida del módulo dueño. Ausente en `eureka` y `suspicious`: en producción no
   // se cargan y el bundler no emite sus tiras (E12). El Lab los añade desde su código.
+  // Ausente también en `sofi-blink`, que es estática (plan §7): quien la pinta importa su
+  // módulo directamente, y un `import()` suyo no lo movería a otro chunk.
   load?: () => Promise<SofiOwnerModule>
 }
 
@@ -59,7 +61,6 @@ export const SOFI_REGISTRY: Record<SofiAnimationId, RegistryEntry> = {
     playback: 'loop',
     reducedPose: 'partial',
     maskStrips: NO_MASKS,
-    load: () => import('../sprites/sofi-blink'),
   },
   sofing: {
     playback: 'loop',

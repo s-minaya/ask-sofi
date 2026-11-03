@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   PRODUCTION_RATES,
   clearSessionRates,
   rateFor,
   setSessionRate,
+  subscribeToRates,
 } from './rates'
 import { SOFI_ANIMATION_IDS } from './types'
 
@@ -54,4 +55,24 @@ describe('sobrescritura de sesión (la usa el Lab)', () => {
       expect(rateFor('sofing')).toBe(2)
     },
   )
+})
+
+// `SofiSprite` se entera del cambio por aquí, no volviendo a pintar desde fuera.
+describe('suscripción a los cambios', () => {
+  it('avisa al fijar y al deshacer, y no a quien se dio de baja ni ante un factor inválido', () => {
+    const listener = vi.fn()
+    const unsubscribe = subscribeToRates(listener)
+
+    setSessionRate('sofing', 2)
+    expect(listener).toHaveBeenCalledTimes(1)
+    clearSessionRates()
+    expect(listener).toHaveBeenCalledTimes(2)
+
+    expect(() => setSessionRate('sofing', 0)).toThrow(RangeError)
+    expect(listener).toHaveBeenCalledTimes(2)
+
+    unsubscribe()
+    setSessionRate('sofing', 3)
+    expect(listener).toHaveBeenCalledTimes(2)
+  })
 })

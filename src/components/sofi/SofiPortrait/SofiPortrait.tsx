@@ -1,5 +1,8 @@
 import { useState, type CSSProperties, type ReactNode } from 'react'
 import { cx } from '../../../utils/cx'
+import { SofiSprite } from '../SofiSprite/SofiSprite'
+import { className as blinkClass } from '../sprites/sofi-blink'
+import type { SofiAnimationId } from '../visual/types'
 import styles from './SofiPortrait.module.scss'
 
 // La pantalla decide la expresión; el retrato elige fotograma. Cuando lleguen
@@ -33,6 +36,9 @@ type SofiPortraitProps = {
   size: number
   expression?: SofiExpression
   frame?: SofiFrame
+  // Recurso animado en lugar del parpadeo (plan 008 §5.4). Con uno distinto de `sofi-blink`,
+  // `expression` y `frame` no se usan: el recurso lleva su propia pose. Es decorativo.
+  animation?: SofiAnimationId
   crop?: SofiCrop
   // Describe la expresión cuando aporta; vacío cuando acompaña a un texto que ya lo dice.
   alt?: string
@@ -55,6 +61,7 @@ export function SofiPortrait({
   size,
   expression = 'attentive',
   frame,
+  animation = 'sofi-blink',
   crop,
   alt = '',
   outline = false,
@@ -66,26 +73,34 @@ export function SofiPortrait({
   const a11y = alt
     ? { role: 'img', 'aria-label': alt }
     : { 'aria-hidden': true as const }
-  // Con recorte o imagen, la accesibilidad pasa al contenedor exterior.
-  const wrapped = Boolean(crop || image)
+  const resource = animation !== 'sofi-blink'
+  // Con recorte, imagen o recurso animado, la accesibilidad pasa al contenedor exterior.
+  const wrapped = Boolean(crop || image || resource)
   const placement = crop
     ? { margin: `${-crop.offsetY}px 0 0 ${-crop.offsetX}px` }
     : undefined
-  const sprite = (
+  const box = {
+    // Con imagen y sin recorte, el contenedor manda: la alternativa lo sigue.
+    width: image && !crop ? '100%' : size,
+    height: image && !crop ? '100%' : size,
+    ...(wrapped ? placement : style),
+  }
+  const sprite = resource ? (
+    <SofiSprite
+      animation={animation}
+      className={cx(outline && styles.outline)}
+      style={box}
+    />
+  ) : (
     <span
       className={cx(
-        styles['sofi-blink'],
+        blinkClass,
         styles.sprite,
         FRAME_CLASS[shownFrame],
         outline && styles.outline,
         !wrapped && className,
       )}
-      style={{
-        // Con imagen y sin recorte, el contenedor manda: la alternativa lo sigue.
-        width: image && !crop ? '100%' : size,
-        height: image && !crop ? '100%' : size,
-        ...(wrapped ? placement : style),
-      }}
+      style={box}
       {...(wrapped ? { 'aria-hidden': true as const } : a11y)}
     />
   )

@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -24,6 +24,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T017–T026 — `presentationGate`, `select`, `ambient`, `activityLabels` (A3) | Cuatro módulos puros con 71 pruebas, cada pareja vista fallar antes del código. Decisiones D-17 a D-22 aprobadas y comprobadas (§6.3) | §6 |
 | T027–T031 — registro, velocidades y estáticas (A3) | `SOFI_REGISTRY` contrastado con el catálogo y los parciales (74 pruebas), `rateFor` con sobrescritura de sesión (8) y rutas de estáticas movidas al registro sin cambiar `visualFor`. Entrada de la build: CSS idéntico, JS +189 B | §7 |
 | T032–T034 — modo efectivo durante `memory-wipe` (A3) | `holdMotion` fija el modo inicial con el único `data-motion` de `<html>`; 11 pruebas con los tres modos de entrada y la coordinación con el proveedor. Contrato remitido en el plan (D-23). Firefox y WebKit pendientes (T046, T073) | §8 |
+| T035–T038 — `SofiSprite` y `SofiPortrait` (A4) | Carga con decodificación previa, pasada única, velocidad y eventos de ciclo; el retrato usa el módulo dueño y obedece a `full` (control de E11, 12 de 12 en Chromium). Firefox y WebKit pendientes (T046, T073) | §9 |
 
 ---
 
@@ -703,3 +704,68 @@ Sensibilidad: se quitó a propósito, una a una, la guardia de `applyMotionPrefe
 
 - **Firefox y WebKit:** la reacción retenida solo se ha probado en jsdom y en el entorno de pruebas; el comportamiento real de `data-motion` y de la reacción va en T046 y T073.
 - **Consumo real:** nada llama aún a `holdMotion` ni emite las señales de borrado (009 y el Lab, que las simula). El mecanismo es el mismo `data-motion` de `<html>` para CSS y `useReducedMotion` para JS.
+
+---
+
+## 9. A4 — Pintura: `SofiSprite` y `SofiPortrait` (T035–T038)
+
+Fecha: 2026-11-03. Antes de empezar: A3 cerrado (§8, commit `6494c5e`) y su CI en GitHub Actions terminada en éxito (ejecución de `6494c5e`, leída de la API pública del repositorio).
+
+### 9.1 Qué se hizo
+
+| Tareas | Resultado |
+|---|---|
+| T035–T036 | `SofiSprite.test.tsx`, 21 pruebas, vistas fallar antes del código (no existían `SofiSprite` ni `loadSprite`). Módulos y tiras simulados; Web Animations simuladas solo con `getAnimations` y `playbackRate` |
+| T037 | `src/components/sofi/SofiSprite/`: `SofiSprite.tsx`, `loadSprite.ts` (módulo dueño + decodificación de todas sus tiras, con `crossOrigin='anonymous'` en las de máscara que declara el registro) y `SofiSprite.module.scss` |
+| T038 | `SofiPortrait` gana `animation`, pinta el parpadeo con el módulo dueño `sprites/sofi-blink` y ya no importa el parcial. Recorte, contorno y tamaño no cambian |
+
+### 9.2 Contrato de `SofiSprite`
+
+- **Carga:** hasta que el módulo carga y todas sus tiras se decodifican se ve el fotograma de reposo de `sofi-blink` (quieto). Solo entonces se aplica la clase del recurso. Si algo falla se queda la estática, y el fallo no se recuerda: el siguiente montaje lo reintenta. Un recurso ya cargado se pinta de entrada. Una carga en curso la comparten los que piden el mismo recurso.
+- **Pasada única:** la clase propia solo donde el registro la declara (`favoriting`, `needs-context`, `error`).
+- **Velocidad:** `playbackRate` sobre el subárbol, reaplicado en `animationstart`. Los cambios de sesión del Lab llegan por `subscribeToRates`: sin suscripción, leer `rateFor` en el render queda obsoleto con el compilador de React.
+- **Ciclo:** `onFirstCycle` en la primera vuelta de un bucle o al acabar la pasada, y `onEnd` al acabar una pasada única; cada uno una sola vez, aunque acaben varias capas. Con movimiento reducido o sin Web Animations no hay animación y no se emite (el estado efectivo de movimiento es entrada de `presentationGate`).
+- **Accesibilidad:** siempre `aria-hidden`, sin `role` (D-3).
+- **Estática:** `sofi-blink` se pinta de entrada, sin cargador ni decodificación; `eureka` y `suspicious`, sin cargador de producción, se quedan en la estática.
+
+### 9.3 Decisiones de implementación dentro del alcance
+
+- **`sofi-blink` sin cargador en el registro** (la nota de §7.5): es estática (plan §7) y `SofiSprite` ya importa su módulo como respaldo, así que un `import()` suyo no lo movería de chunk. Prueba nueva en `registry.test.ts`. La build no emite ningún aviso.
+- **Eventos de animación nativos** (`addEventListener` en un efecto), como en la medición E5, no las propiedades de React: en jsdom React escucha `animationend` con prefijo de proveedor y los eventos no llegan.
+- **Un `SofiSprite` por recurso** (`key={animation}`): cambiar de animación reinicia la carga y el recuento del primer ciclo.
+- **Especificidad en lugar de orden:** el parcial llega por otro CSS (los recursos diferidos, por un chunk que se carga después), así que `.root.fallback`, `.root.singlePass` y `.sprite.frame0/1/2` ganan por especificidad, no por posición en la cascada.
+- **`SofiPortrait` con `animation` distinto de `sofi-blink`:** `expression` y `frame` no se usan, y el retrato se envuelve como con imagen o recorte, de modo que la alternativa (`alt`) vive en el contenedor y el recurso sigue decorativo.
+
+### 9.4 Pruebas
+
+- **Vitest:** `SofiSprite.test.tsx` (21), `SofiPortrait.test.tsx` (5), más una prueba en `sprites.test.ts` (ningún otro módulo SCSS importa un parcial de sprites; falla antes del cambio con `SofiPortrait.module.scss`), una en `rates.test.ts` (suscripción) y una en `registry.test.ts` (`sofi-blink` estática).
+- **Sensibilidad:** se rompió a propósito, una a una, 11 guardas (clase antes de decodificar, `crossOrigin` de máscara, reaplicar en `animationstart`, las dos guardas de una sola vez, la clave por animación, la clase de pasada única, eventos con la estática, recordar un fallo, `role="img"` y que el retrato ignore `animation`). Las 11 las detecta alguna prueba. Una de ellas, recordar un fallo, no la detectaba ninguna: se añadió su prueba.
+- **Chromium, versionado (`e2e/sofi-motion.spec.ts`, 12 pruebas):** el parpadeo y un fotograma fijo del retrato de «Sofi Components» en los seis modos (sistema normal o reducido × sin atributo, `reduce`, `full`). **Control de E11:** antes del cambio, 11 de 12 pasaban y fallaba `sistema reduce · data-motion full` (el parpadeo ignoraba `full`); con el módulo dueño pasan 12 de 12. Este archivo es la semilla de T046, que lo amplía a Firefox y WebKit.
+- **Chromium, comprobación puntual con una página temporal que no se versiona (13 de 13):** `sofing` con la estática antes de cargar y el recurso animado después (velocidad 10× aplicada, un solo `onFirstCycle` y ningún `onEnd` tras varias vueltas); `favoriting` a 8× con una pasada, `first,end` una vez cada uno y 0 animaciones vivas; `rolling` a 4× en sus 8 capas y cambio en vivo a 2×; pose reducida sin animación ni eventos con el sistema en reduce y con `data-motion=reduce`; animado y con eventos con `full` aunque el sistema pida reducir; una tira bloqueada deja la estática; la tira de máscara de `memory-wipe` se pide una sola vez como imagen. El conteo de peticiones de la primera pasada daba 2 porque incluía la petición de módulo de Vite en desarrollo (`?import&url`); la sonda se corrigió para contar solo imágenes.
+
+### 9.5 Efecto en la build
+
+| | Antes (§8) | Ahora |
+|---|---|---|
+| CSS de entrada | 49 006 B; `gzipSync` 9 806 B | 49 424 B (+418); `gzipSync` 9 871 B (+65). Frente a la línea base de EX1 (9 780 B): +91 B |
+| JS de entrada | 337 071 B; `gzipSync` 108 333 B | 344 222 B (+7 151); `gzipSync` 111 063 B (+2 730) |
+| Chunks diferidos | — | 11 de JS y 11 de CSS, uno por módulo dueño (todos menos `sofi-blink`, `eureka` y `suspicious`) |
+| `.webp` en `dist/assets` | 29 | 29, ahora referenciados por los chunks diferidos. Ninguno de `eureka` ni de `suspicious` |
+
+El aumento del JS de entrada viene del registro, que deja de descartarse porque ya tiene consumidor, de `SofiSprite` y su cargador, y del ayudante de precarga de Vite. El CSS crece por `SofiSprite.module.scss` y por el clon forzado que el plugin añade al parcial de parpadeo, que ahora sí pasa por él.
+
+### 9.6 Comprobaciones técnicas
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run typecheck`, `npx eslint .`, `npx prettier --check .` | Sin errores |
+| `npm run build` | Correcta, sin avisos |
+| `npx vitest run` | 95 archivos, 1 669 pruebas, todas pasan (incluida la nueva de excepciones temporales del Lab) |
+| `npx playwright test` (Chromium) | 170 pruebas (158 anteriores y 12 nuevas), todas pasan |
+
+### 9.7 Pendiente y notas
+
+- **Firefox y WebKit:** no se han ejecutado. La confirmación con la implementación es VT4 (T045–T046) y VT6.
+- **Design Lab (decisión aprobada):** `SofiSprite` aún no se ve en el Lab, y no se declara cubierto por `SofiPortrait`. `coverage.test.ts` lleva una excepción temporal explícita, `PENDING_IN_LAB`, separada de `COVERED_BY_PARENT` y vinculada a T058, con una prueba que obliga a retirarla en cuanto el Lab lo muestre. No se adelantó el inspector ni se tocó el Lab visualmente.
+- **Sin consumidor real:** solo `SofiPortrait` usa `SofiSprite`, y ninguna pantalla pasa todavía `animation` (el selector de recursos y el controlador son de T042 y del bloque C).
+- **Movimiento reducido:** `SofiSprite` no añade movimiento propio. La pose reducida es la del parcial, resuelta por el plugin de PostCSS (D-1); se comprobó en Chromium con los tres casos de arriba, y la equivalencia completa de los seis modos por recurso es T046.

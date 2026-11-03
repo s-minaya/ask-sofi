@@ -202,14 +202,22 @@ describe('registro de recursos visuales', () => {
   describe('cargadores de los módulos dueños', () => {
     const withLoader = ids.filter((id) => SOFI_REGISTRY[id].load)
 
-    it('eureka y suspicious no tienen cargador de producción y nadie más se queda sin él', () => {
+    it('eureka y suspicious no tienen cargador de producción y nadie más se queda sin él, salvo la estática', () => {
       expect(ids.filter((id) => !SOFI_REGISTRY[id].load).sort()).toEqual([
         'eureka',
+        'sofi-blink',
         'suspicious',
       ])
       // Ni siquiera como `import()` sin usar: el bundler emitiría sus tiras (E12).
       expect(registrySource).toBeDefined()
       expect(registrySource).not.toMatch(/sprites\/(eureka|suspicious)\b/)
+    })
+
+    // Plan §7: `sofi-blink` es estática y su módulo ya está en la entrada (`SofiSprite` lo
+    // importa como respaldo). Un `import()` suyo no movería nada a otro chunk y Vite lo avisa.
+    it('sofi-blink es estática: su módulo no se importa de forma diferida', () => {
+      expect(SOFI_REGISTRY['sofi-blink'].load).toBeUndefined()
+      expect(registrySource).not.toMatch(/sprites\/sofi-blink\b/)
     })
 
     it.each(withLoader)(

@@ -13,9 +13,19 @@ export const PRODUCTION_RATES: Readonly<
 // Sobrescritura solo de sesión, en memoria: el Lab la usa para probar velocidades.
 // No es una preferencia pública y no se guarda.
 const session = new Map<SofiAnimationId, number>()
+const listeners = new Set<() => void>()
 
 export function rateFor(id: SofiAnimationId): number {
   return session.get(id) ?? PRODUCTION_RATES[id] ?? 1
+}
+
+// Para `useSyncExternalStore`: quien pinta se entera del cambio sin que nadie vuelva a pintar
+// desde fuera (leer `rateFor` en el render se quedaría obsoleto con el compilador de React).
+export function subscribeToRates(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
 }
 
 export function setSessionRate(id: SofiAnimationId, rate: number): void {
@@ -25,8 +35,10 @@ export function setSessionRate(id: SofiAnimationId, rate: number): void {
     )
   }
   session.set(id, rate)
+  listeners.forEach((listener) => listener())
 }
 
 export function clearSessionRates(): void {
   session.clear()
+  listeners.forEach((listener) => listener())
 }
