@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 import { localArea, sessionArea } from '../infrastructure/storage/storageAreas'
+import { resetMotionHold } from '../app/providers/motion'
 import { installMatchMedia, resetMediaQueries } from './matchMedia'
 import { server } from './msw'
 
@@ -20,6 +21,7 @@ afterEach(() => {
   // La copia en memoria del almacenamiento no debe pasar de un test a otro.
   localArea.resetMemory()
   sessionArea.resetMemory()
+  resetMotionHold()
   delete document.documentElement.dataset.theme
   delete document.documentElement.dataset.motion
 })

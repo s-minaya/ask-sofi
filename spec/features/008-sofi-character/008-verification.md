@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -23,6 +23,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T009–T016 y VT2 — movimiento (A2) | Preferencia `motion`, estado efectivo de los seis modos, `u.reduced-motion` sin especificidad y plugin PostCSS de sprites. VT2 sobre los 14 módulos reales: 62 bloques transformados y parciales intactos. Lab en modo forzado: 0 diferencias en 11 224 estados | §5 |
 | T017–T026 — `presentationGate`, `select`, `ambient`, `activityLabels` (A3) | Cuatro módulos puros con 71 pruebas, cada pareja vista fallar antes del código. Decisiones D-17 a D-22 aprobadas y comprobadas (§6.3) | §6 |
 | T027–T031 — registro, velocidades y estáticas (A3) | `SOFI_REGISTRY` contrastado con el catálogo y los parciales (74 pruebas), `rateFor` con sobrescritura de sesión (8) y rutas de estáticas movidas al registro sin cambiar `visualFor`. Entrada de la build: CSS idéntico, JS +189 B | §7 |
+| T032–T034 — modo efectivo durante `memory-wipe` (A3) | `holdMotion` fija el modo inicial con el único `data-motion` de `<html>`; 11 pruebas con los tres modos de entrada y la coordinación con el proveedor. Contrato remitido en el plan (D-23). Firefox y WebKit pendientes (T046, T073) | §8 |
 
 ---
 
@@ -658,3 +659,47 @@ Los fallos de esa pasada (esa y ocho pruebas de Vitest con tiempos de ~5 s) coin
 - **Cuando `SofiPortrait` pase al módulo dueño de `sofi-blink` (T038)**, ese módulo estará a la vez en la entrada y detrás del cargador del registro; Vite lo avisará como importación dinámica ineficaz. Se decide en T038: o `sofi-blink` sin cargador, o se acepta el aviso.
 - **`PRODUCTION_RATES` está vacía** hasta AV3 (T082). No hay suscripción a cambios de velocidad: `SofiSprite` (T037) decide cómo se entera el Lab.
 - **Textos que mencionan a `sofiVisuals.ts` como único sitio con rutas** (`004-plan.md` §6, descripción de la sección del expediente en el Lab) describen el estado anterior. Con T031 las rutas están en el registro y la correspondencia sigue en `sofiVisuals.ts`; no se tocaron, el Lab por no introducir cambios visuales.
+
+---
+
+## 8. A3 — Modo efectivo durante `memory-wipe` (T032–T034)
+
+Fecha: 2026-11-03. Antes de empezar: T027–T031 publicadas (`0a133b3`); su CI en GitHub Actions terminó en éxito. La decisión es D-23 de `008-plan.md` §11.3; aquí solo consta cómo se comprobó.
+
+### 8.1 Qué se hizo
+
+| Tareas | Resultado |
+|---|---|
+| T032 | `src/app/providers/motionHold.test.tsx`, 11 pruebas, vistas fallar antes del código (`holdMotion` no existía) |
+| T033 | `holdMotion` en `src/app/providers/motion.ts`. Captura el modo efectivo inicial leyendo el único `data-motion` de `<html>` y el sistema, y lo fija como `reduce` o `full`. Mientras dura, `applyMotionPreference` no escribe y recuerda la última petición; `restoreMotionAttribute` (la limpieza del proveedor) se descarta. Al terminar se aplica la última petición o, si no hubo, la preferencia vigente que pasa quien libera. `useReducedMotion` sigue el modo retenido con `useSyncExternalStore`. No se necesita otro ámbito de movimiento |
+| T034 | `008-plan.md` §5.2: remisión a `visual/select.ts` (intenciones y señales de borrado) y a `holdMotion` (modo), sin copiar su contenido; el orden de las llamadas queda documentado en el comentario de `holdMotion`. El riesgo de §12 pasa a resuelto, y D-23 se añade a §11.3 |
+
+Cambios de apoyo: `MotionPreferenceProvider` usa `restoreMotionAttribute` en su limpieza, y `src/test/setup.ts` reinicia la reacción retenida entre pruebas (es estado del módulo).
+
+### 8.2 Contrato para 007 y 009
+
+Quien orquesta el borrado total llama a `holdMotion()` **antes** de borrar y guarda la función que devuelve. Al terminar la confirmación funcional, o al interrumpirse la reacción (navegación, cierre de la vista), la llama con `readPreferences().motion`. Repetir la llamada no vuelve a escribir. Una segunda `holdMotion()` mientras dura la primera devuelve la misma función. La interfaz de borrado es de 009 y no se ha tocado.
+
+### 8.3 Pruebas
+
+- **Los tres modos de entrada y las dos situaciones del sistema** (`system`, `reduce`, `full` × reduce del sistema sí/no, seis casos): tras `clearUserData()` la preferencia guardada es `system`, pero `data-motion` y `useReducedMotion` siguen en el modo inicial; al terminar vuelve a `system`, el atributo desaparece y no se escribe nada en el almacenamiento. Un aplicador que sigue a las preferencias guardadas, como tendrá el control de C6, intenta escribir el valor restablecido y no pisa la reacción.
+- El sistema cambia a mitad de la reacción: no la altera.
+- Interrumpirla da el mismo resultado y repetir el fin no pisa un valor posterior.
+- Una segunda reacción mientras dura la primera conserva el modo inicial.
+- Coordinación con el proveedor: un cambio de su valor durante la reacción se aplica al terminar (manda lo último pedido); desmontarlo durante la reacción no la interrumpe.
+
+Sensibilidad: se quitó a propósito, una a una, la guardia de `applyMotionPreference` (8 pruebas fallan), la de `restoreMotionAttribute` (1) y la petición diferida (2); se restauró.
+
+### 8.4 Comprobaciones técnicas
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run typecheck`, `npx eslint .`, `npx prettier --check .` | Sin errores |
+| `npm run build` | Correcta. CSS de entrada idéntico (49 006 B; `gzipSync` 9 806 B). JS de entrada 337 071 B (+225 B; `gzipSync` 108 333 B, +123 B) |
+| `npx vitest run` | 93 archivos, 1 640 pruebas, todas pasan |
+| `npx playwright test` (Chromium) | 158 pruebas, todas pasan |
+
+### 8.5 Pendiente
+
+- **Firefox y WebKit:** la reacción retenida solo se ha probado en jsdom y en el entorno de pruebas; el comportamiento real de `data-motion` y de la reacción va en T046 y T073.
+- **Consumo real:** nada llama aún a `holdMotion` ni emite las señales de borrado (009 y el Lab, que las simula). El mecanismo es el mismo `data-motion` de `<html>` para CSS y `useReducedMotion` para JS.

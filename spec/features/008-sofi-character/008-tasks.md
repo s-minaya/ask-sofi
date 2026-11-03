@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; la siguiente tarea es T032.
+Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; T032–T034 (modo efectivo durante `memory-wipe`) también; la siguiente tarea es T035.
 
 ## Cómo leer este desglose
 
@@ -90,9 +90,9 @@ Requiere VT1. Todo en `src/components/sofi/visual/`, sin React ni archivos, salv
 - [x] **T029** — RED de `visual/rates`: 1× por defecto, un factor por recurso en un único lugar, sobrescritura solo de sesión (la usa el Lab), sin duraciones de los parciales copiadas a JS.
 - [x] **T030** — GREEN.
 - [x] **T031** — `sofiVisuals.ts` queda en la correspondencia estados del expediente → intenciones; `visualFor` y sus pruebas de `004` se conservan sin cambio de comportamiento.
-- [ ] **T032** — RED del modo efectivo durante `memory-wipe` (plan §5.2): el borrado restablece la preferencia a `system`, pero la reacción mantiene el modo con el que empezó hasta el fin de la confirmación; no restaura la preferencia ni los datos. Cubre los tres modos de entrada.
-- [ ] **T033** — GREEN. El mecanismo se decide aquí (p. ej. aplazar la aplicación del valor restablecido al `<html>`, plan §5.2). Si exige algo distinto de un único `data-motion` por documento, **se propone a la autora antes de implementarlo**. Su prueba en los tres motores va en T046 y T073.
-- [ ] **T034** — Registrar en `008-plan.md` §5.2 la remisión a los módulos del contrato (intenciones y señales de borrado) para que `007` y `009` los consuman, sin copiar su contenido.
+- [x] **T032** — RED del modo efectivo durante `memory-wipe` (plan §5.2): el borrado restablece la preferencia a `system`, pero la reacción mantiene el modo con el que empezó hasta el fin de la confirmación; no restaura la preferencia ni los datos. Cubre los tres modos de entrada.
+- [x] **T033** — GREEN. El mecanismo se decide aquí (p. ej. aplazar la aplicación del valor restablecido al `<html>`, plan §5.2). Si exige algo distinto de un único `data-motion` por documento, **se propone a la autora antes de implementarlo**. Su prueba en los tres motores va en T046 y T073.
+- [x] **T034** — Registrar en `008-plan.md` §5.2 la remisión a los módulos del contrato (intenciones y señales de borrado) para que `007` y `009` los consuman, sin copiar su contenido.
 
 ### A4. Pintura y controladores (plan §5.4–5.5, §6)
 

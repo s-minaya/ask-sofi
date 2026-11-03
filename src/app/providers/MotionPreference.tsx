@@ -1,5 +1,9 @@
 import { createContext, useEffect, type ReactNode } from 'react'
-import { applyMotionPreference, type MotionPreference } from './motion'
+import {
+  applyMotionPreference,
+  restoreMotionAttribute,
+  type MotionPreference,
+} from './motion'
 
 export type { MotionPreference }
 
@@ -23,8 +27,7 @@ export function MotionPreferenceProvider({
     applyMotionPreference(value, root)
     return () => {
       // Se devuelve lo que había (p. ej. la preferencia aplicada al arrancar).
-      if (previous === undefined) delete root.dataset.motion
-      else root.dataset.motion = previous
+      restoreMotionAttribute(previous, root)
     }
   }, [value])
 

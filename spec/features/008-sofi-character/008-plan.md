@@ -170,7 +170,8 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
 - **Fin de una pasada única:** se consulta el estado actual, sin cola.
 - **`eureka` y `suspicious`:** solo se referencian desde el Lab (spec §2). El registro de producción no declara sus cargadores: el bundler emite todo lo que alcanza un `import()` y, sin cargador, no sale ninguna de sus tiras (E12). El Lab los añade desde su propio código.
 - **Borrado total (D-15, D-16):** el contrato recibe dos señales de la interfaz de `009`: el borrado efectivo, que inicia `memory-wipe`, y el fin de su confirmación funcional, que devuelve a neutral. Ninguna espera a la animación. Hasta que `009` las emita, el Lab y las pruebas las simulan (spec §2).
-  - **Modo de movimiento (D-16):** el borrado restablece la preferencia a `system` (§4.1). La reacción mantiene el modo efectivo con el que empezó hasta que termina la confirmación, y no restaura la preferencia ni los datos borrados. Como el modo se aplica con un único `data-motion` por documento (§4.1), cómo se mantiene (por ejemplo, aplazando hasta el fin de la confirmación la aplicación del valor restablecido al `<html>`) se decide al implementar y se prueba en los tres motores.
+  - **Modo de movimiento (D-16):** el borrado restablece la preferencia a `system` (§4.1). La reacción mantiene el modo efectivo con el que empezó hasta que termina la confirmación, y no restaura la preferencia ni los datos borrados. Se mantiene con el único `data-motion` de `<html>` (§4.1) mediante `holdMotion` (D-23); su prueba en los tres motores va en T046 y T073.
+  - **Dónde está el contrato (para `007` y `009`):** las intenciones y las señales de borrado en `src/components/sofi/visual/select.ts` (`SofiState`, `selectVisual`, `wipeAfter`) y el modo de movimiento en `src/app/providers/motion.ts` (`holdMotion`). El orden de las llamadas está documentado en esos módulos y no se repite aquí.
   - **Borrado efectivo (D-15):** hoy `clearUserData()` devuelve `void` y `remove` traga los errores del almacenamiento: deja una lápida en memoria y la clave puede seguir en el almacenamiento. El contrato con `009` exige verificar el borrado efectivo antes de anunciar el éxito o de emitir la señal que activa `memory-wipe`. La vía (un resultado de `clearUserData()`, una relectura u otra) y cualquier cambio en `003` se deciden en `009` con `003`; esta feature no los implementa.
 
 ### 5.3 Retención del primer ciclo (D6)
@@ -420,7 +421,7 @@ Cada punto se aprueba expresamente y se registra en su fuente de verdad (§8).
 
 ### 11.3 Capa visual pura (2026-11-03)
 
-Aprobadas al cerrar T017–T026. El código está en `src/components/sofi/visual/`; esta tabla no repite su contenido.
+D-17 a D-22 se aprobaron al cerrar T017–T026 y D-23 al autorizar T032–T034. El código está en `src/components/sofi/visual/` y `src/app/providers/motion.ts`; esta tabla no repite su contenido.
 
 | Decisión | Aprobado |
 |---|---|
@@ -430,6 +431,7 @@ Aprobadas al cerrar T017–T026. El código está en `src/components/sofi/visual
 | D-20 | Con movimiento reducido, las etiquetas decorativas permanecen fijas salvo cambio funcional |
 | D-21 | Copy provisional hasta AV1: `sofing…`, `cooking…` (a los 4000 ms) y `rolling…` |
 | D-22 | La página no visible (`hidden`) es una causa de pausa independiente de las demás |
+| D-23 | Durante `memory-wipe`, el modo efectivo inicial se captura y se conserva con el único `data-motion` de `<html>`, aunque el borrado restablezca la preferencia a `system`. Al terminar o interrumpirse la confirmación se aplica la preferencia vigente, sin restaurar datos borrados. El proveedor de movimiento no sobrescribe la reacción en curso |
 
 ## 12. Riesgos y pendientes
 
@@ -443,7 +445,7 @@ Aprobadas al cerrar T017–T026. El código está en `src/components/sofi/visual
 - **Carga de `talking` y `uncertain`:** pendiente del experimento (§7). Con un único chunk, lo estático entra en el CSS de entrada de toda la app: el criterio de la spec «cada pantalla carga solo el CSS y las tiras que usa» se evalúa con sus resultados.
 - **Sin latencias reales de Jev:** quedan pendientes el anti-destello y la calibración del límite de D6 (§7).
 - **Interfaz «Borrar todos mis datos»:** la asume `009` (D-15), que aún no tiene spec. Hasta entonces el contrato de esta feature se prueba con simulaciones. `009` tendrá que emitir el borrado efectivo y el fin de su confirmación funcional, que es lo que devuelve a Sofi a neutral con movimiento reducido (D-16). Además, el borrado efectivo hay que verificarlo antes de anunciar el éxito: `clearUserData()` hoy no lo confirma (§5.2).
-- **Modo efectivo durante `memory-wipe`:** el borrado restablece la preferencia a `system` mientras la reacción sigue en marcha. Mantener el modo con el que empezó choca con el ámbito único de `data-motion` (§4.1) y se resuelve al implementar, sin restaurar la preferencia.
+- **Modo efectivo durante `memory-wipe`:** resuelto con `holdMotion` (D-23), sin otro ámbito de movimiento. Queda confirmarlo en Firefox y WebKit (T046, T073) y que `009` lo llame antes de borrar.
 
 ## 13. Documentación cambiada
 
