@@ -37,6 +37,9 @@ type SofiSpeechProps = {
   body?: ReactNode
   // Estado de presentación para sincronizar futuras animaciones (008) sin conocer sus assets.
   onStateChange?: (state: SpeechState) => void
+  // Solo avisa cuando cambia si Sofi habla (D-12), no en cada letra: lo que necesita la capa
+  // visual para pasar a `talking` y volver sin repintar al consumidor con cada carácter.
+  onSpeakingChange?: (speaking: boolean) => void
   // Cambiarlo vuelve a escribir el texto desde el principio.
   playToken?: number
   // Si es false, empieza con el texto completo hasta que playToken cambie.
@@ -56,6 +59,7 @@ export function SofiSpeech({
   doneAction,
   body,
   onStateChange,
+  onSpeakingChange,
   playToken = 0,
   autoplay = true,
   revealed = false,
@@ -77,6 +81,7 @@ export function SofiSpeech({
         doneAction={doneAction}
         body={body}
         onStateChange={onStateChange}
+        onSpeakingChange={onSpeakingChange}
         autoplay={autoplay || playToken > 0}
         revealedFromOutside={revealed}
         reducedMotion={reducedMotion}
@@ -97,6 +102,7 @@ type SpeechDialogProps = {
   doneAction?: ReactNode
   body?: ReactNode
   onStateChange?: (state: SpeechState) => void
+  onSpeakingChange?: (speaking: boolean) => void
   autoplay: boolean
   revealedFromOutside: boolean
   reducedMotion: boolean
@@ -113,6 +119,7 @@ function SpeechDialog({
   doneAction,
   body,
   onStateChange,
+  onSpeakingChange,
   autoplay,
   revealedFromOutside,
   reducedMotion,
@@ -132,7 +139,13 @@ function SpeechDialog({
     timing,
     skip: reducedMotion || revealed || revealedFromOutside,
     onStep: (next) => onStateChange?.({ ...next, length: text.length }),
-    onVoice: (speaking) => (speaking ? voice.start() : voice.stop()),
+    // `onVoice` solo se llama al cambiar `speaking` y al cancelar mientras suena: así quien
+    // escucha no se queda en «habla» si el texto cambia o el diálogo se desmonta a mitad.
+    onVoice: (speaking) => {
+      if (speaking) voice.start()
+      else voice.stop()
+      onSpeakingChange?.(speaking)
+    },
   })
 
   useEffect(() => {

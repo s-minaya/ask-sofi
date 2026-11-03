@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -25,6 +25,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T027–T031 — registro, velocidades y estáticas (A3) | `SOFI_REGISTRY` contrastado con el catálogo y los parciales (74 pruebas), `rateFor` con sobrescritura de sesión (8) y rutas de estáticas movidas al registro sin cambiar `visualFor`. Entrada de la build: CSS idéntico, JS +189 B | §7 |
 | T032–T034 — modo efectivo durante `memory-wipe` (A3) | `holdMotion` fija el modo inicial con el único `data-motion` de `<html>`; 11 pruebas con los tres modos de entrada y la coordinación con el proveedor. Contrato remitido en el plan (D-23). Firefox y WebKit pendientes (T046, T073) | §8 |
 | T035–T038 — `SofiSprite` y `SofiPortrait` (A4) | Carga con decodificación previa, pasada única, velocidad y eventos de ciclo; el retrato usa el módulo dueño y obedece a `full` (control de E11, 12 de 12 en Chromium). Firefox y WebKit pendientes (T046, T073) | §9 |
+| T039–T042 y VT3 — habla y controladores (A4) | `onSpeakingChange` avisa solo al cambiar el booleano. `useSofiController` monta los tres controladores reales y los destruye sin residuos (escuchas, observadores, temporizadores, fotogramas, capas y atributos), también con StrictMode; las causas simultáneas no se anulan. 48 pruebas nuevas con sensibilidad comprobada. Navegador real pendiente (VT6) | §10 |
 
 ---
 
@@ -769,3 +770,65 @@ El aumento del JS de entrada viene del registro, que deja de descartarse porque 
 - **Design Lab (decisión aprobada):** `SofiSprite` aún no se ve en el Lab, y no se declara cubierto por `SofiPortrait`. `coverage.test.ts` lleva una excepción temporal explícita, `PENDING_IN_LAB`, separada de `COVERED_BY_PARENT` y vinculada a T058, con una prueba que obliga a retirarla en cuanto el Lab lo muestre. No se adelantó el inspector ni se tocó el Lab visualmente.
 - **Sin consumidor real:** solo `SofiPortrait` usa `SofiSprite`, y ninguna pantalla pasa todavía `animation` (el selector de recursos y el controlador son de T042 y del bloque C).
 - **Movimiento reducido:** `SofiSprite` no añade movimiento propio. La pose reducida es la del parcial, resuelta por el plugin de PostCSS (D-1); se comprobó en Chromium con los tres casos de arriba, y la equivalencia completa de los seis modos por recurso es T046.
+
+---
+
+## 10. A4 — Habla y controladores (T039–T042 y VT3)
+
+Fecha: 2026-11-03. Antes de empezar: `main` en `76fc014` (A4, T035–T038), con su CI en GitHub Actions superada según indicó la autora al autorizar el bloque.
+
+### 10.1 Qué se hizo
+
+| Tareas | Resultado |
+|---|---|
+| T039 | 7 pruebas nuevas en `SofiSpeech.test.tsx`, vistas fallar antes del código (6 fallaban; la de movimiento reducido pasa en vacío antes y después, y es una guarda) |
+| T040 | `SofiSpeech` gana `onSpeakingChange` (D-12). Reutiliza el aviso de voz de `useSpeechTimeline`, que ya solo se llama al cambiar `speaking` y al cancelar mientras suena. `onStateChange` no cambia |
+| T041 | `useSofiController.test.tsx` (35 pruebas) con los **tres controladores reales** de los ZIP (`poking.js`, `are-u-still-here.js`, `i-see-you.js`, sin simular ni tocar). Se simulan solo los módulos dueños, la decodificación de las tiras y los observadores que jsdom no implementa. Vistas fallar antes del código (el módulo no existía) |
+| T041 (instrumentación) | `src/test/leakProbe.ts`, solo de pruebas: envuelve `addEventListener` (de `EventTarget.prototype` y de `window`, que no lo hereda), `setTimeout`, `setInterval` y `requestAnimationFrame`, y sustituye `IntersectionObserver` y `ResizeObserver`. `leakProbe.test.ts` (6) deja escapar cada tipo de fuga a propósito y comprueba que se ve. No se ha modificado ni instrumentado producción |
+| T042 | `src/components/sofi/useSofiController.ts` |
+| VT3 | Ver §10.3 |
+
+### 10.2 Contrato del adaptador
+
+- `useSofiController(kind, host, { ambient, calm })` devuelve la clase del gag (o `undefined`). Monta solo con `calm`, movimiento efectivo no reducido, anfitrión montado y las tiras del gag decodificadas (con `loadSprite`, el mismo cargador que `SofiSprite`). Sin esas condiciones no se pide ni una tira ni se carga el controlador.
+- El `import()` de cada controlador va dentro del hook y se espera **antes** de montar: si la limpieza llega mientras carga, no se crea nada que haya que deshacer. Una prueba de contrato sobre el código fuente impide un import estático (T043 lo comprobará sobre la build).
+- Pasa `idleAfter: STILL_HERE_IDLE_MS` (150 000 ms, provisional, plan §6) a `are-u-still-here`, no el 90 000 ms del ZIP, y la velocidad de `visual/rates` con `setRate`, al montar y en vivo.
+- Se inscribe en `visual/ambient` con `pause()` y `resume()` sin argumentos, también con `attachPoking`, que pierde el motivo al delegar; se da de baja antes de destruir el controlador.
+- Declara el gag activo cuando sale del reposo (`i-see-you`: reaccionar; mirar no cuenta) y lo desactiva al volver.
+
+### 10.3 VT3 — resultados (jsdom, controladores reales)
+
+| Comprobación | Resultado |
+|---|---|
+| Al desmontar, sin StrictMode y con él, para los tres gags: escuchas (`window`, `document`, anfitrión), observadores, temporizadores, fotogramas, capas y atributos | La instantánea de la sonda vuelve **exactamente** a la línea base previa al montaje (6 casos), y antes de desmontar la sonda ve algo que limpiar |
+| Montar–destruir–montar de StrictMode | Mismo conjunto añadido que sin él (escuchas, temporizadores, observadores y capas), con y sin las tiras ya en caché (6 casos). El segundo es el que ejerce la cancelación de la limpieza |
+| Desmontar mientras carga el controlador | No se monta nada ni quedan escuchas globales (3 casos) |
+| Pasar a movimiento reducido, o dejar de estar en escena tranquila | Destruye el controlador y deja la línea base (3 + 3 casos). Con reducido desde el inicio no se pide ninguna tira |
+| Tiras sin decodificar o con fallo | No se aplica la clase ni se monta; el fallo no se propaga |
+| Causas simultáneas con el temporizador real | `poking` (pierde el motivo): con `busy` y `sensitive`, reanudar `busy` no reanuda; el reposo de 10 s corre al quitar la última. `are-u-still-here`: la cuenta atrás espera a la última causa. Un controlador que nace con causas activas nace pausado |
+| Umbral de inactividad | `idle` a los 149 000 ms y `drowsy` a los 150 500 ms (no a los 90 000 ms) |
+| Velocidad | Al montar con 10×, `drowsy` a los 15 s; en vivo a 0,5× se duplica lo que falta |
+| Un solo gag activo | `poking` se declara activo con el primer pinchazo, una vez, y se desactiva al volver al reposo; `i-see-you` en `watching` no activa y con el cursor encima (`caught`) sí; un fotograma de mirada pendiente se cancela al desmontar |
+| Baja de `ambient` | Cada inscripción se da de baja al desmontar (3 casos) |
+
+**Sensibilidad.** Se rompió a propósito, una a una, cada guarda y se comprobó que alguna prueba falla: sin `destroy()` (13 fallan), sin `unregister` (3), sin la cancelación de la limpieza (4), sin `idleAfter` (4), ignorando el movimiento reducido (3), ignorando la escena tranquila (15), montando sin esperar a las tiras (7), sin inscribirse en `ambient` (6), sin `activate` (2), sin `deactivate` (1), sin velocidad inicial (1), sin velocidad en vivo (1) y contando `watching` como actividad (1). En `SofiSpeech`: emitir por carácter (6), no avisar al cancelar (3) y cambiar `onStateChange` (2). Dos no las detectaba ninguna prueba al primer intento y se reforzaron: la cancelación de la limpieza (la prueba desmontaba antes de que existiera la clase, así que nunca llegaba al `import()`) y la baja de `ambient` (una inscripción olvidada no deja escuchas, pero sí una referencia).
+
+**Incidencia de la sonda.** El motor de selectores de jsdom (`dom-selector`) registra sus propias escuchas en un objeto `Window` interno la primera vez que se llama a `querySelector`; engrosaban la cuenta a mitad de prueba. La sonda solo cuenta destinos que son `window`, `document` o elementos. Se halló la causa raíz con una traza, sin ampliar márgenes.
+
+**Límites declarados.** jsdom no es un navegador: no hay capas pintadas, ni `IntersectionObserver` real (se sustituye por uno que notifica visible), ni geometría (el sprite se simula con una caja). La sonda no ve las propiedades `onX` ni las escuchas `once` (plan §2). La comprobación en navegador va en VT6. Las animaciones CSS no son temporizadores de JS y no entran en la cuenta.
+
+### 10.4 Comprobaciones técnicas
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run typecheck`, `npx eslint .`, `npx prettier --check .` | Sin errores |
+| `npm run build` | Correcta. CSS de entrada **idéntico** (49 424 B; `gzipSync` 9 871 B). JS de entrada 344 339 B (+117 B; `gzipSync` 111 105 B, +42 B), por `onSpeakingChange`. El adaptador aún no tiene consumidor y no entra en la build; los `.webp` siguen siendo 29 y ninguno es de `eureka` ni de `suspicious` |
+| `npx vitest run` | 97 archivos, 1 717 pruebas (48 nuevas), todas pasan |
+| `npx playwright test` (Chromium) | 170 pruebas, todas pasan en la repetición con la máquina libre. **Incidencia:** la primera pasada dio 168 de 170: fallaron `a11y.spec.ts` «tema claro · Design Lab · foundations» y «· ui», mientras corrían a la vez las mutaciones de sensibilidad (3 hilos de Vitest). No se capturó su mensaje de error, así que la causa no está demostrada; ambas pasan solas (21 de 21 del grupo «tema claro») y en la suite completa. Si reaparecen sin carga, se investigan |
+| `src/styles/sprites/` | Sin cambios respecto a `HEAD` (`git diff` vacío): los controladores siguen siendo los originales |
+
+### 10.5 Pendiente y notas
+
+- **Navegador real:** la limpieza y las causas de pausa en Chromium, Firefox y WebKit van en VT6 (T073–T076) y T046.
+- **Sin consumidor:** nada llama aún a `useSofiController` ni pasa `onSpeakingChange` (T063, T084, T087, T088).
+- **Pregunta abierta para T087/T088 (no bloquea esto):** el adaptador solo congela los tiempos (`pause()`/`resume()`), como fijan el plan §6 y T023. Los controladores documentan además `reset()` + `pause()` para interrumpir (por ejemplo, cuando Sofi tiene que hablar). Con solo `pause()`, un gag a mitad de reacción queda congelado en su estado hasta que desaparecen las causas. Mientras el anfitrión solo exista en escena tranquila el caso es poco probable; si el consumidor monta el gag en una pantalla donde pueden aparecer causas, habrá que decidir si interrumpir equivale a `reset()`.

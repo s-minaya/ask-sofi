@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
+import { useState } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MotionPreferenceProvider } from '../../../app/providers/MotionPreference'
 import { SoundProvider } from '../../../app/providers/SoundProvider'
@@ -261,6 +262,129 @@ describe('SofiSpeech', () => {
       status: 'done',
       speaking: false,
     })
+  })
+})
+
+// D-12 (plan 008 §5.5): la capa visual solo necesita saber si Sofi habla, no en qué letra va.
+describe('SofiSpeech.onSpeakingChange', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('avisa solo cuando cambia el booleano: habla con las letras y calla en las pausas y al terminar', () => {
+    const changes: boolean[] = []
+    render(<SofiSpeech text={TEXT} onSpeakingChange={(s) => changes.push(s)} />)
+    expect(changes).toEqual([])
+
+    act(() => vi.advanceTimersByTime(2000))
+
+    // «Ya, sí.»: Y,a hablan; «,» y el espacio callan; s,í hablan; «.» calla.
+    expect(changes).toEqual([true, false, true, false])
+  })
+
+  it('no cambia el contrato de onStateChange: sigue avisando en cada carácter', () => {
+    const states: SpeechState[] = []
+    const changes: boolean[] = []
+    render(
+      <SofiSpeech
+        text={TEXT}
+        onStateChange={(state) => states.push(state)}
+        onSpeakingChange={(s) => changes.push(s)}
+      />,
+    )
+
+    act(() => vi.advanceTimersByTime(2000))
+
+    expect(states).toHaveLength(TEXT.length)
+    expect(states.map((state) => state.speaking)).toEqual([
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+    ])
+    expect(changes).toHaveLength(4)
+  })
+
+  it('el estado por carácter no repinta al consumidor: solo lo hacen los cambios', () => {
+    const rendered = vi.fn()
+    function Consumer() {
+      const [speaking, setSpeaking] = useState(false)
+      rendered()
+      return (
+        <>
+          <SofiSpeech
+            text="Una frase larga sin pausas hasta el final."
+            onSpeakingChange={setSpeaking}
+          />
+          <output>{speaking ? 'habla' : 'calla'}</output>
+        </>
+      )
+    }
+    render(<Consumer />)
+
+    act(() => vi.advanceTimersByTime(700 + 28 * 3))
+    expect(screen.getByRole('status')).toHaveTextContent('habla')
+    // Montaje + empezar a hablar: más letras no repintan.
+    expect(rendered).toHaveBeenCalledTimes(2)
+
+    act(() => vi.advanceTimersByTime(5000))
+    expect(screen.getByRole('status')).toHaveTextContent('calla')
+    expect(rendered).toHaveBeenCalledTimes(3)
+  })
+
+  // Si no avisara aquí, la capa visual se quedaría en `talking` para siempre.
+  it.each(['desmontar', 'cambiar de texto'] as const)(
+    'al %s mientras habla, avisa de que calla',
+    (action) => {
+      const changes: boolean[] = []
+      const onSpeakingChange = (s: boolean) => changes.push(s)
+      const view = render(
+        <SofiSpeech text="Hola, mundo." onSpeakingChange={onSpeakingChange} />,
+      )
+      act(() => vi.advanceTimersByTime(700 + 28))
+      expect(changes).toEqual([true])
+
+      if (action === 'desmontar') view.unmount()
+      else
+        view.rerender(
+          <SofiSpeech text="Otra." onSpeakingChange={onSpeakingChange} />,
+        )
+
+      expect(changes).toEqual([true, false])
+    },
+  )
+
+  it('«Ver todo» mientras habla avisa de que calla', () => {
+    const changes: boolean[] = []
+    render(<SofiSpeech text={TEXT} onSpeakingChange={(s) => changes.push(s)} />)
+    act(() => vi.advanceTimersByTime(700 + 28))
+    expect(changes).toEqual([true])
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Ver todo' }))
+    })
+
+    expect(changes).toEqual([true, false])
+  })
+
+  it('con movimiento reducido no hay escritura y nunca avisa', () => {
+    const onSpeakingChange = vi.fn()
+    render(
+      <MotionPreferenceProvider value="reduce">
+        <SofiSpeech text={TEXT} onSpeakingChange={onSpeakingChange} />
+      </MotionPreferenceProvider>,
+    )
+
+    act(() => vi.advanceTimersByTime(2000))
+
+    expect(onSpeakingChange).not.toHaveBeenCalled()
   })
 })
 

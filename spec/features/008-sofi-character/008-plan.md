@@ -207,7 +207,7 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
 
 ### 5.5 Habla y velocidad
 
-- **Habla (D-12):** `SofiSpeech` gana `onSpeakingChange`, que solo avisa cuando cambia el booleano. El expediente lo pasa a la capa visual: `talking` mientras habla y la pose de pausa aprobada en el Lab.
+- **Habla (D-12):** `SofiSpeech` gana `onSpeakingChange`, que solo avisa cuando cambia el booleano (y avisa de que calla si el texto cambia, «Ver todo» lo completa o el diálogo se desmonta mientras suena, para que la capa visual no se quede en `talking`). El expediente lo pasa a la capa visual: `talking` mientras habla y la pose de pausa aprobada en el Lab.
 - **Velocidad (D-7):**
   - `visual/rates` guarda una velocidad por recurso, 1× por defecto;
   - el Lab la sobrescribe solo durante la sesión;
@@ -219,12 +219,14 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
 - **`useSofiController(kind, host, opciones)`:**
   - importa el controlador del ZIP de forma diferida, sin modificarlo;
   - lo monta solo si la escena está tranquila, el estado efectivo no es reducido, el anfitrión está montado y sus tiras están decodificadas (las capas las crea el controlador y piden sus tiras entonces: E12, E13);
-  - lo destruye en la limpieza del efecto (E6, E7).
+  - lo destruye en la limpieza del efecto (E6, E7);
+  - recibe `{ ambient, calm }` (las causas compartidas y si la escena está tranquila) y **devuelve la clase del gag**, que el consumidor aplica al anfitrión: es `undefined` hasta que las tiras están decodificadas y mientras no pueda montarse. El controlador no se monta hasta que esa clase está aplicada, y el estado efectivo de movimiento lo lee él mismo;
+  - la velocidad llega con `setRate`, al montar y en vivo; el umbral de `are-u-still-here` es la constante `STILL_HERE_IDLE_MS`.
 - **Anfitrión:** el elemento de `sofi-blink` con la clase del gag, sin hijos de React.
 - **Causas de pausa** (`visual/ambient`):
   - el adaptador agrega en un conjunto: Sofi ocupada, otro gag, escritura o interacción, estado sensible;
   - llama a `pause()`/`resume()` solo al pasar de vacío a no vacío y al revés;
-  - un solo gag activo, con el patrón `quiet` que documentan los propios controladores.
+  - un solo gag activo, con el patrón `quiet` que documentan los propios controladores: sale del reposo (`i-see-you`: reaccionar, no mirar) y se declara activo en `ambient`.
 - **Inactividad de `are-u-still-here`:** 150 000 ms como valor provisional, dentro de los 2–3 minutos de la spec; el definitivo en el Lab.
 - **Superficies:** consulta en reposo y expediente, en la ubicación aprobada en el Lab.
 
