@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved - 27 de octubre de 2026. Desarrolla las decisiones D-1 a D-13, aprobadas el 2026-10-23 con las precisiones de §11, y las posteriores del 2026-10-27 (§11.2).
+Approved - 27 de octubre de 2026. Desarrolla las decisiones D-1 a D-13, aprobadas el 2026-10-23 con las precisiones de §11, las posteriores del 2026-10-27 (§11.2) y las de la capa visual del 2026-11-03 (§11.3).
 
 ## Approach
 
@@ -183,7 +183,7 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
   - estado efectivo de movimiento.
 - **Salida:** presentar ahora o esperar.
 - **Exclusiones:** las del catálogo §6.4 presentan en el acto, y se prueban todas.
-- **Límite:** es un valor de experiencia aprobado en el Lab. **Ojo:** el primer ciclo de `sofing` dura 6440 ms a 1× (E5), así que el límite decide cuánto puede esperar un resultado rápido.
+- **Límite:** es un valor de experiencia aprobado en el Lab (experimental hasta AV2: D-17). **Ojo:** el primer ciclo de `sofing` dura 6440 ms a 1× (E5), así que el límite decide cuánto puede esperar un resultado rápido.
 - **Integración:** la consume la pantalla de resultados de `007`. En 008 se demuestra en la Preview del Lab, que es un prototipo provisional (§8): no fija el flujo de resultados de `007`.
 
 ### 5.4 Pintura
@@ -417,6 +417,19 @@ Cada punto se aprueba expresamente y se registra en su fuente de verdad (§8).
 | Margen de FCP | Se retira +50 ms como umbral automático. FCP, LCP y disponibilidad funcional siguen siendo relevantes, y EX4 fija sus criterios definitivos con comparaciones A/B (§7) |
 | gzip del CSS de entrada | `gzipSync` de Node con opciones fijas. Referencia inicial: 9780 B. El margen de +2 kB sigue siendo provisional (§7) |
 | Comparaciones entre versiones | Protocolo A/B intercalado (ABBA/BAAB) con calentamiento predefinido y equivalente, todas las muestras conservadas, análisis de diferencias emparejadas con su incertidumbre y la misma configuración para las dos versiones (§7) |
+
+### 11.3 Capa visual pura (2026-11-03)
+
+Aprobadas al cerrar T017–T026. El código está en `src/components/sofi/visual/`; esta tabla no repite su contenido.
+
+| Decisión | Aprobado |
+|---|---|
+| D-17 | La retención del primer ciclo es de 3000 ms, solo como valor experimental hasta AV2. Se aplica la excepción del catálogo §6.4 tal cual: únicamente resultados no críticos |
+| D-18 | Prioridades de `selectVisual`: salida rápida y `safety_concern` (sin sprite), seguridad no evaluada (estática sobria), borrado efectivo, carga, procesamiento, reacción al resultado y `favoriting`, habla y `uncertain`, reposo. Solo con señales vigentes del catálogo §5, y sin cortar una animación por una señal que su ficha no lista entre sus interrupciones (`talking` no corta `favoriting`; sí cede `uncertain`). La seguridad prevalece sobre el borrado |
+| D-19 | El flujo funcional gestiona las señales: retira el resultado cuando lo sustituye una acción de la persona y limpia la pasada terminada ante un nuevo disparador. `selectVisual` no almacena estado de negocio |
+| D-20 | Con movimiento reducido, las etiquetas decorativas permanecen fijas salvo cambio funcional |
+| D-21 | Copy provisional hasta AV1: `sofing…`, `cooking…` (a los 4000 ms) y `rolling…` |
+| D-22 | La página no visible (`hidden`) es una causa de pausa independiente de las demás |
 
 ## 12. Riesgos y pendientes
 

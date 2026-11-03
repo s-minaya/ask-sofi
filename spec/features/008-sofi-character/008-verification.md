@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -21,6 +21,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T003 — verificación de los ZIP | Los 7 actualizados coinciden con los SHA-256 del informe de correcciones; los 6 restantes, byte a byte con las fuentes de `17aca4f` | §3.3 |
 | T004–T008 y VT1 — integración e integridad | Recursos integrados: 61 de 61 idénticos a `17aca4f`; T005–T008 hechas. Completados tras corregir `serverBoundary.test.ts` (§4.4); suite completa en verde | §4 |
 | T009–T016 y VT2 — movimiento (A2) | Preferencia `motion`, estado efectivo de los seis modos, `u.reduced-motion` sin especificidad y plugin PostCSS de sprites. VT2 sobre los 14 módulos reales: 62 bloques transformados y parciales intactos. Lab en modo forzado: 0 diferencias en 11 224 estados | §5 |
+| T017–T026 — `presentationGate`, `select`, `ambient`, `activityLabels` (A3) | Cuatro módulos puros con 71 pruebas, cada pareja vista fallar antes del código. Decisiones D-17 a D-22 aprobadas y comprobadas (§6.3) | §6 |
 
 ---
 
@@ -551,3 +552,48 @@ El aumento del CSS viene del mixin (cada uso lleva dos prefijos más); el del JS
 - **La aplicación real no monta `MotionPreferenceProvider` con la preferencia guardada.** `main.tsx` pone `data-motion` en `<html>` (el CSS ya obedece), pero `useReducedMotion` solo ve la preferencia a través del proveedor, que hoy usan el Lab y las pruebas. Mientras no haya un control que guarde `reduce` o `full`, el valor guardado es siempre `system` y no hay efecto visible. El proveedor con la preferencia, su suscripción y el control son de C6/T071, tras AV7; queda anotado.
 - **Plan §10 punto 7 dice «entorno `node`».** `src/test/setup.ts` usa `window`, así que las pruebas del plugin corren en el entorno por defecto (jsdom). El plugin y `preprocessCSS` son de Node y no dependen del DOM.
 - **`SofiPortrait`** sigue importando el parcial de `sofi-blink` fuera del alcance del plugin; ese cambio pertenece a la capa visual (plan §5.4).
+
+---
+
+## 6. A3 — Capa visual pura, parte 1 (T017–T026)
+
+Fecha: 2026-11-03. Antes de empezar: A2 cerrado (§5). Todo en `src/components/sofi/visual/`, sin React ni archivos. Ninguno de estos módulos lo importa aún la aplicación: la build de producción no cambia (mismos archivos de entrada que en §5.5).
+
+### 6.1 Módulos y pruebas
+
+Cada pareja RED → GREEN se vio fallar antes del código (la importación del módulo no existía; en `ambient` se retiró el módulo ya escrito para comprobarlo).
+
+| Tareas | Módulo | Qué hace | Pruebas |
+|---|---|---|---|
+| T017–T018 | `presentationGate.ts` | `presentationGate({ kind, firstCycleEnded, elapsedMs, limitMs, reducedMotion })` devuelve `{ present: true }` o `{ present: false, waitMs }` (lo que falta hasta el límite). Solo `interpreted` y `needs_context` esperan; los otros siete tipos del catálogo §6.4 (error, ambas seguridades, privacidad, borrado, cancelación, salida rápida) y el movimiento reducido presentan en el acto. No conoce la operación, así que no puede retrasarla. Un límite o un tiempo no válido presenta | 18: cada tipo, el final del ciclo, el límite (justo antes, en él y después), la espera nunca por encima del límite y un escenario con reloj falso |
+| T019–T022 | `select.ts`, `types.ts` | `selectVisual(estado, { lab })` es una función pura del estado semántico actual. Cubre la tabla del catálogo §5, la jerarquía §6.1 y la matriz §6.3, y `wipeAfter(señal)` fija el contrato de las dos señales del borrado total | 35: tabla del catálogo §5, `talking` por `speaking`, `interpreted` en producción y en el Lab, pasada única sin cola, nueve combinaciones de jerarquía, salida rápida, el barrido de 2 304 combinaciones (`memory-wipe` solo con borrado efectivo y nunca en salida rápida; nada de `eureka`/`suspicious` fuera del Lab; ninguna animación con seguridad o salida rápida) y las dos señales de borrado |
+| T023–T024 | `ambient.ts` | `createAmbient()`: causas de pausa de la escena (`busy`, `interaction`, `sensitive`, `hidden`), un solo gag activo y `pause()`/`resume()` sin argumentos solo al pasar de ninguna causa a alguna y al revés | 10 |
+| T025–T026 | `activityLabels.ts` | `activityLabel({ kind, pending, elapsedMs, reducedMotion })` sigue un calendario y devuelve `null` cuando la operación real ya no está pendiente, aunque la animación esté en su primer ciclo | 8 |
+
+Total 71 pruebas nuevas tras el cierre (§6.3). `types.ts` lista los 14 identificadores del catálogo §3 (el 007 sigue reservado). El estado selecciona 11 de ellos; los tres gags (`poking`, `i-see-you`, `are-u-still-here`) viven sobre el reposo y los coordina `ambient`.
+
+### 6.2 Comprobaciones técnicas
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run typecheck`, `npx eslint .`, `npx prettier --check .` | Sin errores |
+| `npm run build` | Correcta; sin cambios en los archivos de entrada |
+| `npx vitest run` | 90 archivos, 1 547 pruebas, todas pasan (tras el cierre de §6.3) |
+
+### 6.3 Cierre de T017–T026: decisiones aprobadas
+
+La autora aprobó el 2026-11-03 las seis decisiones de diseño de esta parte; su texto vive en `008-plan.md` §11.3 (D-17 a D-22) y no se repite aquí. Comprobación del código frente a cada una:
+
+| Decisión | Resultado |
+|---|---|
+| D-17 retención de 3000 ms experimental | Cumple. `PROVISIONAL_RETENTION_LIMIT_MS` vale 3000 y lo fija una prueba; el gate no tiene valor por defecto (el límite entra como parámetro) y solo retiene `interpreted` y `needs_context`. Se aclaró en su comentario que es experimental hasta AV2 |
+| D-18 prioridades | **Un incumplimiento corregido:** `favoriting` quedaba por detrás de `talking`, aunque su ficha (catálogo §4) no lista el habla entre sus interrupciones, así que el habla la cortaba. Ahora `favoriting` se reproduce antes de `talking` y `uncertain`, cuya ficha sí lista la intervención hablada, sigue cediendo. Dos filas nuevas en las pruebas de jerarquía (una vista fallar antes del cambio). El resto de las animaciones ya respetaba las interrupciones de su ficha |
+| D-19 el flujo gestiona las señales | Cumple: `selectVisual` es una función pura que no guarda nada; `settled` y `outcome` los pasa y retira quien posee el estado (comentarios del tipo `SofiState`) |
+| D-20 etiquetas fijas con movimiento reducido | Cumple: se queda la primera etiqueta de la actividad; cambia solo con otra actividad o al terminar la operación. Fijado en una prueba |
+| D-21 copy provisional | Cumple, y la prueba por defecto lo fija: «sofing…», «cooking…» a los 4000 ms y «rolling…» |
+| D-22 `hidden` independiente | Cumple: es una causa propia y la prueba de varias causas la incluye y comprueba que el gag sigue pausado cuando las demás se van |
+
+### 6.4 Pendiente
+
+- El registro (T027–T028), las velocidades (T029–T030), `sofiVisuals` (T031), el modo durante `memory-wipe` (T032–T033) y la remisión en el plan (T034) no se han hecho.
+- La conexión de `selectVisual` con `SofiSprite`, con `SofiSpeech.speaking` y con las señales de `009` es de A4 y de las features emisoras.

@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; la siguiente tarea es T017.
+Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; la siguiente tarea es T027.
 
 ## Cómo leer este desglose
 
@@ -75,16 +75,16 @@ Requiere VT1.
 
 Requiere VT1. Todo en `src/components/sofi/visual/`, sin React ni archivos, salvo el registro. Las pruebas de tabla se escriben antes que el código (plan §5.2).
 
-- [ ] **T017** — RED de `presentationGate` con reloj falso (plan §5.3): presentar/esperar según tipo de resultado, fin del primer ciclo, tiempo desde la llegada, límite y estado efectivo de movimiento. Solo `interpreted` y `needs_context` esperan; todas las exclusiones del catálogo §6.4 presentan en el acto y se prueban una a una; la operación nunca se retrasa. El límite entra como parámetro provisional, marcado como tal (AV2).
-- [ ] **T018** — GREEN.
-- [ ] **T019** — RED de `visual/select`, selección: tabla del catálogo §5 y jerarquía §6.1. Incluye: `talking` por `speaking` y no por `asking`; `uncertain` usa 014; `interpreted` en reposo en producción (`eureka` y `suspicious` solo con la marca del Lab); `safety_concern` sin sprites; consulta del estado actual al terminar una pasada única, sin cola.
-- [ ] **T020** — GREEN.
-- [ ] **T021** — RED de `visual/select`, interrupciones: matriz del catálogo §6.3, y el contrato del borrado total (D-15, D-16): dos señales, borrado efectivo (inicia `memory-wipe`) y fin de su confirmación funcional (vuelve a neutral). Nada espera a la animación; salida rápida sin animación; `memory-wipe` nunca en salida rápida ni sin borrado efectivo.
-- [ ] **T022** — GREEN.
-- [ ] **T023** — RED de `visual/ambient`: causas de pausa simultáneas (Sofi ocupada, otro gag, escritura o interacción, estado sensible); `pause()`/`resume()` solo al pasar de vacío a no vacío y al revés; la reanudación de una causa no anula las demás; un solo gag activo.
-- [ ] **T024** — GREEN.
-- [ ] **T025** — RED de `activityLabels`: calendario de etiquetas a partir del estado real; al terminar la operación dejan de indicar actividad, también durante la retención del primer ciclo. El copy entra como datos provisionales (AV1).
-- [ ] **T026** — GREEN.
+- [x] **T017** — RED de `presentationGate` con reloj falso (plan §5.3): presentar/esperar según tipo de resultado, fin del primer ciclo, tiempo desde la llegada, límite y estado efectivo de movimiento. Solo `interpreted` y `needs_context` esperan; todas las exclusiones del catálogo §6.4 presentan en el acto y se prueban una a una; la operación nunca se retrasa. El límite entra como parámetro provisional, marcado como tal (AV2).
+- [x] **T018** — GREEN.
+- [x] **T019** — RED de `visual/select`, selección: tabla del catálogo §5 y jerarquía §6.1. Incluye: `talking` por `speaking` y no por `asking`; `uncertain` usa 014; `interpreted` en reposo en producción (`eureka` y `suspicious` solo con la marca del Lab); `safety_concern` sin sprites; consulta del estado actual al terminar una pasada única, sin cola.
+- [x] **T020** — GREEN.
+- [x] **T021** — RED de `visual/select`, interrupciones: matriz del catálogo §6.3, y el contrato del borrado total (D-15, D-16): dos señales, borrado efectivo (inicia `memory-wipe`) y fin de su confirmación funcional (vuelve a neutral). Nada espera a la animación; salida rápida sin animación; `memory-wipe` nunca en salida rápida ni sin borrado efectivo.
+- [x] **T022** — GREEN.
+- [x] **T023** — RED de `visual/ambient`: causas de pausa simultáneas (Sofi ocupada, otro gag, escritura o interacción, estado sensible); `pause()`/`resume()` solo al pasar de vacío a no vacío y al revés; la reanudación de una causa no anula las demás; un solo gag activo.
+- [x] **T024** — GREEN.
+- [x] **T025** — RED de `activityLabels`: calendario de etiquetas a partir del estado real; al terminar la operación dejan de indicar actividad, también durante la retención del primer ciclo. El copy entra como datos provisionales (AV1).
+- [x] **T026** — GREEN.
 - [ ] **T027** — RED de la integridad del registro (plan §10, punto 5): 14 recursos con el tipo de reproducción del catálogo §3; prefijos de tira existentes en `src/styles/sprites/`; poses reducidas válidas; clase de pasada única donde la indique el parcial; tiras usadas como máscara declaradas (hoy `memory-wipe-dissolve`, con `crossOrigin`); el registro de producción no declara cargadores de `eureka` ni `suspicious`.
 - [ ] **T028** — GREEN de `visual/registry`: cargadores `import()` de los módulos dueños y tabla de recursos. Pasa a él el catálogo de estáticas (único sitio con rutas, `004-plan.md` §6).
 - [ ] **T029** — RED de `visual/rates`: 1× por defecto, un factor por recurso en un único lugar, sobrescritura solo de sesión (la usa el Lab), sin duraciones de los parciales copiadas a JS.
