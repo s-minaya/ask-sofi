@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, type Plugin } from 'vite'
 import { configDefaults } from 'vitest/config'
+import { spriteReducedMotion } from './scripts/spriteReducedMotion.ts'
 
 // public/ se copia entero al build: el worker de MSW solo sirve en desarrollo
 // (main.tsx lo arranca únicamente con import.meta.env.DEV) y no debe publicarse.
@@ -25,6 +26,8 @@ function dropMswWorker(): Plugin {
 export default defineConfig({
   plugins: [react({ compiler: true }), dropMswWorker()],
   css: {
+    // Solo actúa sobre los módulos de src/components/sofi/sprites/ (plan 008 §4.3).
+    postcss: { plugins: [spriteReducedMotion()] },
     preprocessorOptions: {
       scss: {
         // Permite `@use 'utilities' as u;` desde cualquier CSS Module sin rutas relativas largas.

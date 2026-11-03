@@ -89,7 +89,11 @@ describe('AppShell · preferencias persistentes', () => {
     fireEvent.click(screen.getByRole('radio', { name: 'Con sonido' }))
     fireEvent.click(startButton())
 
-    expect(storedPreferences().data).toEqual({ theme: 'dark', sound: 'on' })
+    expect(storedPreferences().data).toEqual({
+      theme: 'dark',
+      sound: 'on',
+      motion: 'system',
+    })
   })
 
   it('con el almacenamiento bloqueado la aplicación sigue funcionando', () => {

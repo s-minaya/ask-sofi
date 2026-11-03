@@ -91,7 +91,11 @@ describe('deletePartnerProfile', () => {
     deletePartnerProfile()
 
     expect(readPartnerProfile()).toEqual({ status: 'missing' })
-    expect(readPreferences()).toEqual({ theme: 'dark', sound: 'on' })
+    expect(readPreferences()).toEqual({
+      theme: 'dark',
+      sound: 'on',
+      motion: 'system',
+    })
     expect(readConsultationDraft()).toEqual({
       message: 'hola',
       context: 'ayer',
@@ -123,12 +127,17 @@ describe('clearUserData', () => {
   })
 
   it('devuelve un estado inicial coherente', () => {
-    updatePreferences({ theme: 'dark', sound: 'on' })
+    updatePreferences({ theme: 'dark', sound: 'on', motion: 'full' })
     saveConsultationDraft({ message: 'hola', context: 'ayer' })
 
     clearUserData()
 
-    expect(readPreferences()).toEqual({ theme: 'system', sound: 'off' })
+    // El borrado total también devuelve el movimiento a «system» (plan 008 §4.1).
+    expect(readPreferences()).toEqual({
+      theme: 'system',
+      sound: 'off',
+      motion: 'system',
+    })
     expect(readConsultationDraft()).toEqual({ message: '', context: '' })
   })
 

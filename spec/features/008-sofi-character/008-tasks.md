@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1 y T002–T008 con VT1 están completados; la siguiente tarea es T009.
+Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; la siguiente tarea es T017.
 
 ## Cómo leer este desglose
 
@@ -61,15 +61,15 @@ Fuentes locales comprobadas al preparar este desglose: repositorio de spriteshee
 
 Requiere VT1.
 
-- [ ] **T009** — RED del campo `motion` de las preferencias: `system | reduce | full`, valor por defecto `system`, `z.catch` ante un valor corrupto, sin cambiar de versión; `clearUserData` lo devuelve a `system` (hoy borra todo el espacio de nombres: la prueba lo confirma).
-- [ ] **T010** — GREEN en `preferencesStorage`.
-- [ ] **T011** — RED del estado efectivo y su aplicación: los seis modos del plan §4.1 en `useReducedMotion`; `data-motion` en `<html>` (no en un `div`), un único ámbito por documento; `main.tsx` lo aplica antes del primer render, como el tema; `src/test/setup.ts` limpia `dataset.motion` entre pruebas.
-- [ ] **T012** — GREEN. `MotionPreferenceProvider` conserva su API `value`; los consumidores actuales (`SofiSpeech`, desplazamientos, retratos) no cambian. Adaptar al ámbito único los usos del Lab (`DesignLab.tsx`, `PreviewFrameRoot.tsx`, `ProfileFrameRoot.tsx`) y sus pruebas. Seguir el patrón de `ThemeProvider`.
-- [ ] **T013** — RED de `u.reduced-motion` (plan §4.2): compilar el mixin con Sass y comprobar las dos reglas (`@media … reduce` con `:where(:root:not([data-motion='full']))`, y `:where(:root[data-motion='reduce'])`), sin añadir especificidad.
-- [ ] **T014** — GREEN del mixin. Revisar en el Lab, en modo forzado, los 12 módulos de la app que lo usan: la rama forzada pierde el `(0,1,0)` que tenía (plan §12). Capturas antes/después de los que cambien.
-- [ ] **T015** — RED de `scripts/spriteReducedMotion.ts` con `preprocessCSS` en entorno `node` (plan §10, punto 7): alcance por ruta (solo `src/components/sofi/sprites/`); las cuatro reglas de la tabla de plan §4.3; fallo de build ante otras formas de media, selectores `html`/`:root`/`body` dentro de un parcial y reglas anidadas; los parciales no se modifican.
-- [ ] **T016** — GREEN: plugin en línea y sin dependencias, registrado en `vite.config.ts`.
-- [ ] **VT2** — Compilar los 14 módulos dueños reales con el plugin: solo ellos son alcanzados, los parciales quedan intactos y las reglas coinciden con plan §4.3. Registrar en `008-verification.md`. Si algún parcial rompe el build o la tabla, **parar** (regla de parada).
+- [x] **T009** — RED del campo `motion` de las preferencias: `system | reduce | full`, valor por defecto `system`, `z.catch` ante un valor corrupto, sin cambiar de versión; `clearUserData` lo devuelve a `system` (hoy borra todo el espacio de nombres: la prueba lo confirma).
+- [x] **T010** — GREEN en `preferencesStorage`.
+- [x] **T011** — RED del estado efectivo y su aplicación: los seis modos del plan §4.1 en `useReducedMotion`; `data-motion` en `<html>` (no en un `div`), un único ámbito por documento; `main.tsx` lo aplica antes del primer render, como el tema; `src/test/setup.ts` limpia `dataset.motion` entre pruebas.
+- [x] **T012** — GREEN. `MotionPreferenceProvider` conserva su API `value`; los consumidores actuales (`SofiSpeech`, desplazamientos, retratos) no cambian. Adaptar al ámbito único los usos del Lab (`DesignLab.tsx`, `PreviewFrameRoot.tsx`, `ProfileFrameRoot.tsx`) y sus pruebas. Seguir el patrón de `ThemeProvider`.
+- [x] **T013** — RED de `u.reduced-motion` (plan §4.2): compilar el mixin con Sass y comprobar las dos reglas (`@media … reduce` con `:where(:root:not([data-motion='full']))`, y `:where(:root[data-motion='reduce'])`), sin añadir especificidad.
+- [x] **T014** — GREEN del mixin. Revisar en el Lab, en modo forzado, los 12 módulos de la app que lo usan: la rama forzada pierde el `(0,1,0)` que tenía (plan §12). Capturas antes/después de los que cambien.
+- [x] **T015** — RED de `scripts/spriteReducedMotion.ts` con `preprocessCSS` en entorno `node` (plan §10, punto 7): alcance por ruta (solo `src/components/sofi/sprites/`); las cuatro reglas de la tabla de plan §4.3; fallo de build ante otras formas de media, selectores `html`/`:root`/`body` dentro de un parcial y reglas anidadas; los parciales no se modifican.
+- [x] **T016** — GREEN: plugin en línea y sin dependencias, registrado en `vite.config.ts`.
+- [x] **VT2** — Compilar los 14 módulos dueños reales con el plugin: solo ellos son alcanzados, los parciales quedan intactos y las reglas coinciden con plan §4.3. Registrar en `008-verification.md`. Si algún parcial rompe el build o la tabla, **parar** (regla de parada).
 
 ### A3. Capa visual pura (D-4; plan §5)
 

@@ -15,9 +15,10 @@ function store(value: unknown) {
 }
 
 describe('preferencesStorage', () => {
-  it('empieza con los valores por defecto: tema del sistema y sin sonido', () => {
-    expect(readPreferences()).toEqual({ theme: 'system', sound: 'off' })
-    expect(DEFAULT_PREFERENCES).toEqual({ theme: 'system', sound: 'off' })
+  it('empieza con los valores por defecto: tema y movimiento del sistema y sin sonido', () => {
+    const defaults = { theme: 'system', sound: 'off', motion: 'system' }
+    expect(readPreferences()).toEqual(defaults)
+    expect(DEFAULT_PREFERENCES).toEqual(defaults)
   })
 
   it('guarda con formato versionado y recupera', () => {
@@ -26,9 +27,13 @@ describe('preferencesStorage', () => {
 
     expect(JSON.parse(stored() ?? '')).toEqual({
       version: 1,
-      data: { theme: 'dark', sound: 'on' },
+      data: { theme: 'dark', sound: 'on', motion: 'system' },
     })
-    expect(readPreferences()).toEqual({ theme: 'dark', sound: 'on' })
+    expect(readPreferences()).toEqual({
+      theme: 'dark',
+      sound: 'on',
+      motion: 'system',
+    })
     // Las preferencias son persistentes: nunca viven en sessionStorage.
     expect(window.sessionStorage.length).toBe(0)
   })
@@ -38,7 +43,62 @@ describe('preferencesStorage', () => {
 
     updatePreferences({ theme: 'dark' })
 
-    expect(readPreferences()).toEqual({ theme: 'dark', sound: 'on' })
+    expect(readPreferences()).toEqual({
+      theme: 'dark',
+      sound: 'on',
+      motion: 'system',
+    })
+  })
+
+  describe('movimiento (plan 008 §4.1)', () => {
+    it.each(['system', 'reduce', 'full'] as const)(
+      'guarda y recupera «%s» sin cambiar de versión',
+      (motion) => {
+        updatePreferences({ motion })
+
+        expect(JSON.parse(stored() ?? '').version).toBe(1)
+        expect(readPreferences().motion).toBe(motion)
+      },
+    )
+
+    it('un registro anterior sin movimiento lo lee como «system»', () => {
+      store({ version: 1, data: { theme: 'dark', sound: 'on' } })
+
+      expect(readPreferences()).toEqual({
+        theme: 'dark',
+        sound: 'on',
+        motion: 'system',
+      })
+    })
+
+    it.each([
+      ['desconocido', 'turbo'],
+      ['de otro tipo', 3],
+      ['nulo', null],
+    ])('un valor %s vuelve a «system» y conserva el resto', (_case, motion) => {
+      store({
+        version: 1,
+        data: { theme: 'dark', sound: 'on', motion },
+      })
+
+      expect(readPreferences()).toEqual({
+        theme: 'dark',
+        sound: 'on',
+        motion: 'system',
+      })
+    })
+
+    it('cambiar el movimiento no pierde el tema ni el sonido', () => {
+      store({ version: 1, data: { theme: 'light', sound: 'on' } })
+
+      updatePreferences({ motion: 'reduce' })
+
+      expect(readPreferences()).toEqual({
+        theme: 'light',
+        sound: 'on',
+        motion: 'reduce',
+      })
+    })
   })
 
   describe('datos de la feature 002', () => {
@@ -53,7 +113,11 @@ describe('preferencesStorage', () => {
       (theme) => {
         legacy(theme)
 
-        expect(readPreferences()).toEqual({ theme, sound: 'off' })
+        expect(readPreferences()).toEqual({
+          theme,
+          sound: 'off',
+          motion: 'system',
+        })
       },
     )
 
@@ -64,7 +128,7 @@ describe('preferencesStorage', () => {
 
       expect(JSON.parse(stored() ?? '')).toEqual({
         version: 1,
-        data: { theme: 'dark', sound: 'on' },
+        data: { theme: 'dark', sound: 'on', motion: 'system' },
       })
       expect(window.localStorage.getItem(LEGACY_THEME_KEY)).toBeNull()
     })
@@ -103,7 +167,11 @@ describe('preferencesStorage', () => {
   it('conserva los campos válidos cuando otro es inválido', () => {
     store({ version: 1, data: { theme: 'dark', sound: 'a todo volumen' } })
 
-    expect(readPreferences()).toEqual({ theme: 'dark', sound: 'off' })
+    expect(readPreferences()).toEqual({
+      theme: 'dark',
+      sound: 'off',
+      motion: 'system',
+    })
   })
 
   it('no pisa datos de una versión futura, pero la sesión sigue funcionando', () => {
@@ -158,7 +226,11 @@ describe('preferencesStorage', () => {
       )
 
       expect(listener).toHaveBeenCalledTimes(1)
-      expect(listener).toHaveBeenCalledWith({ theme: 'light', sound: 'off' })
+      expect(listener).toHaveBeenCalledWith({
+        theme: 'light',
+        sound: 'off',
+        motion: 'system',
+      })
     })
 
     it('avisa de los cambios y borrados del propio documento', () => {
@@ -166,7 +238,11 @@ describe('preferencesStorage', () => {
       const unsubscribe = subscribeToPreferences(listener)
 
       updatePreferences({ theme: 'dark' })
-      expect(listener).toHaveBeenLastCalledWith({ theme: 'dark', sound: 'off' })
+      expect(listener).toHaveBeenLastCalledWith({
+        theme: 'dark',
+        sound: 'off',
+        motion: 'system',
+      })
 
       window.localStorage.clear()
       emitStorageChange('all')

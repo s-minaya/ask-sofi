@@ -94,6 +94,8 @@ describe('DesignLab', () => {
         { name: 'Reducido' },
       ),
     )
-    expect(document.querySelector('[data-motion="reduce"]')).not.toBeNull()
+    // Un único ámbito por documento: <html>, no un contenedor del Lab.
+    expect(document.documentElement.dataset.motion).toBe('reduce')
+    expect(document.querySelectorAll('[data-motion]')).toHaveLength(1)
   })
 })

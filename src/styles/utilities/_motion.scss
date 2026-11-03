@@ -1,12 +1,15 @@
-// Alternativa reducida de una animación. Responde a la preferencia del sistema y a
-// data-motion="reduce" en un ancestro, que permite simularla (Design Lab) o, en el
-// futuro, aplicar una preferencia propia del usuario. Solo para CSS Modules.
+// Alternativa reducida de una animación (plan 008 §4.2). Responde a la preferencia del
+// sistema, salvo que el documento fuerce el movimiento con data-motion="full", y a
+// data-motion="reduce" en <html>. Solo para CSS Modules.
+// `:where()` no suma especificidad: el selector del consumidor queda tal cual.
 @mixin reduced-motion {
   @media (prefers-reduced-motion: reduce) {
-    @content;
+    :where(:root:not([data-motion='full'])) & {
+      @content;
+    }
   }
 
-  :global([data-motion='reduce']) & {
+  :where(:root[data-motion='reduce']) & {
     @content;
   }
 }

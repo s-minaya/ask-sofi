@@ -2,12 +2,16 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/globals/global.scss'
 import App from './App.tsx'
+import { applyMotionPreference } from './app/providers/motion'
 import { applyThemePreference } from './app/providers/theme'
 import { readPreferences } from './infrastructure/storage/preferencesStorage'
 
 async function bootstrap() {
-  // El tema guardado se aplica antes del primer render para no mostrar el contrario.
-  applyThemePreference(readPreferences().theme)
+  // El tema y el movimiento guardados se aplican antes del primer render para no
+  // mostrar el contrario ni un instante de animación no deseada.
+  const preferences = readPreferences()
+  applyThemePreference(preferences.theme)
+  applyMotionPreference(preferences.motion)
 
   // MSW sólo se activa en desarrollo; en producción el chunk no se carga.
   if (import.meta.env.DEV) {

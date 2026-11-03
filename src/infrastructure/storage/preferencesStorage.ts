@@ -11,9 +11,14 @@ export type ThemePreference = (typeof THEME_PREFERENCES)[number]
 export const SOUND_PREFERENCES = ['off', 'on'] as const
 export type SoundPreference = (typeof SOUND_PREFERENCES)[number]
 
+// «system» sigue al sistema; «reduce» y «full» fuerzan el movimiento (plan 008 §4.1).
+export const MOTION_PREFERENCES = ['system', 'reduce', 'full'] as const
+export type MotionPreference = (typeof MOTION_PREFERENCES)[number]
+
 export type Preferences = {
   theme: ThemePreference
   sound: SoundPreference
+  motion: MotionPreference
 }
 
 // Solo lo que existe hoy. Nuevas preferencias se añaden aquí cuando una
@@ -21,12 +26,14 @@ export type Preferences = {
 export const DEFAULT_PREFERENCES: Preferences = {
   theme: 'system',
   sound: 'off',
+  motion: 'system',
 }
 
 // Cada campo se valida por separado: un valor desconocido no hace perder el resto.
 const preferencesSchema = z.object({
   theme: z.catch(z.enum(THEME_PREFERENCES), DEFAULT_PREFERENCES.theme),
   sound: z.catch(z.enum(SOUND_PREFERENCES), DEFAULT_PREFERENCES.sound),
+  motion: z.catch(z.enum(MOTION_PREFERENCES), DEFAULT_PREFERENCES.motion),
 })
 
 const PREFERENCES_RECORD = { version: 1, schema: preferencesSchema }

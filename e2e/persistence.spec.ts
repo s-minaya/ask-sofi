@@ -170,3 +170,33 @@ test.describe('with Web Storage blocked', () => {
     expect(errors).toEqual([])
   })
 })
+
+test('the stored motion preference is applied to <html> on load', async ({
+  page,
+}) => {
+  const store = (motion: string) =>
+    page.addInitScript(
+      ([key, value]) => {
+        window.localStorage.setItem(
+          key,
+          JSON.stringify({
+            version: 1,
+            data: { theme: 'system', sound: 'off', motion: value },
+          }),
+        )
+      },
+      [PREFERENCES_KEY, motion],
+    )
+
+  await store('full')
+  await page.goto('/')
+  await expect(page.locator('html')).toHaveAttribute('data-motion', 'full')
+})
+
+test('without a stored motion preference <html> carries no data-motion', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await expect(page.getByRole('button', { name: /Empezar/ })).toBeVisible()
+  await expect(page.locator('html')).not.toHaveAttribute('data-motion')
+})

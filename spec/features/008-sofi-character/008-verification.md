@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -20,6 +20,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T002 — inventario de los 13 ZIP | Completo frente al catálogo §3 y a las fuentes de `17aca4f`; `_sprite.scss` idéntico en los 13; controladores `006`, `008` y `009` con sus tipos. Sin ausencias | §3.2 |
 | T003 — verificación de los ZIP | Los 7 actualizados coinciden con los SHA-256 del informe de correcciones; los 6 restantes, byte a byte con las fuentes de `17aca4f` | §3.3 |
 | T004–T008 y VT1 — integración e integridad | Recursos integrados: 61 de 61 idénticos a `17aca4f`; T005–T008 hechas. Completados tras corregir `serverBoundary.test.ts` (§4.4); suite completa en verde | §4 |
+| T009–T016 y VT2 — movimiento (A2) | Preferencia `motion`, estado efectivo de los seis modos, `u.reduced-motion` sin especificidad y plugin PostCSS de sprites. VT2 sobre los 14 módulos reales: 62 bloques transformados y parciales intactos. Lab en modo forzado: 0 diferencias en 11 224 estados | §5 |
 
 ---
 
@@ -486,3 +487,67 @@ Los tres `.d.ts` que T004 manda importar tal cual (`poking.d.ts`, `are-u-still-h
 - `eureka` y `needs-context` definen además una clase suelta (`.eureka-spark`, `.needs-context-question`) que el catálogo, la spec y el plan no mencionan; los módulos dueños no la exportan. Queda anotado por si 008 la necesita.
 - `SofiPortrait.module.scss` sigue importando el parcial de `sofi-blink` directamente; pasa al módulo dueño en la capa visual (plan §5.4), no en estas tareas. Mientras tanto hay dos módulos que importan ese parcial, sin que ninguno cargue el nuevo.
 - Con §4.4 resuelta, T004 y VT1 cumplen sus criterios.
+
+---
+
+## 5. A2 — Movimiento (T009–T016 y VT2)
+
+Fecha: 2026-11-03. Antes de empezar: A1 cerrado y VT1 aprobado (§4); el árbol de trabajo estaba limpio sobre `3bf765f`.
+
+### 5.1 Qué se hizo
+
+| Tarea | Resultado |
+|---|---|
+| T009 y T010 | Campo `motion` (`system \| reduce \| full`) en `preferencesStorage`: valor por defecto `system`, `z.catch` por campo y sin cambiar de versión (registro `version: 1`). Un registro anterior sin el campo se lee como `system`. `clearUserData` lo devuelve a `system`: borra todo el espacio de nombres, y la prueba lo confirma con `motion: 'full'` guardado. Las pruebas que comparaban las preferencias completas incorporan `motion` |
+| T011 y T012 | `src/app/providers/motion.ts` (`applyMotionPreference`, `isReducedMotion`). `useReducedMotion` devuelve el estado efectivo de los seis modos de plan §4.1. `MotionPreferenceProvider` conserva `value` y escribe `data-motion` en `<html>` (sin `div`); al desmontarse o cambiar, devuelve lo que había. `main.tsx` aplica la preferencia guardada antes del primer render. `src/test/setup.ts` limpia `dataset.motion` entre pruebas. Los consumidores (`SofiSpeech`, desplazamientos, retratos) y los tres usos del Lab (`DesignLab`, `PreviewFrameRoot`, `ProfileFrameRoot`) no cambian de código; la prueba del Lab comprueba ahora que el único ámbito es `<html>` |
+| T013 y T014 | `u.reduced-motion` genera `@media (prefers-reduced-motion: reduce) { :where(:root:not([data-motion='full'])) & }` y `:where(:root[data-motion='reduce']) &`. Prueba compilando con Sass (`src/styles/utilities/reducedMotion.test.ts`, 5 pruebas) |
+| T015 y T016 | Plugin PostCSS en línea `scripts/spriteReducedMotion.ts`, registrado en `vite.config.ts` (`css.postcss.plugins`), sin dependencias nuevas. 26 pruebas con `preprocessCSS` (`scripts/spriteReducedMotion.test.ts`) |
+| VT2 | Los 14 módulos dueños reales con la configuración real (§5.4) |
+
+RED → GREEN: las pruebas de T009 (20 fallos), T013 (3 de 5 fallos antes del cambio del mixin) y T015 (la importación del plugin no existía) se vieron fallar antes de su código. En T011 los casos del hook que ya cubría el comportamiento previo (cinco de los ocho) pasaban de entrada; fallaron el modo `full` con sistema reducido y todo el archivo del proveedor, que no podía importar `motion.ts`.
+
+### 5.2 Especificidad y comparación en el Lab (T014)
+
+Plan §12 pide revisar el Lab en modo forzado porque la rama forzada pierde el `(0,1,0)` que le daba su atributo. Se midió en Chromium sobre los 12 módulos que usan el mixin (`SofiDialog`, `SofiPortrait`, `SofiSpeech`, `Button`, `Indicators`, `Loader`, `OptionGroup`, `Spinner`, `TextLink`, `Ticker`, `MotionSection` y `ProfileSheet`):
+
+- Se volcaron `animation-name`, `animation-duration`, `animation-iteration-count`, `transition-property`, `transition-duration` y `display` de todos los elementos de `#lab-main` y de los iframes de las seis secciones del Lab, en tres modos (normal, sistema reducido y forzado desde el botón «Reducido»), con el mixin anterior y con el nuevo.
+- Resultado: 11 224 estados de elementos comparados, **0 diferencias** (se normalizó el hash de CSS Modules de los nombres de animación, que cambia con el contenido del mixin). Con el mixin anterior el modo forzado sí cambia 854 de 3 574 elementos frente al normal, por lo que la comparación no es trivial.
+- Al no cambiar ningún elemento, no se toman capturas antes/después.
+- **Sin comprobar:** el `:hover` real de `Button` y `OptionGroup` (el volcado no pasa el ratón; la variante `data-force-state='hover'` sí está en el Lab). Por lectura del código, sus reglas reducidas (`&:hover { transform: none }`) quedan en la misma especificidad `(0,2,0)` que la base y después de ella, y la rama del sistema ya era así. Tampoco se mide Firefox ni WebKit (§5.6).
+
+### 5.3 Efecto en la build
+
+| | Antes (`3bf765f`) | Ahora |
+|---|---|---|
+| CSS de entrada | 48 292 B; `gzipSync` 9 780 B | 49 006 B (+714); `gzipSync` 9 806 B (+26) |
+| JS de entrada | 336 343 B | 336 652 B (+309) |
+
+El aumento del CSS viene del mixin (cada uso lleva dos prefijos más); el del JS, de `motion.ts` y del efecto del proveedor. La referencia de EX1 (9 780 B) sigue siendo la de la build del commit de la línea base, que es la A de EX4.
+
+### 5.4 VT2 — Módulos dueños reales con el plugin
+
+`src/components/sofi/sprites/reducedMotion.test.ts`, con la configuración real de `vite.config.ts` (Sass, plugin y CSS Modules):
+
+| Comprobación | Resultado |
+|---|---|
+| Los 14 módulos compilan | Sí, sin romper el build ni la tabla de plan §4.3 |
+| Solo ellos son alcanzados | Los 14 parciales compilados por su propia ruta quedan sin prefijos. El resto del CSS de la app solo cambia por el mixin (§5.3) |
+| Reglas | En los 14, quitando los prefijos y los clones se obtiene exactamente el CSS del parcial. Cada regla de cada `@media` lleva su prefijo en el sitio y su clon forzado justo detrás, en el mismo orden y con las mismas declaraciones. 62 bloques en total (36 `reduce` y 26 `no-preference`), sin otra forma de media |
+| Parciales intactos | `git status` no los muestra modificados. La comparación de VT1 se repitió después de todos los cambios: 61 de 61 archivos idénticos a `17aca4f` |
+| Formas rechazadas | Ningún parcial usa `html`, `:root` ni `body`, reglas anidadas, ni `@keyframes` dentro de un bloque de movimiento |
+
+### 5.5 Comprobaciones técnicas
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run typecheck`, `npx eslint .`, `npx prettier --check .` | Sin errores |
+| `npm run build` | Correcta |
+| `npx vitest run` | 86 archivos, 1 476 pruebas, todas pasan |
+| `npx playwright test` (Chromium, servidor propio del puerto 5199) | 158 pruebas, todas pasan, incluidas dos nuevas en `e2e/persistence.spec.ts`: la preferencia `full` guardada llega a `<html>` y sin preferencia no hay `data-motion` |
+
+### 5.6 Pendiente y notas
+
+- **Firefox y WebKit:** no se han ejecutado. La confirmación con la implementación es VT4 y VT6.
+- **La aplicación real no monta `MotionPreferenceProvider` con la preferencia guardada.** `main.tsx` pone `data-motion` en `<html>` (el CSS ya obedece), pero `useReducedMotion` solo ve la preferencia a través del proveedor, que hoy usan el Lab y las pruebas. Mientras no haya un control que guarde `reduce` o `full`, el valor guardado es siempre `system` y no hay efecto visible. El proveedor con la preferencia, su suscripción y el control son de C6/T071, tras AV7; queda anotado.
+- **Plan §10 punto 7 dice «entorno `node`».** `src/test/setup.ts` usa `window`, así que las pruebas del plugin corren en el entorno por defecto (jsdom). El plugin y `preprocessCSS` son de Node y no dependen del DOM.
+- **`SofiPortrait`** sigue importando el parcial de `sofi-blink` fuera del alcance del plugin; ese cambio pertenece a la capa visual (plan §5.4).

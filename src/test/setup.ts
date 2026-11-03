@@ -21,6 +21,7 @@ afterEach(() => {
   localArea.resetMemory()
   sessionArea.resetMemory()
   delete document.documentElement.dataset.theme
+  delete document.documentElement.dataset.motion
 })
 
 // MSW intercepta las peticiones HTTP de todos los tests.
