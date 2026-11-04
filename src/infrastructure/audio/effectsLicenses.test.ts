@@ -27,10 +27,11 @@ const AUDIO_EXTENSIONS = [
   '.webm',
 ]
 
-// Licencias que permiten redistribuir el archivo dentro de un repositorio público. Quedan fuera
-// las no comerciales (NC), las que prohíben modificar (ND), las de compartir igual (SA), las
-// licencias propias de un sitio («gratis para uso personal», «royalty-free» sin redistribución)
-// y cualquier desconocida.
+// Licencias admitidas: política del proyecto (plan §11.4, D-29), que solo se amplía con aprobación.
+// Quedan fuera las que no permiten redistribuir el archivo en un repositorio público (NC, ND), las
+// licencias propias de un sitio («gratis para uso personal», «royalty-free» sin redistribución) y
+// las desconocidas. SA queda fuera por política del proyecto, no por una incompatibilidad jurídica
+// general con MIT.
 const ALLOWED_LICENSES = [
   'CC0-1.0',
   'CC-BY-3.0',

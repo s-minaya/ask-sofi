@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; T032–T034 (modo efectivo durante `memory-wipe`) también; T035–T038 (`SofiSprite` y `SofiPortrait`) también; T039–T042 y VT3 (habla y controladores) también; T043–T044 (contrato de build y límite de incrustación) también; T045–T046 y VT4 (movimiento en tres motores) también; T047–T050 (contexto de audio compartido) también; T051–T053 (efectos sonoros: controlador y manifiesto de licencias) también, con las decisiones D-24 a D-29 de plan §11.4 pendientes de aprobación; la siguiente tarea es T054.
+Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; T032–T034 (modo efectivo durante `memory-wipe`) también; T035–T038 (`SofiSprite` y `SofiPortrait`) también; T039–T042 y VT3 (habla y controladores) también; T043–T044 (contrato de build y límite de incrustación) también; T045–T046 y VT4 (movimiento en tres motores) también; T047–T050 (contexto de audio compartido) también; T051–T053 (efectos sonoros: controlador y manifiesto de licencias, con D-24 a D-29 aprobadas en plan §11.4) también; T054 (cierre del bloque A) también, así que el bloque A está cerrado; la siguiente tarea es T055.
 
 ## Cómo leer este desglose
 
@@ -120,7 +120,7 @@ Requiere VT1. Todo en `src/components/sofi/visual/`, sin React ni archivos, salv
 - [x] **T051** — RED de `createEffectsAudio` con `src/test/fakeAudio.ts`: contexto siempre prestado; un efecto a la vez; nunca mientras habla la voz; nunca en seguridad, salida rápida ni estados sensibles; los de `memory-wipe` solo tras el borrado efectivo y sin condicionarlo; sin sonido activado no suena nada.
 - [x] **T052** — GREEN. Incluye liberar los efectos en `SoundProvider` antes de cerrar el contexto compartido (T050).
 - [x] **T053** — Manifiesto JSON de licencias junto a los archivos de efectos y prueba de contrato (cada archivo con licencia registrada, compatible con publicar; ningún audio de Myinstants ni de Nintendo). No se elige ningún sonido aquí. El manifiesto (`src/assets/sofi/effects/licenses.json`) está vacío.
-- [ ] **T054** — Cierre del bloque A: formato, lint, typecheck, tests y build. Revisar los criterios de la spec que se puedan verificar en este bloque y registrar los resultados en `008-verification.md`.
+- [x] **T054** — Cierre del bloque A: formato, lint, typecheck, tests y build. Revisar los criterios de la spec que se puedan verificar en este bloque y registrar los resultados en `008-verification.md`.
 
 ---
 

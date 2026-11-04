@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -29,7 +29,8 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T043–T044 — contrato de build y límite de incrustación (A4) | Las 35 tiras de producción salen como archivos (antes, 15 iban incrustadas) y ninguna del Lab llega a la build; 11 chunks diferidos propios, controladores y keyframes únicos fuera de la entrada. CSS de entrada idéntico (9 871 B; +91 B sobre EX1, objetivo provisional sin aplicar); chunks diferidos −36 % de CSS y −77 % de JS. 11 pruebas de build y 4 estáticas con sensibilidad comprobada | §11 |
 | T045–T046 y VT4 — movimiento en tres motores (A4) | Proyectos de Firefox y WebKit solo para `e2e/motion/`; los seis modos en `SofiPortrait`, `Spinner`, `Loader` y `Ticker`, la especificidad medida con las reglas reales y `holdMotion` (13 pruebas): **13 de 13 en Chromium, Firefox y WebKit, con los mismos resultados.** Los 12 módulos con el mixin: 16 de 16 reglas reducidas excluyen `full`, también en el CSS de la build. Sin incompatibilidades. Sensibilidad comprobada; una incidencia de `profile.spec.ts` sin explicar (§12.6) | §12 |
 | T047–T050 — contexto de audio compartido (A5) | `createSpeechAudio` admite un contexto prestado (`context`) que `dispose()` no cierra; `SoundProvider` lo crea la primera vez que se pide, dentro del gesto que desbloquea el sonido, y lo cierra al desmontarse después de liberar la voz. 11 pruebas nuevas (6 + 5) con cada RED visto fallar y 5 mutaciones detectadas; las 12 suites que dependen de los dos módulos (137 pruebas) pasan. Efectos (T051–T052) y audio real pendientes | §13 |
-| T051–T053 — efectos sonoros: controlador y licencias (A5) | `createEffectsAudio` con contexto siempre prestado, un efecto a la vez, sin tapar la voz, en silencio en seguridad, salida rápida y estados sensibles, `memory-wipe` solo tras el borrado efectivo y sin condicionar nunca la aplicación; el proveedor libera efectos y voz antes de cerrar el contexto. Manifiesto de licencias vacío y su contrato. 68 pruebas nuevas (34 + 2 + 32) con cada RED visto fallar y 19 mutaciones detectadas; las 14 suites dependientes (205 pruebas) pasan. Decisiones D-24 a D-29 **pendientes de aprobación** (plan §11.4). Sin sonidos elegidos ni audio real | §14 |
+| T051–T053 — efectos sonoros: controlador y licencias (A5) | `createEffectsAudio` con contexto siempre prestado, un efecto a la vez, sin tapar la voz, en silencio en seguridad, salida rápida y estados sensibles, `memory-wipe` solo tras el borrado efectivo y sin condicionar nunca la aplicación; el proveedor libera efectos y voz antes de cerrar el contexto. Manifiesto de licencias vacío y su contrato. 68 pruebas nuevas (34 + 2 + 32) con cada RED visto fallar y 19 mutaciones detectadas; las 14 suites dependientes (205 pruebas) pasan. Decisiones D-24 a D-29 aprobadas (plan §11.4). Sin sonidos elegidos ni audio real | §14 |
+| T054 — cierre del bloque A | Formato, lint, tipos, build y `verify:bundle` sin errores; Vitest completo 100 archivos y 1 813 pruebas; CSS de entrada igual que en §11 (9 871 B). Playwright en los tres motores: la CI (nº 26 y nº 27), no en local. De los 27 criterios de la spec, **7 verificados, 14 parciales y 6 pendientes** de otros bloques; ninguna casilla de la spec se marca. Recursos reverificados (61 de 61 archivos y 13 de 13 ZIP) | §15 |
 
 ---
 
@@ -1091,7 +1092,7 @@ No se ejecutaron la suite completa de Vitest, Playwright ni `build`: el cambio n
 
 ## 14. A5 — Efectos sonoros: controlador y licencias (T051–T053)
 
-Fecha: 2026-11-04. Antes de empezar: `main` en `bb5d4ed` (T047–T050) con su CI en GitHub Actions terminada en éxito (ejecución nº 26, leída de la API pública del repositorio: `foundation` 124 s, `browser` 445 s; el paso de Playwright tardó 341 s frente a los 282 s de la nº 23 sin que haya cambiado ninguna prueba de navegador); árbol de trabajo limpio salvo los 13 ZIP sin versionar. Las restricciones son las de spec §9 y plan §11.1; las decisiones de implementación que no fijaban son D-24 a D-29 de plan §11.4, **propuestas pendientes de aprobación**. No se ha elegido ni incorporado ningún sonido.
+Fecha: 2026-11-04. Antes de empezar: `main` en `bb5d4ed` (T047–T050) con su CI en GitHub Actions terminada en éxito (ejecución nº 26, leída de la API pública del repositorio: `foundation` 124 s, `browser` 445 s; el paso de Playwright tardó 341 s frente a los 282 s de la nº 23 sin que haya cambiado ninguna prueba de navegador); árbol de trabajo limpio salvo los 13 ZIP sin versionar. Las restricciones son las de spec §9 y plan §11.1; las decisiones de implementación que no fijaban son D-24 a D-29 de plan §11.4, aprobadas el 2026-11-04 tal como están implementadas. No se ha elegido ni incorporado ningún sonido.
 
 ### 14.1 Qué se hizo
 
@@ -1161,5 +1162,106 @@ No se ejecutaron la suite completa de Vitest, Playwright ni `build`: no hay camb
 - **Conexión (T100–T101):** `createEffects` no tiene valor por defecto y el proveedor no expone los efectos ni los prepara, silencia ni conecta al borrado de datos. Hasta entonces, en la aplicación real no se crea ningún controlador de efectos.
 - **Pregunta abierta de `memory-wipe`** (plan §11.4): al borrar los datos `SoundProvider` vuelve al silencio inicial; hay que decidir cómo encaja un efecto que solo puede sonar tras el borrado. No se resuelve aquí.
 - **Audio real:** no se ha oído ningún sonido ni se ha reproducido ningún archivo; las pruebas usan dobles de `AudioContext`. La reproducción real, con el gesto del navegador, queda para VT6/T098 y `015`.
-- **Licencias:** el contrato valida metadatos. La lista de licencias admitidas (D-29) es una propuesta; ampliarla es editar una constante de la prueba, con aprobación.
+- **Licencias:** el contrato valida metadatos. La lista de licencias admitidas es la política aprobada en D-29 (plan §11.4); ampliarla es editar una constante de la prueba, con aprobación.
 - **Voz entre fragmentos:** «mientras habla la voz» es el estado de audio `playing` (el bucle de `SofiSpeech` suena mientras habla y se detiene en las pausas), no el booleano `speaking` del texto; en una pausa del texto un efecto puede sonar, y la voz lo corta si reanuda (D-26).
+
+---
+
+## 15. Cierre del bloque A (T054)
+
+Fecha: 2026-11-04. Antes de empezar: `main` en `a2e8367` (T051–T053) con su CI en GitHub Actions terminada en éxito (ejecución nº 27, leída de la API pública del repositorio); árbol de trabajo limpio salvo los 13 ZIP sin versionar. Las aprobaciones de D-24 a D-29 constan solo en su fuente normativa, plan §11.4; aquí no se copian.
+
+### 15.1 Qué se hizo
+
+| Concepto | Resultado |
+|---|---|
+| Aprobaciones | D-24 a D-29 registradas como aprobadas en plan §11.4, con dos precisiones de la autora: `prepare()` carga todos los efectos registrados (D-24) y la exclusión de SA es una política del proyecto, no una incompatibilidad jurídica general con MIT (D-29). Sin cambios de comportamiento: el único cambio en código es el comentario de `effectsLicenses.test.ts` que explica esa política |
+| Cierre técnico | §15.2 |
+| Criterios de la spec | §15.3: 27 criterios revisados; ninguna casilla de `008-spec.md` se marca, porque se marcan al cerrar la feature (T102) |
+
+### 15.2 Comprobaciones técnicas
+
+Según `tech-stack.md` §42.7: T054 es un hito que pide formato, lint, tipos, tests y build, así que se ejecutan las suites amplias que pide y nada más.
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run format:check`, `npm run lint`, `npm run typecheck` | Sin errores |
+| `npm run test` | 100 archivos, 1 813 pruebas, todas pasan (187 s). Frente a §12.7 (98 y 1 734): +2 archivos y +79 pruebas, las de A5 (11 en §13 y 68 en §14) |
+| `npm run build` | Correcta. CSS de entrada: `index-DVOvylSK.css`, 49 424 B, 9 871 B con el `gzip` del arnés (idéntico a §11: sigue sin haber cambio de CSS desde T044) |
+| `npm run verify:bundle` | Bundle del cliente limpio (25 ficheros revisados) |
+| Código de efectos en la build | Ausente: `createEffectsAudio`, `afterErasure` y el manifiesto no aparecen en `dist/assets` (nadie los importa fuera de las pruebas) |
+| Playwright | **No se ejecuta en local en este cierre.** La última ejecución local completa fue la de §12.7 (209 pruebas, Chromium 183, Firefox 13, WebKit 13). Desde entonces solo cambia la infraestructura de audio y los documentos, y la CI ejecutó los tres motores sobre esos cambios: ejecución nº 26 (`bb5d4ed`) y nº 27 (`a2e8367`), ambas en éxito (`browser` 468 s en la nº 27; paso de Playwright 331 s). Es el árbol exacto de este cierre, que solo añade documentos y un comentario |
+| `src/styles/sprites/`, `package.json`, `package-lock.json` | Sin cambios respecto a `HEAD` |
+
+### 15.3 Criterios de aceptación de la spec
+
+Estado de los 27 criterios al cerrar el bloque A. **Verificado** es lo que A puede dar por cumplido con la evidencia citada; **parcial** es la parte que sí se ha comprobado (con su límite) y lo que falta; **pendiente** es lo que depende de otros bloques y no se da por cumplido.
+
+**Resumen:** 7 verificados, 14 parciales y 6 pendientes.
+
+#### Recursos
+
+| Criterio | Estado | Evidencia y límite |
+|---|---|---|
+| Cada recurso original importado es idéntico a su fuente (`001` sin ZIP) | Verificado | VT1 (§4.2). Reverificado hoy: los 61 archivos de `src/styles/sprites/` coinciden (`git hash-object`) con un blob de `17aca4f` del mismo nombre, 61 de 61. La carpeta no tiene commits desde su integración (`3bf765f`) |
+| Los ZIP de los siete paquetes actualizados coinciden con los SHA-256 del informe; los seis restantes, por contenido | Verificado | T003 (§3.3). Reverificado hoy: los 13 ZIP conservan tamaño y SHA-256 registrados |
+| Ningún fotograma se ha alterado | Verificado | Consecuencia de la identidad byte a byte de arriba; decodificación de los 40 `.webp` en VT1 |
+| Solo se versionan los recursos integrados; los ZIP siguen sin versionar | Verificado a la fecha | 0 ZIP en `git ls-files`, 13 sin versionar. Se vuelve a comprobar en T102 |
+| `asset-provenance.md` mantiene la procedencia | Verificado | Conserva el commit `17aca4f` (3 menciones) y la remisión al informe de correcciones en `auditorias/` |
+| En la build, cada pantalla carga solo el CSS y las tiras que usa; sin `_index.scss` ni sprites en estilos globales | Parcial | Verificada la parte estructural (T043–T044, §11): ningún módulo importa `_index.scss`, no hay sprites en estilos globales, la entrada solo lleva los recursos de producción y los 11 diferidos salen en chunks propios. «Cada pantalla» necesita los consumidores del bloque C y el experimento EX3 (plan §12) |
+| Con un recurso lento o caído, Sofi conserva una representación estática | Parcial | `SofiSprite` conserva la estática si el módulo o las tiras fallan (T035–T037, §9), en jsdom. Conexión lenta y tiras caídas en producción: VT7 |
+
+#### Comportamiento
+
+| Criterio | Estado | Evidencia y límite |
+|---|---|---|
+| Pruebas unitarias de la selección semántica y de las prioridades del catálogo §6 | Verificado | T019–T022 (`visual/select`, §6): tabla del catálogo §5, jerarquía §6.1 y matriz de interrupciones §6.3, cada pareja vista fallar antes del código |
+| Ninguna operación se retrasa | Parcial | `presentationGate` prueba que la operación nunca espera a la animación (T017–T018, §6). No hay operaciones reales conectadas (`007`, bloque C) |
+| La retención del primer ciclo respeta su límite, solo en resultados no críticos y sin afectar a seguridad, privacidad, cancelación, salida rápida, movimiento reducido ni carga | Parcial | Lógica pura con las exclusiones del catálogo §6.4 probadas una a una (T017–T018). Límite de 3000 ms provisional hasta AV2 (D-17); falta la integración |
+| Todo error se muestra en cuanto se conoce | Parcial | El `presentationGate` presenta los errores en el acto (T017–T018). Falta la integración con los emisores |
+| Al terminar la operación, etiqueta e indicador dejan de indicar actividad | Parcial | Las etiquetas, también durante la retención (T025–T026). El indicador (D-8) es del Lab y de la integración |
+| `safety_concern` no muestra sprites, la salida rápida no anima y `memory-wipe` solo aparece tras un borrado total efectivo | Parcial | Selección pura (T019–T022). Su presentación en pantalla y los emisores de `007` y `009` están pendientes |
+| `eureka` y `suspicious` no aparecen en producción | Verificado | El registro de producción no declara cargadores para ellos (T027, `registry.test.ts`) y ninguno sale en la build (T043, `production-build.spec.ts`). Esas pruebas lo siguen vigilando mientras se integra C |
+| En el expediente, `talking` solo mientras `speaking` y `uncertain` usa el recurso 014, sin cambiar el formulario | Pendiente | Bloque C. A aporta `onSpeakingChange` (T039–T040) y la selección |
+
+#### Easter eggs y controladores
+
+| Criterio | Estado | Evidencia y límite |
+|---|---|---|
+| Un solo easter egg activo; la reanudación de una causa no anula las demás, incluido `attachPoking` | Parcial | `ambient` (T023–T024) y VT3 con los controladores reales en jsdom (§10.3). Navegador real: VT6 |
+| Ningún gag durante escritura, interacción, habla, procesamiento ni estados sensibles; `poking` sin teclado ni foco | Pendiente | T087–T088. A solo aporta las causas de pausa y la condición de escena tranquila |
+| Al desmontar, también con StrictMode, no quedan escuchas, observadores, temporizadores, capas ni atributos | Parcial | VT3 en jsdom, con instrumentación propia (§10). Navegador real: VT6 |
+| `are-u-still-here` no se activa antes del umbral aprobado | Pendiente | T087. A comprueba solo que el adaptador pasa el umbral al controlador (T041); el valor sigue provisional |
+
+#### Accesibilidad y movimiento
+
+| Criterio | Estado | Evidencia y límite |
+|---|---|---|
+| Sprites, capas e indicador fuera del árbol de accesibilidad; los hechos se anuncian una vez | Parcial | `SofiSprite` es decorativo (`aria-hidden`, sin `role="img"`; T035–T037, D-3). El indicador y los anuncios son de B y C |
+| Sistema, modo forzado y `reduce` dan la misma pose estática y detienen CSS y JS; con `full` se anima (Playwright en los tres motores) | Parcial | Los seis modos en `SofiPortrait`, `Spinner`, `Loader` y `Ticker`, la especificidad y `holdMotion`, 13 de 13 en Chromium, Firefox y WebKit en Windows (VT4, §12); el paso de la CI de Linux con los tres motores terminó en éxito. Faltan la pose aprobada de los 14 recursos (T069, AV) y su prueba (VT6, T073) |
+| La preferencia propia persiste, es reversible y vuelve a `system` al borrar todos los datos | Parcial | Valor por defecto, registro anterior y valor corrupto (T009–T010) y vuelta a `system` al borrar (`userData.test.ts`). El control de la persona y su reversibilidad desde la interfaz son de B (T071, AV) |
+| La verificación de destellos de `error` y WCAG 2.2.2 están documentadas | Pendiente | VT8 |
+
+#### Velocidad, sonido y Lab
+
+| Criterio | Estado | Evidencia y límite |
+|---|---|---|
+| Cambiar la velocidad mantiene sincronizadas capas y controlador, sin duraciones copiadas a JS | Parcial | `visual/rates` guarda un factor, no una duración (T029–T030); `SofiSprite` aplica `playbackRate` y el adaptador usa `setRate` (T036–T042), en jsdom con Web Animations simuladas. La sincronía real: VT6 |
+| Sin sonido activado no suena ningún efecto; seguridad y salida rápida no suenan; ningún efecto tapa la voz; los de `memory-wipe` solo tras el borrado efectivo; cada archivo tiene su licencia registrada | Parcial | Controlador y contrato de licencias verificados (T051–T053, §14), con dobles de `AudioContext`. No existe ningún archivo de efecto y la conexión al contrato de eventos es T100–T101, con la pregunta abierta de plan §11.4 |
+| El Design Lab cumple el catálogo §8 y la checklist §13, con las aprobaciones registradas | Pendiente | Bloque B |
+| Hay pruebas según `tech-stack.md` §42 y el catálogo §9.11, y se cumplen los criterios de accesibilidad y responsive en los contenedores afectados | Pendiente | Se evalúa al cerrar la feature (T102). A sigue §42 (RED antes de GREEN y sensibilidad comprobada), pero los contenedores afectados no están integrados |
+
+### 15.4 Límites reales del cierre
+
+- **Playwright no se repite en local** (§15.2): la evidencia de los tres motores es la de la CI sobre el mismo código. Si la CI de este commit falla, el cierre no se sostiene.
+- **jsdom no es un navegador:** lo marcado como parcial por esta razón (limpieza, causas de pausa, velocidad, estática ante tiras caídas) se completa en VT6 y VT7.
+- **Audio:** no se ha oído ningún sonido ni se ha reproducido ningún archivo; las pruebas usan dobles de `AudioContext`. Lo manual (audio real, lectores de pantalla, dispositivos) sigue sin hacerse: VT6, T098 y `015`.
+- **Reverificación de recursos:** la comparación con `17aca4f` empareja cada archivo por nombre con los blobs de ese commit; VT1 (§4.2) ya comparó por ruta y descartó archivos sin fuente o sin integrar.
+- **Medidas de rendimiento:** el CSS de entrada es el de §11. Los objetivos de plan §7 siguen siendo provisionales; EX2, EX3 y EX4 no se han ejecutado.
+
+### 15.5 Pendiente reservado
+
+- **T087–T088:** `reset()` y `pause()` frente a solo `pause()` al interrumpir un gag (§10.5, §12.8).
+- **T100–T101 (y `009`):** cómo encaja un efecto de `memory-wipe` con el silencio al que vuelve `SoundProvider` tras el borrado (plan §11.4).
+- **Bloque B** y sus aprobaciones (AV1–AV9); **VT5–VT8**; **EX2–EX4**.
+- **Incidencia sin explicar:** un `ERR_CONNECTION_REFUSED` aislado en `profile.spec.ts` (§12.6) y un fallo intermitente de accesibilidad anterior (§10.4). No han reaparecido en la CI (ejecuciones nº 23 a nº 27, todas en éxito).
