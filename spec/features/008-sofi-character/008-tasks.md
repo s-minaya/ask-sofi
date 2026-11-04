@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; T032–T034 (modo efectivo durante `memory-wipe`) también; T035–T038 (`SofiSprite` y `SofiPortrait`) también; T039–T042 y VT3 (habla y controladores) también; T043–T044 (contrato de build y límite de incrustación) también; T045–T046 y VT4 (movimiento en tres motores) también; la siguiente tarea es T047.
+Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; T032–T034 (modo efectivo durante `memory-wipe`) también; T035–T038 (`SofiSprite` y `SofiPortrait`) también; T039–T042 y VT3 (habla y controladores) también; T043–T044 (contrato de build y límite de incrustación) también; T045–T046 y VT4 (movimiento en tres motores) también; T047–T050 (contexto de audio compartido) también; la siguiente tarea es T051.
 
 ## Cómo leer este desglose
 
@@ -113,10 +113,10 @@ Requiere VT1. Todo en `src/components/sofi/visual/`, sin React ni archivos, salv
 
 ### A5. Infraestructura de audio (D-11; plan §11.1)
 
-- [ ] **T047** — RED de `createSpeechAudio`: opción `context: () => AudioContextLike`; con contexto prestado, `prepare()` lo usa y `dispose()` no lo cierra; sin la opción, `createContext` crea uno propio que `dispose()` cierra, como hoy (`speechAudio.test.ts` sigue verde).
-- [ ] **T048** — GREEN.
-- [ ] **T049** — RED de `SoundProvider`: crea el `AudioContext` dentro del primer gesto que desbloquea el sonido, no antes ni con el sonido desactivado, y lo cierra al desmontarse tras liberar voz y efectos.
-- [ ] **T050** — GREEN.
+- [x] **T047** — RED de `createSpeechAudio`: opción `context: () => AudioContextLike`; con contexto prestado, `prepare()` lo usa y `dispose()` no lo cierra; sin la opción, `createContext` crea uno propio que `dispose()` cierra, como hoy (`speechAudio.test.ts` sigue verde).
+- [x] **T048** — GREEN.
+- [x] **T049** — RED de `SoundProvider`: crea el `AudioContext` dentro del primer gesto que desbloquea el sonido, no antes ni con el sonido desactivado, y lo cierra al desmontarse tras liberar voz y efectos.
+- [x] **T050** — GREEN. La liberación de los efectos antes de cerrar el contexto no existe todavía: se añade con `createEffectsAudio` en T052, en el mismo punto del proveedor.
 - [ ] **T051** — RED de `createEffectsAudio` con `src/test/fakeAudio.ts`: contexto siempre prestado; un efecto a la vez; nunca mientras habla la voz; nunca en seguridad, salida rápida ni estados sensibles; los de `memory-wipe` solo tras el borrado efectivo y sin condicionarlo; sin sonido activado no suena nada.
 - [ ] **T052** — GREEN.
 - [ ] **T053** — Manifiesto JSON de licencias junto a los archivos de efectos y prueba de contrato (cada archivo con licencia registrada, compatible con publicar; ningún audio de Myinstants ni de Nintendo). No se elige ningún sonido aquí.

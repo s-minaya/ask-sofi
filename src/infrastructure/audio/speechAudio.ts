@@ -14,9 +14,14 @@ export type AudioContextLike = {
   decodeAudioData(data: ArrayBuffer): Promise<AudioBuffer>
 }
 
-export type SpeechAudioOptions = {
+// El contexto es propio (`createContext`, que `dispose()` cierra) o prestado (`context`, que
+// pertenece a quien lo presta y `dispose()` no cierra): nunca los dos a la vez.
+type SpeechAudioContextSource =
+  | { createContext?: () => AudioContextLike; context?: never }
+  | { context: () => AudioContextLike; createContext?: never }
+
+export type SpeechAudioOptions = SpeechAudioContextSource & {
   src: string
-  createContext?: () => AudioContextLike
   fetchData?: (src: string) => Promise<ArrayBuffer>
   volume?: number
 }
@@ -37,7 +42,7 @@ export type SpeechAudio = {
 // Margen para que el navegador reanude el contexto; si no lo hace, está bloqueado.
 const RESUME_GRACE_MS = 300
 
-function defaultCreateContext(): AudioContextLike {
+export function defaultCreateContext(): AudioContextLike {
   const Context =
     window.AudioContext ??
     (window as unknown as { webkitAudioContext?: typeof AudioContext })
@@ -59,9 +64,11 @@ function wait(ms: number) {
 export function createSpeechAudio({
   src,
   createContext = defaultCreateContext,
+  context: borrowedContext,
   fetchData = defaultFetchData,
   volume: initialVolume = 0.6,
 }: SpeechAudioOptions): SpeechAudio {
+  const getContext = borrowedContext ?? createContext
   let status: SpeechAudioStatus = 'off'
   let context: AudioContextLike | null = null
   let buffer: AudioBuffer | null = null
@@ -108,7 +115,7 @@ export function createSpeechAudio({
     }
     if (!context) {
       try {
-        context = createContext()
+        context = getContext()
       } catch {
         setStatus('unavailable')
         return false
@@ -197,8 +204,14 @@ export function createSpeechAudio({
     stopVoice()
     const ctx = context
     context = null
-    gain = null
-    if (ctx) void ctx.close().catch(() => undefined)
+    if (borrowedContext) {
+      // Quien lo presta lo sigue usando: sin cerrarlo, la ganancia no puede quedar colgando de él.
+      gain?.disconnect()
+      gain = null
+    } else {
+      gain = null
+      if (ctx) void ctx.close().catch(() => undefined)
+    }
     setStatus('off')
   }
 

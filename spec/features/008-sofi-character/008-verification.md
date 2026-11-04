@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -28,6 +28,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T039–T042 y VT3 — habla y controladores (A4) | `onSpeakingChange` avisa solo al cambiar el booleano. `useSofiController` monta los tres controladores reales y los destruye sin residuos (escuchas, observadores, temporizadores, fotogramas, capas y atributos), también con StrictMode; las causas simultáneas no se anulan. 48 pruebas nuevas con sensibilidad comprobada. Navegador real pendiente (VT6) | §10 |
 | T043–T044 — contrato de build y límite de incrustación (A4) | Las 35 tiras de producción salen como archivos (antes, 15 iban incrustadas) y ninguna del Lab llega a la build; 11 chunks diferidos propios, controladores y keyframes únicos fuera de la entrada. CSS de entrada idéntico (9 871 B; +91 B sobre EX1, objetivo provisional sin aplicar); chunks diferidos −36 % de CSS y −77 % de JS. 11 pruebas de build y 4 estáticas con sensibilidad comprobada | §11 |
 | T045–T046 y VT4 — movimiento en tres motores (A4) | Proyectos de Firefox y WebKit solo para `e2e/motion/`; los seis modos en `SofiPortrait`, `Spinner`, `Loader` y `Ticker`, la especificidad medida con las reglas reales y `holdMotion` (13 pruebas): **13 de 13 en Chromium, Firefox y WebKit, con los mismos resultados.** Los 12 módulos con el mixin: 16 de 16 reglas reducidas excluyen `full`, también en el CSS de la build. Sin incompatibilidades. Sensibilidad comprobada; una incidencia de `profile.spec.ts` sin explicar (§12.6) | §12 |
+| T047–T050 — contexto de audio compartido (A5) | `createSpeechAudio` admite un contexto prestado (`context`) que `dispose()` no cierra; `SoundProvider` lo crea la primera vez que se pide, dentro del gesto que desbloquea el sonido, y lo cierra al desmontarse después de liberar la voz. 11 pruebas nuevas (6 + 5) con cada RED visto fallar y 5 mutaciones detectadas; las 12 suites que dependen de los dos módulos (137 pruebas) pasan. Efectos (T051–T052) y audio real pendientes | §13 |
 
 ---
 
@@ -1020,9 +1021,67 @@ Se rompió a propósito, una a una, cada guarda, y se comprobó que la detecta a
 
 ### 12.8 Pendiente y notas
 
-- **CI en Linux:** los resultados son de las compilaciones de Windows. El job `browser` instala ahora Firefox y WebKit en `ubuntu-latest`; su primera ejecución con los tres motores se registra al subir el commit.
+- **CI en Linux:** los resultados de arriba son de las compilaciones de Windows. El job `browser` instala Firefox y WebKit en `ubuntu-latest`: la ejecución nº 23 de GitHub Actions (`a000df8`) terminó en éxito, con el paso de accesibilidad, teclado, tamaño de texto y movimiento en los tres motores en 282 s (job `browser` 372 s; `foundation` 128 s). Sin incompatibilidad entre motores tampoco en Linux.
 - **Solo los anfitriones que ya existen.** Los 14 recursos, la velocidad, los gags y la limpieza en navegador real van en VT6 (T073–T076).
 - **`useReducedMotion` durante la retención** (el lado de JavaScript) solo está probado en jsdom (§8): en navegador se verifica el atributo de `<html>` que lee el CSS. Sigue sin haber consumidor de `holdMotion` (`009`).
 - **Dependencia de la prueba de retención:** importa `/src/app/providers/motion.ts` del servidor de desarrollo en la página; la quinta prueba comprueba que es la misma copia que usa la aplicación.
 - **Lo manual** (dispositivos, Safari de macOS y de iOS) sigue sin hacerse: `015`.
 - **`reset()` frente a `pause()`:** sigue pendiente para T087–T088.
+
+---
+
+## 13. A5 — Contexto de audio compartido (T047–T050)
+
+Fecha: 2026-11-04. Antes de empezar: `main` en `a6b1fba` (política de ejecución de pruebas, `tech-stack.md` §42.7) con su CI en GitHub Actions terminada en éxito (ejecución nº 25, leída de la API pública del repositorio); la de `a000df8` (nº 23) también, ver §12.8. Árbol de trabajo limpio salvo los 13 ZIP sin versionar. La decisión es D-11 de `008-plan.md` (§11.1); aquí solo consta cómo se comprobó.
+
+### 13.1 Qué se hizo
+
+| Tareas | Resultado |
+|---|---|
+| T047 | RED en `speechAudio.test.ts`: 6 pruebas de contexto prestado. Con la opción `context` ignorada, las 6 fallaron y las 11 existentes siguieron pasando. El doble de `AudioContext` solo ganó `disconnect` en la ganancia y el registro de las ganancias creadas |
+| T048 | `createSpeechAudio` admite `context: () => AudioContextLike`: `prepare()` lo pide al prepararse y `dispose()` no lo cierra. Sin la opción, `createContext` crea uno propio que `dispose()` cierra, como hasta ahora: las 11 pruebas anteriores, con las mismas aserciones, siguen en verde |
+| T049 | RED en `SoundProvider.test.tsx`: 5 pruebas con el controlador de voz real y un doble de `AudioContext`. Con el proveedor sin cambios, 4 fallaron; la quinta (no crea nada al montar ni con el sonido desactivado) pasó, como corresponde: protege contra una implementación que cree el contexto antes de tiempo (la mutación M5 de §13.4 la hace fallar) |
+| T050 | `SoundProvider` es dueño del `AudioContext` compartido: lo crea la primera vez que alguien lo pide, lo cierra al desmontarse después de `audio.dispose()` y lo olvida para que un nuevo gesto cree otro |
+
+### 13.2 Contrato
+
+- **`createSpeechAudio`:** `context` y `createContext` son excluyentes en el tipo (`never` en el otro), de modo que no se pueden dar los dos. Con contexto prestado, `dispose()` además desconecta su nodo de ganancia del contexto, que sigue vivo para otros, y olvida el contexto: el siguiente `prepare()` lo vuelve a pedir. Si pedirlo lanza, el estado es `unavailable`, la misma ruta que un `createContext` que lanza. `defaultCreateContext` pasa a exportarse para que el proveedor lo use por defecto.
+- **`SoundProvider`:** `createAudio` recibe ahora el getter del contexto compartido (`(context) => SpeechAudio`); la aplicación real lo pasa a `createSpeechAudio`. Una prop nueva, `createContext`, permite sustituir su creación en pruebas. El contexto se crea dentro de `audio.prepare()`, que `unlock()` llama sin ninguna espera previa, es decir, en el gesto; con `deferAudio` y con el sonido desactivado, nadie lo pide.
+- **Compatibilidad:** los `createAudio={() => audio}` de los tests y el `createSimulatedAudio` del Design Lab (que sigue con su `createContext` propio y su bloqueo simulado) no cambian y no crean contexto compartido, porque no lo piden. `src/design-lab/simulatedAudio.ts` y `src/test/fakeAudio.ts` quedan intactos.
+
+### 13.3 Pruebas
+
+- **`speechAudio.test.ts`** (17: 11 anteriores + 6 nuevas): no pide el contexto hasta preparar y entonces reanuda y decodifica con él; lo pide una sola vez aunque se prepare varias veces; la voz suena por él; `dispose()` no lo cierra, para la fuente y desconecta la ganancia; tras `dispose()` pide el contexto de nuevo y suena por el nuevo; si no se puede obtener, `unavailable`.
+- **`SoundProvider.test.tsx`** (9: 4 anteriores + 5 nuevas): no lo crea al montar, ni con la preparación diferida, ni al silenciar, ni al desmontar sin haber desbloqueado; lo crea una sola vez y mientras el clic que desbloquea está en curso (el doble lo registra entre la captura y la burbuja del `click`) y reanuda el contexto; lo crea también al activar el sonido cuando no se aplaza la preparación (Design Lab); al desmontarse llama a `dispose()` de la voz antes que a `close()` del contexto, y `close()` se llama una vez (la voz no lo cierra por su cuenta); si el proveedor se oculta (`Activity`) y se muestra de nuevo, cierra el primer contexto, crea otro en el siguiente gesto y no reutiliza el cerrado.
+
+### 13.4 Sensibilidad
+
+Cada mutación se aplicó a una copia del código, se ejecutó su archivo de pruebas y se restauró (los diffs de los archivos de producción eran idénticos antes y después).
+
+| Mutación | Prueba que la detecta |
+|---|---|
+| M1 `dispose()` cierra también el contexto prestado | `dispose() no cierra el contexto prestado…` |
+| M2 `dispose()` no desconecta la ganancia | la misma |
+| M3 el proveedor cierra el contexto antes de liberar la voz | `al desmontarse libera la voz, después cierra el contexto…` |
+| M4 el proveedor no olvida el contexto cerrado | `si el proveedor se oculta y se muestra de nuevo…` |
+| M5 el proveedor crea el contexto al montar | 7 de 9 (entre ellas, `no lo crea al montar…` y `lo crea una sola vez, dentro del primer gesto…`) |
+
+### 13.5 Comprobaciones técnicas
+
+Según la política de ejecución de `tech-stack.md` §42.7: pruebas dirigidas durante RED/GREEN y, al cerrar, las pertinentes. `SoundProvider` envuelve toda la aplicación, así que se ejecutaron las pruebas de todo lo que importa los dos módulos.
+
+| Comprobación | Resultado |
+|---|---|
+| `npx vitest run` sobre los dos archivos de las tareas | 26 pruebas (17 + 9), todas pasan |
+| `npx vitest related` sobre `SoundProvider.tsx` y `speechAudio.ts` | 12 archivos, 137 pruebas, todas pasan |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check` sobre lo tocado | Sin errores |
+| `src/styles/sprites/`, `package.json`, `package-lock.json`, `src/design-lab/`, `src/test/fakeAudio.ts` | Sin cambios |
+
+No se ejecutaron la suite completa de Vitest, Playwright ni `build`: el cambio no toca configuración, estilos ni dependencias, y esos pasos los ejecuta la CI; el cierre del bloque (T054) pide la batería completa.
+
+### 13.6 Pendiente y notas
+
+- **Efectos (T051–T052):** `createEffectsAudio` todavía no existe. El proveedor ya cierra el contexto después de liberar la voz; la liberación de los efectos entra en ese mismo punto con T052. «Voz y efectos» de T049 queda, por tanto, cubierto solo para la voz hasta entonces.
+- **Gesto real del navegador:** en jsdom se comprueba que el contexto se crea y se reanuda de forma síncrona durante el despacho del clic, sin esperas intermedias. Que el navegador lo considere una activación de usuario (política de reproducción automática) y que el audio suene no se puede comprobar aquí: es manual y queda pendiente (VT6, `015`). No se ha oído ningún audio.
+- **`Activity`:** el caso de ocultar y volver a mostrar el proveedor sin desmontarlo no existe hoy en la aplicación; se prueba porque es la forma de ejecutar la limpieza del efecto sin perder el estado, y evita que un contexto cerrado se reutilice.
+- **Sin concentrador:** D-11 descarta un `close()` simulado y un concentrador; el proveedor solo guarda y cierra el contexto, sin enrutar voz ni efectos.

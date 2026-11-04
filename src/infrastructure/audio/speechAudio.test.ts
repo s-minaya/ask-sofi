@@ -13,6 +13,7 @@ type FakeSource = {
 // Doble de AudioContext: permite decidir si el navegador deja sonar o no.
 function fakeContext({ running = false, allowResume = true } = {}) {
   const sources: FakeSource[] = []
+  const gains: { disconnect: ReturnType<typeof vi.fn> }[] = []
   const context = {
     state: (running ? 'running' : 'suspended') as AudioContextState,
     currentTime: 0,
@@ -35,14 +36,16 @@ function fakeContext({ running = false, allowResume = true } = {}) {
       sources.push(source)
       return source as unknown as AudioBufferSourceNode
     }),
-    createGain: vi.fn(
-      () => ({ gain: { value: 1 }, connect: vi.fn() }) as unknown as GainNode,
-    ),
+    createGain: vi.fn(() => {
+      const gain = { gain: { value: 1 }, connect: vi.fn(), disconnect: vi.fn() }
+      gains.push(gain)
+      return gain as unknown as GainNode
+    }),
     decodeAudioData: vi.fn(() =>
       Promise.resolve({ duration: 21 } as AudioBuffer),
     ),
   }
-  return { context, sources }
+  return { context, sources, gains }
 }
 
 function setup(
@@ -188,5 +191,96 @@ describe('speechAudio', () => {
 
     expect(listener).toHaveBeenCalled()
     expect(audio.getStatus()).toBe('ready')
+  })
+
+  describe('con un contexto prestado (D-11)', () => {
+    function setupBorrowed(fake = fakeContext()) {
+      const borrow = vi.fn(() => fake.context as unknown as AudioContextLike)
+      const audio = createSpeechAudio({
+        src: '/talking-sound.mp3',
+        context: borrow,
+        fetchData: () => Promise.resolve(new ArrayBuffer(8)),
+      })
+      return { ...fake, audio, borrow }
+    }
+
+    it('no lo pide hasta que se prepara, y entonces lo usa para reanudar y decodificar', async () => {
+      const { audio, borrow, context } = setupBorrowed()
+
+      expect(borrow).not.toHaveBeenCalled()
+
+      await expect(audio.prepare()).resolves.toBe(true)
+      expect(borrow).toHaveBeenCalledTimes(1)
+      expect(context.resume).toHaveBeenCalledTimes(1)
+      expect(context.decodeAudioData).toHaveBeenCalledTimes(1)
+      expect(audio.getStatus()).toBe('ready')
+    })
+
+    it('lo pide una sola vez aunque se prepare varias veces', async () => {
+      const { audio, borrow } = setupBorrowed()
+
+      await audio.prepare()
+      await audio.prepare()
+
+      expect(borrow).toHaveBeenCalledTimes(1)
+    })
+
+    it('la voz suena por el contexto prestado', async () => {
+      const { audio, sources } = setupBorrowed()
+      await audio.prepare()
+
+      audio.startVoice()
+
+      expect(sources).toHaveLength(1)
+      expect(audio.getStatus()).toBe('playing')
+    })
+
+    it('dispose() no cierra el contexto prestado y deja de colgar de él su ganancia', async () => {
+      const { audio, borrow, context, sources, gains } = setupBorrowed()
+      await audio.prepare()
+      audio.startVoice()
+
+      audio.dispose()
+
+      expect(context.close).not.toHaveBeenCalled()
+      expect(sources[0].stop).toHaveBeenCalled()
+      expect(gains[0].disconnect).toHaveBeenCalledTimes(1)
+      expect(audio.getStatus()).toBe('off')
+      expect(borrow).toHaveBeenCalledTimes(1)
+    })
+
+    it('tras dispose() vuelve a pedir el contexto en lugar de reutilizar el anterior', async () => {
+      const first = fakeContext()
+      const second = fakeContext()
+      const contexts = [first, second]
+      const context = vi.fn(
+        () => contexts.shift()!.context as unknown as AudioContextLike,
+      )
+      const audio = createSpeechAudio({
+        src: '/talking-sound.mp3',
+        context,
+        fetchData: () => Promise.resolve(new ArrayBuffer(8)),
+      })
+      await audio.prepare()
+      audio.dispose()
+
+      await expect(audio.prepare()).resolves.toBe(true)
+      audio.startVoice()
+
+      expect(context).toHaveBeenCalledTimes(2)
+      expect(first.sources).toHaveLength(0)
+      expect(second.sources).toHaveLength(1)
+    })
+
+    it('si no se puede obtener el contexto, el sonido queda no disponible', async () => {
+      const context = vi.fn(() => {
+        throw new Error('sin Web Audio')
+      })
+      const audio = createSpeechAudio({ src: '/talking-sound.mp3', context })
+
+      await expect(audio.prepare()).resolves.toBe(false)
+      expect(context).toHaveBeenCalledTimes(1)
+      expect(audio.getStatus()).toBe('unavailable')
+    })
   })
 })

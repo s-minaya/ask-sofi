@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useRef,
   useState,
   useSyncExternalStore,
   type ReactNode,
@@ -7,6 +8,8 @@ import {
 import talkingSoundUrl from '../../assets/sofi/talking-sound.mp3'
 import {
   createSpeechAudio,
+  defaultCreateContext,
+  type AudioContextLike,
   type SpeechAudio,
 } from '../../infrastructure/audio/speechAudio'
 import {
@@ -18,8 +21,11 @@ import { subscribeToUserDataCleared } from '../../infrastructure/storage/userDat
 import { SoundContext } from './sound'
 
 type SoundProviderProps = {
-  // Permite sustituir el controlador (tests y simulaciones del Design Lab).
-  createAudio?: () => SpeechAudio
+  // Permite sustituir el controlador (tests y simulaciones del Design Lab). Recibe el
+  // contexto compartido, que se crea al pedirlo por primera vez; quien no lo use no crea ninguno.
+  createAudio?: (context: () => AudioContextLike) => SpeechAudio
+  // Crea el AudioContext compartido (tests).
+  createContext?: () => AudioContextLike
   // Recuerda la elección de sonido entre visitas. Lo activa solo la aplicación
   // real: el Design Lab usa un audio simulado y no debe tocar las preferencias.
   persist?: boolean
@@ -32,15 +38,22 @@ type SoundProviderProps = {
   children: ReactNode
 }
 
-const createDefaultAudio = () => createSpeechAudio({ src: talkingSoundUrl })
+const createDefaultAudio = (context: () => AudioContextLike) =>
+  createSpeechAudio({ src: talkingSoundUrl, context })
 
 export function SoundProvider({
   createAudio = createDefaultAudio,
+  createContext = defaultCreateContext,
   persist = false,
   deferAudio = false,
   children,
 }: SoundProviderProps) {
-  const [audio] = useState(createAudio)
+  // Dueño único del AudioContext compartido (D-11). Se crea cuando alguien lo pide por
+  // primera vez, que es dentro del gesto que desbloquea el sonido: el navegador solo deja
+  // iniciarlo así. Con el sonido desactivado, nadie lo pide.
+  const contextRef = useRef<AudioContextLike | null>(null)
+  const getContext = () => (contextRef.current ??= createContext())
+  const [audio] = useState(() => createAudio(getContext))
   // Activo ahora mismo: siempre empieza en silencio, porque el navegador solo
   // deja preparar el audio dentro de un gesto.
   const [enabled, setEnabled] = useState(false)
@@ -54,7 +67,17 @@ export function SoundProvider({
     audio.getStatus,
   )
 
-  useEffect(() => () => audio.dispose(), [audio])
+  useEffect(
+    () => () => {
+      audio.dispose()
+      // Lo último que se cierra: la voz ya no lo usa. Se olvida para que, si el proveedor
+      // vuelve a mostrarse sin haberse desmontado, el siguiente gesto cree uno nuevo.
+      const context = contextRef.current
+      contextRef.current = null
+      if (context) void context.close().catch(() => undefined)
+    },
+    [audio],
+  )
 
   // Tras borrar los datos la aplicación vuelve al silencio inicial.
   useEffect(() => {
