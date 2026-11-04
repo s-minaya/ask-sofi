@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import postcss from 'postcss'
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs'
@@ -359,6 +360,60 @@ test.describe('production build', () => {
       'data-i-see-you-layer',
     ])
       expect(entryJs, marker).not.toContain(marker)
+  })
+
+  // D-1 y D-9 en lo que se publica: el minificador no puede deshacer los prefijos de movimiento.
+  // Cada regla bajo `prefers-reduced-motion` lleva el prefijo que excluye al modo contrario, y la
+  // forzada va fuera de la media. Los cuatro prefijos son los de plan §4.2 y §4.3.
+  test('every reduced-motion rule in the built CSS keeps its prefix excluding the opposite mode', () => {
+    const SYSTEM_REDUCE = ':where(:root:not([data-motion=full])) '
+    const SYSTEM_FULL = ':where(:root:not([data-motion=reduce])) '
+    const FORCED = [
+      ':where(:root[data-motion=reduce]) ',
+      ':where(:root[data-motion=full]) ',
+    ]
+    const bare: string[] = []
+    const forced: string[] = []
+    let systemReduce = 0
+    let systemFull = 0
+
+    for (const file of files.filter((name) => name.endsWith('.css'))) {
+      postcss.parse(read([file])).walkRules((rule) => {
+        const parent = rule.parent
+        const media =
+          parent?.type === 'atrule' && 'params' in parent
+            ? parent.params.replace(/\s+/g, '')
+            : ''
+        const own = media.includes('prefers-reduced-motion')
+        for (const selector of rule.selectors) {
+          if (own && media === '(prefers-reduced-motion:reduce)') {
+            if (selector.startsWith(SYSTEM_REDUCE)) systemReduce++
+            else bare.push(selector)
+          } else if (
+            own &&
+            media === '(prefers-reduced-motion:no-preference)'
+          ) {
+            if (selector.startsWith(SYSTEM_FULL)) systemFull++
+            else bare.push(selector)
+          } else if (own) {
+            bare.push(
+              `@media ${parent && 'params' in parent ? parent.params : ''} ${selector}`,
+            )
+          } else if (selector.includes('data-motion')) {
+            if (FORCED.some((prefix) => selector.startsWith(prefix)))
+              forced.push(selector)
+            else bare.push(selector)
+          }
+        }
+      })
+    }
+
+    // Nada reducido sin prefijo (con él, «full» no lo anularía) y no vacío.
+    expect(bare).toEqual([])
+    expect(systemReduce).toBeGreaterThan(0)
+    expect(systemFull).toBeGreaterThan(0)
+    // Cada regla del sistema tiene su clon forzado.
+    expect(forced).toHaveLength(systemReduce + systemFull)
   })
 
   // Plan §7: las cifras se registran en cada build y no son umbral hasta que las apruebe la autora.

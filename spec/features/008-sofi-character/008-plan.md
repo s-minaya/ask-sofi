@@ -356,7 +356,7 @@ Cada punto se aprueba expresamente y se registra en su fuente de verdad (§8).
   - `ActivityIndicator`;
   - control de preferencia;
   - efectos con `fakeAudio`.
-- **Playwright en Chromium, Firefox y WebKit** (D-10): un proyecto por motor para la especificación de movimiento, y Chromium para el resto. Cubre:
+- **Playwright en Chromium, Firefox y WebKit** (D-10): un proyecto por motor para la especificación de movimiento, y Chromium para el resto. Las pruebas de movimiento viven en `e2e/motion/`, y `playwright.config.ts` solo asigna esa carpeta a Firefox y WebKit. Cubre:
   - equivalencia de los seis modos por recurso, con capturas (E11);
   - pasada única;
   - velocidad;

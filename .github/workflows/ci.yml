@@ -65,9 +65,12 @@ jobs:
         run: npm ci
 
       # Chromium completo: la prueba de tamaño de texto cambia su fuente por defecto,
-      # algo que el «headless shell» no respeta.
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+      # algo que el «headless shell» no respeta. Firefox y WebKit solo hacen falta para las
+      # pruebas de movimiento (plan 008, D-10).
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
 
-      - name: Accessibility, keyboard and text size
+      # `playwright.config.ts` reparte el trabajo: Chromium ejecuta todo; Firefox y WebKit,
+      # únicamente lo que hay en e2e/motion/.
+      - name: Accessibility, keyboard, text size and motion (Chromium, Firefox, WebKit)
         run: npm run test:a11y

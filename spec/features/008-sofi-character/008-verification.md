@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -23,10 +23,11 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T009–T016 y VT2 — movimiento (A2) | Preferencia `motion`, estado efectivo de los seis modos, `u.reduced-motion` sin especificidad y plugin PostCSS de sprites. VT2 sobre los 14 módulos reales: 62 bloques transformados y parciales intactos. Lab en modo forzado: 0 diferencias en 11 224 estados | §5 |
 | T017–T026 — `presentationGate`, `select`, `ambient`, `activityLabels` (A3) | Cuatro módulos puros con 71 pruebas, cada pareja vista fallar antes del código. Decisiones D-17 a D-22 aprobadas y comprobadas (§6.3) | §6 |
 | T027–T031 — registro, velocidades y estáticas (A3) | `SOFI_REGISTRY` contrastado con el catálogo y los parciales (74 pruebas), `rateFor` con sobrescritura de sesión (8) y rutas de estáticas movidas al registro sin cambiar `visualFor`. Entrada de la build: CSS idéntico, JS +189 B | §7 |
-| T032–T034 — modo efectivo durante `memory-wipe` (A3) | `holdMotion` fija el modo inicial con el único `data-motion` de `<html>`; 11 pruebas con los tres modos de entrada y la coordinación con el proveedor. Contrato remitido en el plan (D-23). Firefox y WebKit pendientes (T046, T073) | §8 |
-| T035–T038 — `SofiSprite` y `SofiPortrait` (A4) | Carga con decodificación previa, pasada única, velocidad y eventos de ciclo; el retrato usa el módulo dueño y obedece a `full` (control de E11, 12 de 12 en Chromium). Firefox y WebKit pendientes (T046, T073) | §9 |
+| T032–T034 — modo efectivo durante `memory-wipe` (A3) | `holdMotion` fija el modo inicial con el único `data-motion` de `<html>`; 11 pruebas con los tres modos de entrada y la coordinación con el proveedor. Contrato remitido en el plan (D-23). Firefox y WebKit: confirmado en T046 (§12); queda T073 | §8 |
+| T035–T038 — `SofiSprite` y `SofiPortrait` (A4) | Carga con decodificación previa, pasada única, velocidad y eventos de ciclo; el retrato usa el módulo dueño y obedece a `full` (control de E11, 12 de 12 en Chromium). Firefox y WebKit: confirmado en T046 (§12); queda T073 | §9 |
 | T039–T042 y VT3 — habla y controladores (A4) | `onSpeakingChange` avisa solo al cambiar el booleano. `useSofiController` monta los tres controladores reales y los destruye sin residuos (escuchas, observadores, temporizadores, fotogramas, capas y atributos), también con StrictMode; las causas simultáneas no se anulan. 48 pruebas nuevas con sensibilidad comprobada. Navegador real pendiente (VT6) | §10 |
 | T043–T044 — contrato de build y límite de incrustación (A4) | Las 35 tiras de producción salen como archivos (antes, 15 iban incrustadas) y ninguna del Lab llega a la build; 11 chunks diferidos propios, controladores y keyframes únicos fuera de la entrada. CSS de entrada idéntico (9 871 B; +91 B sobre EX1, objetivo provisional sin aplicar); chunks diferidos −36 % de CSS y −77 % de JS. 11 pruebas de build y 4 estáticas con sensibilidad comprobada | §11 |
+| T045–T046 y VT4 — movimiento en tres motores (A4) | Proyectos de Firefox y WebKit solo para `e2e/motion/`; los seis modos en `SofiPortrait`, `Spinner`, `Loader` y `Ticker`, la especificidad medida con las reglas reales y `holdMotion` (13 pruebas): **13 de 13 en Chromium, Firefox y WebKit, con los mismos resultados.** Los 12 módulos con el mixin: 16 de 16 reglas reducidas excluyen `full`, también en el CSS de la build. Sin incompatibilidades. Sensibilidad comprobada; una incidencia de `profile.spec.ts` sin explicar (§12.6) | §12 |
 
 ---
 
@@ -917,4 +918,111 @@ Los «antes» de los chunks diferidos son las cifras que imprime Vite (su gzip e
 - **Sin consumidor:** el adaptador de gags y `SofiSprite` en pantalla no existen todavía en producción, así que «los controladores no están en la entrada» se cumple también porque ningún código los usa; la prueba pasará a ser decisiva con T088. Mientras tanto no hay chunk de controlador que comprobar.
 - **`talking` y `uncertain`:** el registro los declara diferidos y el contrato lo sigue, sin fijarlo: la decisión es de EX3.
 - **Firefox y WebKit:** sin cambios; T045–T046.
+- **`reset()` frente a `pause()`:** sigue pendiente para T087–T088.
+
+---
+
+## 12. A4 — Movimiento en tres motores (T045–T046 y VT4)
+
+Fecha: 2026-11-04. Antes de empezar: `main` en `ca3f464` (T043–T044) y su CI en GitHub Actions terminada en éxito (ejecución nº 22, leída de la API pública del repositorio); árbol de trabajo limpio salvo los 13 ZIP sin versionar.
+
+### 12.1 Qué se hizo
+
+| Tareas | Resultado |
+|---|---|
+| T045 | `playwright.config.ts` con tres proyectos. Chromium lo ejecuta todo (183 pruebas); Firefox y WebKit, solo `e2e/motion/` (13 cada uno). El job `browser` de `ci.yml` instala los tres motores y ejecuta `npm run test:a11y`, que ahora recorre los tres proyectos. Firefox 157.0 (`firefox-1555`) y WebKit 27.2 (`webkit-2370`) ya estaban instalados desde la puerta A0 y son los que pide Playwright 1.64 (`install --dry-run`): no se instaló nada y `package.json` y `package-lock.json` no cambian. RED: antes de la configuración, `playwright test --project=firefox --project=webkit` fallaba con «Project(s) "firefox", "webkit" not found». Además, `workers: 2` fuera de CI (§12.6) |
+| T046 | `e2e/motion/` con `modes.spec.ts` (los seis modos y la especificidad), `hold.spec.ts` (el modo efectivo de T033) y `support.ts` (los seis modos y su aplicación). La semilla `e2e/sofi-motion.spec.ts` (12 pruebas de Chromium) se movió a `modes.spec.ts` y se reorganizó, sin duplicarla. Plan §10 anota la carpeta |
+| VT4 | Los criterios de `008-tasks.md` (§12.5), más la medida de especificidad de plan §4.2. Sin incompatibilidad entre motores |
+
+### 12.2 Pruebas de movimiento (`e2e/motion/`)
+
+Cada motor se compara **consigo mismo**: no hay capturas de referencia versionadas ni dependencia de que Chromium, Firefox y WebKit pinten igual.
+
+- **Los seis modos en los anfitriones del Lab** (`modes.spec.ts`, una prueba por anfitrión): `SofiPortrait` (parpadeo y fotograma fijo), `Spinner`, `Loader` y `Ticker`. Para cada modo (sistema normal o reducido × sin atributo, `reduce`, `full`, cambiados en vivo con `emulateMedia` y el único `data-motion` de `<html>`) se mide el número de animaciones vivas del subárbol del anfitrión, su definición (nombre, duración, retardo, iteraciones) y una captura del elemento con la animación congelada a un instante en que se distingue de la pose reducida. Se exige que los tres modos que animan sean iguales entre sí en definición y captura, y lo mismo los tres que reducen; y, como control, que una captura animada y una reducida **difieran** (así una comparación en blanco no pasa). El fotograma fijo es un único grupo: no se anima en ningún modo, tampoco con `full`.
+- **Especificidad** (`modes.spec.ts`, una prueba por anfitrión con interfaz de usuario): se localiza en las hojas la regla reducida real de `Spinner`, `Loader` y `Ticker` (rama del sistema y rama forzada) y se mide si su prefijo suma algo: una regla posterior con el selector del consumidor, sin prefijo, tiene que ganarle. El control es una regla anterior con `:root` delante, que sí suma especificidad y le gana a esa misma regla posterior. La regla se localiza también si el prefijo fuera `:is()` o no existiera, para que la regresión falle por la medida y no por no encontrar la regla.
+- **Modo efectivo durante `memory-wipe`** (`hold.spec.ts`, 5 pruebas): `holdMotion` se llama sobre el retrato del Lab. Con los cuatro estados iniciales (`full` con el sistema reduciendo, `reduce` sin que el sistema lo pida, y `system` con el sistema sin pedir reducir o reduciendo), la preferencia vuelve a `system`, el sistema cambia a mitad y el anfitrión no cambia de estado hasta terminar; al terminar manda la preferencia vigente. La quinta prueba comprueba que lo último pedido durante la reacción es lo que se aplica al terminar y que repetir el fin no vuelve a escribir; esa petición la hace el proveedor real del Lab (control «Reducido»), así que vale también para la integración y comprueba que el módulo importado en la página es el de la aplicación.
+- **12 módulos de la aplicación con el mixin** (VT4): `src/styles/utilities/reducedMotion.test.ts` compila con Sass cada `*.module.scss` de la aplicación que usa `u.reduced-motion` y comprueba que todas sus reglas reducidas llevan el prefijo que excluye `full`, que cada una tiene su clon forzado y que no hay otra forma de `prefers-reduced-motion`. `e2e/production-build.spec.ts` lo repite sobre el CSS **minificado** de la build (una prueba más, sobre la compilación ya compartida).
+
+#### Cifras de las reglas reducidas
+
+- Fuente: 12 módulos, **16 selectores reducidos y 16 clones forzados**, todos con el prefijo que excluye `full`. En E11 eran 15 de 16: la restante era la del parcial de parpadeo que importaba `SofiPortrait` y que T038 movió al módulo dueño.
+- Build (todo el CSS emitido, entrada y chunks): 40 selectores reducidos del sistema, 49 de `no-preference` y 89 forzados, es decir, uno por cada uno de los otros dos; ninguna regla reducida sin prefijo. Faltan en la build los módulos que solo usa el Lab (por ejemplo `Loader`), que cubre la prueba de la fuente.
+
+### 12.3 Resultados por navegador
+
+Compilaciones de Playwright 1.64 para Windows: Chromium 156.0.8078.4, Firefox 157.0 y WebKit 27.2 (no es Safari de macOS ni de iOS, cuya verificación corresponde a `015`).
+
+| Prueba | Chromium | Firefox | WebKit |
+|---|---|---|---|
+| `SofiPortrait` · parpadeo, seis modos | pasa | pasa | pasa |
+| `SofiPortrait` · fotograma fijo, seis modos | pasa | pasa | pasa |
+| `Spinner`, seis modos | pasa | pasa | pasa |
+| `Loader`, seis modos | pasa | pasa | pasa |
+| `Ticker`, seis modos | pasa | pasa | pasa |
+| Especificidad: `Spinner`, `Loader` y `Ticker` (3) | pasan | pasan | pasan |
+| `holdMotion` (5) | pasan | pasan | pasan |
+| **Total de `e2e/motion/`** | **13 de 13** | **13 de 13** | **13 de 13** |
+
+- **Resultados idénticos en los tres motores:** en los tres, los tres modos que animan coinciden entre sí en definición y captura, y lo mismo los tres que reducen; `full` anima aunque el sistema pida reducir; el fotograma fijo no se anima en ningún modo; y la regla reducida de cada anfitrión empata en especificidad con el selector del consumidor en las dos ramas. No hay diferencias de comportamiento que informar.
+- **Repeticiones con el diseño final:** Chromium, las cinco pruebas de anfitrión por 15 (75 de 75); Firefox y WebKit, `e2e/motion/` entera por 3 (39 de 39 cada uno).
+- **Suite completa** (`npx playwright test`, con 2 trabajadores, sin nada más en ejecución): **209 pruebas, todas pasan, en 9,0 min**: 183 de Chromium (las 181 anteriores menos las 12 semilla de movimiento, más 13 de movimiento y 1 de la build) y 13 de Firefox y de WebKit.
+
+### 12.4 Sensibilidad
+
+Se rompió a propósito, una a una, cada guarda, y se comprobó que la detecta alguna prueba. Todo se restauró y `git diff` queda vacío sobre los archivos de producción.
+
+| Regresión | Detectada por |
+|---|---|
+| Mixin sin `:where` en ambas ramas (el estado anterior a D-1: el prefijo suma especificidad) | Especificidad (`Spinner`, `Loader`, `Ticker`) en Chromium, Firefox y WebKit: la regla posterior sin prefijo ya no gana. En Vitest, 16 pruebas (4 del mixin y las 12 de módulos) |
+| `:where` cambiado por `:is` (suma especificidad sin dejar de envolver) | Especificidad, en los tres motores |
+| Rama del sistema sin la exclusión de `full` | `sistema reduce · data-motion full` en `SofiPortrait`, `Spinner`, `Loader` y `Ticker`, en Chromium, Firefox y WebKit; 15 pruebas de Vitest |
+| Una declaración extra solo en la rama forzada | La comparación de capturas en `SofiPortrait` (parpadeo y fotograma fijo), `Spinner` y `Ticker`; las animaciones coincidían, solo las capturas fallaron. `Loader` no la ve porque sus celdas están ocultas en reducido |
+| El plugin de sprites sin la exclusión de `full` (el parcial de `sofi-blink`) | `SofiPortrait · parpadeo` con `sistema reduce · data-motion full` |
+| `applyMotionPreference` ignora la retención | Las 5 pruebas de `hold.spec.ts`; la quinta, que usa el proveedor real, falla con `reduce` en vez de `full` |
+| `holdMotion` no escribe el modo inicial | Las dos de partida en `system` y la de «lo último pedido». Las de partida con atributo explícito no la ven: ya lo tenían |
+| Al terminar no se aplica lo último pedido | «Lo último pedido se aplica al terminar» |
+| Una regla `@media (prefers-reduced-motion: reduce)` propia en un módulo | La prueba de Vitest de ese módulo y la de la build |
+
+### 12.5 Criterios de VT4
+
+| Criterio (`008-tasks.md`) | Resultado |
+|---|---|
+| T046 verde en Chromium, Firefox y WebKit | 13 de 13 en cada uno (§12.3) |
+| El `SofiPortrait` de T038 pasa con `full` | Sí, en los tres motores: con `full` (también con el sistema reduciendo) tiene 1 animación viva y la captura de los otros modos animados; con `reduce` o el sistema reduciendo, 0 y la pose reducida. Su fotograma fijo no se anima con `full`. Su regla propia (`SofiPortrait.module.scss`) ya excluye `full` |
+| En los 12 módulos de la app con el mixin, todas las reglas reducidas excluyen `full` | Sí: 16 de 16 selectores, cada uno con su clon forzado (E11: 15 de 16), y lo mismo en el CSS minificado de la build (§12.2) |
+| Especificidad CSS (plan §4.2 y §4.3) | Medida: en `Spinner`, `Loader` y `Ticker`, y en las ramas del sistema y forzada, el prefijo no suma especificidad en los tres motores; con el control que sí suma, la medida lo distingue |
+| Una incompatibilidad detiene el bloque A | No hay ninguna: los tres motores dan el mismo resultado |
+
+### 12.6 Incidencias
+
+**Del entorno y de la ejecución (no del producto):**
+
+- **Firefox, con 4 trabajadores.** La primera ejecución completa dio 2 fallos de Firefox, por tiempo agotado (30 s). Medido: sin carga, esas pruebas tardan 5–11 s; con 4 trabajadores a la vez, 17–28 s, y una repetición falló porque el retrato del Lab no se vio en 5 s. El equipo tiene 7,9 GB de RAM (3,4 GB libres en reposo) y la causa es la contención de cuatro navegadores y el servidor de desarrollo, no la lógica. Con 2 trabajadores, 39 repeticiones de Firefox pasaron sin superar 11,5 s. No se subió ningún tiempo límite: `playwright.config.ts` fija `workers: 2` fuera de CI, como `maxWorkers` de Vitest, y en CI se usan los de por defecto.
+- **Una prueba de `profile.spec.ts`, una sola vez.** En una ejecución completa, `desde el índice, el foco pasa a las respuestas y la pregunta se ve a 375 px` (Chromium, anterior a este bloque) agotó los 30 s esperando el botón «Empezar». La traza muestra `net::ERR_CONNECTION_REFUSED` al pedir `/src/main.tsx` con el WebSocket de Vite ya conectado, y el registro del servidor no muestra reinicio ni error. **Causa no determinada.** No se repitió: aislada, `profile.spec.ts` pasó 99 de 99 (3 repeticiones) y la ejecución completa siguiente pasó entera. Consta como incidencia sin explicar, como la de §10.4; si reaparece sin carga, investigarla.
+
+**De mis primeras versiones de las pruebas, hallados al ejecutarlas (ninguno del producto):**
+
+- **Captura inestable del `Ticker`.** La primera captura del `Ticker` salía a veces con el texto más grueso (8 de 25 repeticiones de la prueba en Chromium). Hipótesis descartadas con medidas: no depende del orden de los modos (se probó fotografiar primero los reducidos, y falló igual), ni de repetir la captura hasta que coincidan dos (la diferencia era estable hasta que cambiaba sola), ni de las fuentes (todas cargadas), ni de los estilos calculados (idénticos antes y después). Con la página cargada y sin aplicar ningún modo, el raster cambia solo, entre 1 y 4 s después; una página estática con el mismo texto no cambia. **Causa medida:** el servidor de desarrollo sigue sirviendo módulos del Lab después del evento `load` (decenas, hasta más de 0,5 s después, con el anfitrión ya visible) y la rasterización del texto cambia cuando acaban. Con `waitUntil: 'networkidle'` en la navegación, la primera captura ya salió en el estado final 3 de 3 veces (sin esperar, 0 de 3), y la prueba pasó 75 de 75 en Chromium y 39 de 39 en Firefox y WebKit. Se retiraron los dos arreglos probados antes (el orden de los modos y repetir la captura), que no hacían falta. El mecanismo interno del navegador que cambia el raster no se investigó.
+- **Animaciones congeladas que no se descongelan.** Congelar el anfitrión con `pause()` lo deja pausado en el modo siguiente, porque una animación CSS que no cambia de definición no se recrea; el último modo daba 0 vivas. Ahora se sueltan tras la captura.
+- **Captura de todo el `Ticker`.** La diferencia de la primera captura recaía solo en los píxeles de la etiqueta «Última hora» (508 píxeles dentro de x 16–104, y 15–26). Se fotografía la ventana de titulares, que es donde se mueve el texto; las animaciones medidas no cambian.
+- **`Loader` en la prueba de especificidad.** Con `position: absolute`, un `inline-block` se calcula como `block`, así que no valía de control; se usa `flex`.
+- **Barras invertidas y comillas invertidas.** Al escribir las pruebas desde el shell se perdieron (`/\s+/` quedó `/s+/` y se borró un `toHaveScreenshot` entre comillas invertidas). Se corrigió con la herramienta de edición.
+
+### 12.7 Comprobaciones técnicas
+
+| Comprobación | Resultado |
+|---|---|
+| `npm run typecheck`, `npx eslint .`, `npx prettier --check .` | Sin errores |
+| `npm run build` | Correcta, sin avisos |
+| `npx vitest run` | 98 archivos, 1 734 pruebas (13 nuevas: 12 módulos y la comprobación de que se encuentran), todas pasan |
+| `npx playwright test` | 209 pruebas (Chromium 183, Firefox 13, WebKit 13), todas pasan, 9,0 min |
+| `src/styles/sprites/`, código de producción, `package.json` y `package-lock.json` | Sin cambios respecto a `HEAD` |
+
+### 12.8 Pendiente y notas
+
+- **CI en Linux:** los resultados son de las compilaciones de Windows. El job `browser` instala ahora Firefox y WebKit en `ubuntu-latest`; su primera ejecución con los tres motores se registra al subir el commit.
+- **Solo los anfitriones que ya existen.** Los 14 recursos, la velocidad, los gags y la limpieza en navegador real van en VT6 (T073–T076).
+- **`useReducedMotion` durante la retención** (el lado de JavaScript) solo está probado en jsdom (§8): en navegador se verifica el atributo de `<html>` que lee el CSS. Sigue sin haber consumidor de `holdMotion` (`009`).
+- **Dependencia de la prueba de retención:** importa `/src/app/providers/motion.ts` del servidor de desarrollo en la página; la quinta prueba comprueba que es la misma copia que usa la aplicación.
+- **Lo manual** (dispositivos, Safari de macOS y de iOS) sigue sin hacerse: `015`.
 - **`reset()` frente a `pause()`:** sigue pendiente para T087–T088.
