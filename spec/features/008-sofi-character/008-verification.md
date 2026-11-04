@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -31,6 +31,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T047–T050 — contexto de audio compartido (A5) | `createSpeechAudio` admite un contexto prestado (`context`) que `dispose()` no cierra; `SoundProvider` lo crea la primera vez que se pide, dentro del gesto que desbloquea el sonido, y lo cierra al desmontarse después de liberar la voz. 11 pruebas nuevas (6 + 5) con cada RED visto fallar y 5 mutaciones detectadas; las 12 suites que dependen de los dos módulos (137 pruebas) pasan. Efectos (T051–T052) y audio real pendientes | §13 |
 | T051–T053 — efectos sonoros: controlador y licencias (A5) | `createEffectsAudio` con contexto siempre prestado, un efecto a la vez, sin tapar la voz, en silencio en seguridad, salida rápida y estados sensibles, `memory-wipe` solo tras el borrado efectivo y sin condicionar nunca la aplicación; el proveedor libera efectos y voz antes de cerrar el contexto. Manifiesto de licencias vacío y su contrato. 68 pruebas nuevas (34 + 2 + 32) con cada RED visto fallar y 19 mutaciones detectadas; las 14 suites dependientes (205 pruebas) pasan. Decisiones D-24 a D-29 aprobadas (plan §11.4). Sin sonidos elegidos ni audio real | §14 |
 | T054 — cierre del bloque A | Formato, lint, tipos, build y `verify:bundle` sin errores; Vitest completo 100 archivos y 1 813 pruebas; CSS de entrada igual que en §11 (9 871 B). Playwright en los tres motores: la CI (nº 26 y nº 27), no en local. De los 27 criterios de la spec, **7 verificados, 14 parciales y 6 pendientes** de otros bloques; ninguna casilla de la spec se marca. Recursos reverificados (61 de 61 archivos y 13 de 13 ZIP) | §15 |
+| T055–T057 — playground y estado de sesión del inspector (B1) | Playground leído en `17aca4f` sin modificarlo, con las 6 filas de plan §8 contrastadas: 9 divergencias y una coincidencia (el pixelado) registradas. Ninguna contradice el plan: varias dejan decisiones a T058–T061 y T064. `createInspectorState` e `inspectorReducer` guardan la velocidad, la pausa, el tamaño, el fondo y el pixelado de cada recurso, y se conservan al cambiar de recurso, sin tocar preferencias públicas, `PRODUCTION_RATES` ni `rateFor`. 8 pruebas nuevas (RED: 3 fallan y 5 pasan) y 9 mutaciones detectadas. Sin conectar a ningún componente (T058) | §16 |
 
 ---
 
@@ -1265,3 +1266,77 @@ Estado de los 27 criterios al cerrar el bloque A. **Verificado** es lo que A pue
 - **T100–T101 (y `009`):** cómo encaja un efecto de `memory-wipe` con el silencio al que vuelve `SoundProvider` tras el borrado (plan §11.4).
 - **Bloque B** y sus aprobaciones (AV1–AV9); **VT5–VT8**; **EX2–EX4**.
 - **Incidencia sin explicar:** un `ERR_CONNECTION_REFUSED` aislado en `profile.spec.ts` (§12.6) y un fallo intermitente de accesibilidad anterior (§10.4). No han reaparecido en la CI (ejecuciones nº 23 a nº 27, todas en éxito).
+
+---
+
+## 16. B1 — Playground y estado de sesión del inspector (T055–T057)
+
+Fecha: 2026-11-04. Antes de empezar: `main` en `1ce2206` (T054) con su CI en GitHub Actions terminada en éxito (ejecución nº 28, leída de la API pública del repositorio); árbol de trabajo limpio salvo los 13 ZIP sin versionar. No se ha tocado el Design Lab visible (`MotionSection.tsx` y estilos sin cambios), las preferencias públicas, `visual/rates` ni el repositorio de spritesheets.
+
+### 16.1 T055 — Playground frente a plan §8
+
+Lectura, solo lectura, de `spritesheets/spritesheet/playground/` (`index.html`, `playground.js` y las reglas de tamaño, fondo y pixelado de `playground.scss`), del contrato de las demos (`setRate`, `pause`, `resume` y `restart` en los `demo.js` de `008` y `012`) y de cómo calcula los pesos `scripts/dev.mjs`. El repositorio estaba en `17aca4f` con el árbol limpio, y siguió así al terminar. Se contrastaron las seis filas de la tabla de plan §8; solo constan las divergencias que afectan a lo que se adapta, más la coincidencia del pixelado, que justifica cómo se empieza.
+
+| Fila de plan §8 | Divergencia del playground | Consecuencia |
+|---|---|---|
+| Velocidad, pausa y reinicio | Un solo estado **global**: la velocidad y la pausa afectan a todas las tarjetas a la vez. La velocidad solo admite ¼×, ½×, 1× y 2× | El catálogo §8 pide una velocidad independiente por recurso, y T056–T057 lo hacen por recurso. Qué valores ofrece el control es de T058 (`LabRange`) y no se fija aquí |
+| Velocidad, pausa y reinicio | Aplica `playbackRate` directamente a `getAnimations({ subtree: true })` una sola vez, sin volver a aplicarlo en `animationstart`, y a las demos con `setRate` | En Ask Sofi la velocidad pasa por `visual/rates`: `SofiSprite` la aplica al subárbol y la vuelve a aplicar en `animationstart`, y el adaptador usa `setRate` (plan §5.5, T029–T042). El estado del inspector solo guarda la velocidad elegida, y conectarla con `setSessionRate` es de T058. No existe «comparar con 1×» |
+| Velocidad, pausa y reinicio | Pasa todo a pausa de forma global al desplazarse por la línea de tiempo | Hay que tenerlo en cuenta en T060: la pausa de Ask Sofi es por recurso |
+| Tamaño, fondos y pixelado | Tamaño de 64 a 512 px en pasos de 8, empezando en 192, y un tamaño común para todas las tarjetas | En Ask Sofi es por recurso. El rango y el valor de partida son de T059: el estado los recibe de quien lo crea |
+| Tamaño, fondos y pixelado | Fondos «Claro», «Oscuro» y «Cuadros» del escenario, independientes del tema de la página | En el Lab, el tema es global (`ThemeSwitch`) y `LabStage` ofrece su fondo propio, `plain` o `dots`. No hay cuadros. Las opciones no se corresponden una a una y elegirlas es de T059: el estado guarda un fondo de un tipo que define el inspector |
+| Tamaño, fondos y pixelado | Pixelado desactivado al principio (`image-rendering: pixelated` en el sprite y las miniaturas) | Igual que en producción, donde ningún estilo de `src/` aplica `image-rendering`. Se empieza sin pixelar |
+| Línea de tiempo (T060) | Lee los tramos del primer `getAnimations()` y su `backgroundPositionX`. Las miniaturas usan `background-size` sobre la imagen | Se volverá a leer antes de T060. No se adapta aquí |
+| Peso y memoria (T061) | Los bytes salen del manifiesto de su servidor (`fs.statSync` de cada archivo) y la memoria, de ancho × alto × 4 tras `decode()` | En Ask Sofi no existe ese servidor: T061 tendrá que sacar los bytes de otra fuente. No se adapta aquí |
+| Escenarios de las demos (T064) | Cada `demo.js` construye su propio DOM y sus temporizadores y devuelve `setRate`, `pause`, `resume` y `restart` | La idea se adapta con `useSofiController` (plan §8). No se adapta aquí |
+| Plantillas, `localStorage`, EventSource, servidor | Guarda tamaño, velocidad, fondo, pixelado y pausa en `localStorage` (`sprites:*`) y recarga con EventSource | Se descarta (plan §8). El estado del inspector vive en memoria y desaparece al recargar (T056) |
+
+### 16.2 T056–T057 — Estado de sesión del inspector
+
+Se añade a `src/design-lab/motionLab.ts`, aparte del reductor de habla, que no cambia:
+
+- `createInspectorState({ size, background })` crea una entrada para cada uno de los 14 recursos de `SOFI_ANIMATION_IDS` y selecciona el primero. Cada entrada empieza a 1× (catálogo §8: la línea de tiempo original), sin pausa, sin pixelar y con el tamaño y el fondo que se le pasan.
+- `inspectorReducer`: `select` cambia el recurso seleccionado y no toca ningún ajuste. `rate`, `paused`, `size`, `background` y `pixelated` cambian solo el recurso seleccionado. Una velocidad o un tamaño que no sean un número finito y positivo se ignoran (devuelve el mismo estado), con el mismo criterio que `setSessionRate`.
+- Es lógica pura: no lee ni escribe almacenamiento, preferencias ni `visual/rates`.
+
+| Tarea | Resultado |
+|---|---|
+| T056 | RED. 8 pruebas nuevas en `motionLab.test.ts` con un esqueleto inerte: **3 fallan y 5 pasan**. Las que pasan afirman que algo no ocurre (rechazos y no tocar preferencias ni velocidades), y un esqueleto que no hace nada las cumple. La sensibilidad de §16.3 demuestra que sí discriminan. Las 14 pruebas anteriores del reductor de habla siguen en verde |
+| T057 | GREEN. 22 de 22 |
+
+### 16.3 Sensibilidad
+
+Cada mutación se aplicó a `motionLab.ts`, se ejecutó su archivo de pruebas y se restauró. El SHA-256 del archivo era el mismo antes y después (`95418bf5…`).
+
+| Mutación | Pruebas que la detectan |
+|---|---|
+| M1 acepta cualquier velocidad | Las 4 de valores no válidos (0, −1, NaN, ∞) |
+| M2 acepta cualquier tamaño | Las mismas 4 |
+| M3 cambiar de recurso reinicia los ajustes | `keeps the values of each resource when switching between entries` |
+| M4 un ajuste cambia todos los recursos | 2 (`changes only the selected resource` y la anterior) |
+| M5 escribe en `localStorage` | `touches neither the public preferences, nor the production speeds, nor the speed SofiSprite reads` |
+| M6 llama a `setSessionRate` | La misma |
+| M7 escribe la preferencia pública `motion` | La misma |
+| M8 empieza a 0,5× | 2 |
+| M9 empieza pixelado | 3 |
+
+**Límite:** con `PRODUCTION_RATES` vacío, la prueba no distingue entre «empieza a 1×» y «empieza a la velocidad de producción». El código no lee `PRODUCTION_RATES`. Ver §16.5.
+
+### 16.4 Comprobaciones técnicas
+
+Según `tech-stack.md` §42.7: las pruebas del archivo durante RED y GREEN y, al cerrar, las suites que dependen de `motionLab.ts`, los tipos, el lint y el formato.
+
+| Comprobación | Resultado |
+|---|---|
+| `npx vitest run src/design-lab/motionLab.test.ts` | 22 de 22 |
+| `npx vitest related src/design-lab/motionLab.ts --run` | 3 archivos (`motionLab`, `DesignLab` y `PropPlaygrounds`), 36 pruebas, todas pasan |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check` sobre los archivos tocados y `spec/features/008-sofi-character` | Sin errores. Prettier reformateó la prueba, y después se volvieron a pasar las suites relacionadas |
+| `MotionSection.tsx`, estilos del Lab, `visual/rates`, `preferencesStorage`, `src/styles/sprites/`, `package.json`, repositorio de spritesheets | Sin cambios |
+
+No se ejecutaron la suite completa de Vitest, Playwright ni `build`, porque no cambian configuración, estilos, dependencias ni nada que se pinte: el estado nuevo no lo usa todavía ningún componente. Esos pasos los ejecuta la CI.
+
+### 16.5 Pendiente y notas
+
+- **Conexión (T058):** el estado no se usa todavía en ningún componente. T058 tiene que pasar la velocidad elegida a `setSessionRate` (y quitarla con «comparar con 1×» sin perderla) y aplicar la pausa al recurso que se ve.
+- **Valores de partida y opciones (T059):** el tamaño, el fondo y sus opciones se eligen en T059. El estado no fija ninguno.
+- **1× frente a la velocidad de producción:** el catálogo §8 pide empezar en 1×, y hoy las dos cosas coinciden porque `PRODUCTION_RATES` está vacío. Si con AV3 alguna velocidad de producción deja de ser 1×, habrá que decidir si el inspector parte de 1× o de esa velocidad. No se decide aquí.
+- **Sesión:** el estado vive en el `useReducer` de quien lo monte, así que se pierde al recargar, igual que la sobrescritura de `visual/rates`.

@@ -3,12 +3,19 @@ import {
   DEFAULT_SPEECH_TIMING,
   type SpeechState,
 } from '../components/sofi/SofiSpeech/speechTimeline'
+import { PRODUCTION_RATES, rateFor } from '../components/sofi/visual/rates'
+import { SOFI_ANIMATION_IDS } from '../components/sofi/visual/types'
+import { readPreferences } from '../infrastructure/storage/preferencesStorage'
 import {
   SPEECH_TEXTS,
+  createInspectorState,
   createMotionLabState,
   formatElapsed,
+  inspectorReducer,
   motionLabReducer,
   speechText,
+  type InspectorAction,
+  type InspectorState,
   type MotionLabAction,
   type MotionLabState,
 } from './motionLab'
@@ -200,5 +207,113 @@ describe('motionLabReducer', () => {
   it('formats elapsed time in seconds with a decimal comma', () => {
     expect(formatElapsed(0)).toBe('0,00 s')
     expect(formatElapsed(1234)).toBe('1,23 s')
+  })
+})
+
+// Las opciones de fondo y el tamaño de partida son del inspector (T059); aquí solo importa
+// que cada recurso conserve los suyos.
+type Background = 'base' | 'alt'
+
+const DEFAULTS = { size: 160, background: 'base' as Background }
+
+function inspect(
+  actions: ReadonlyArray<InspectorAction<Background>>,
+  state: InspectorState<Background> = createInspectorState(DEFAULTS),
+) {
+  return actions.reduce(inspectorReducer<Background>, state)
+}
+
+const START = {
+  rate: 1,
+  paused: false,
+  size: 160,
+  background: 'base',
+  pixelated: false,
+}
+
+describe('inspectorReducer', () => {
+  it('starts every resource at 1×, playing and unpixelated, on the first entry of the catalogue', () => {
+    const state = createInspectorState(DEFAULTS)
+    expect(state.selected).toBe(SOFI_ANIMATION_IDS[0])
+    expect(Object.keys(state.entries).sort()).toEqual(
+      [...SOFI_ANIMATION_IDS].sort(),
+    )
+    for (const id of SOFI_ANIMATION_IDS)
+      expect(state.entries[id]).toEqual(START)
+  })
+
+  it('changes only the selected resource', () => {
+    const state = inspect([
+      { type: 'select', id: 'sofing' },
+      { type: 'rate', value: 0.5 },
+      { type: 'paused', value: true },
+      { type: 'size', value: 256 },
+      { type: 'background', value: 'alt' },
+      { type: 'pixelated', value: true },
+    ])
+    expect(state.entries.sofing).toEqual({
+      rate: 0.5,
+      paused: true,
+      size: 256,
+      background: 'alt',
+      pixelated: true,
+    })
+    for (const id of SOFI_ANIMATION_IDS.filter((id) => id !== 'sofing'))
+      expect(state.entries[id]).toEqual(START)
+  })
+
+  it('keeps the values of each resource when switching between entries', () => {
+    const state = inspect([
+      { type: 'select', id: 'talking' },
+      { type: 'rate', value: 2 },
+      { type: 'pixelated', value: true },
+      { type: 'select', id: 'rolling' },
+      { type: 'rate', value: 0.25 },
+      { type: 'paused', value: true },
+      { type: 'select', id: 'talking' },
+    ])
+    expect(state.selected).toBe('talking')
+    expect(state.entries.talking).toEqual({
+      ...START,
+      rate: 2,
+      pixelated: true,
+    })
+    expect(state.entries.rolling).toEqual({
+      ...START,
+      rate: 0.25,
+      paused: true,
+    })
+  })
+
+  it.each([0, -1, Number.NaN, Number.POSITIVE_INFINITY])(
+    'ignores a speed or a size of %s and keeps the previous one',
+    (value) => {
+      const before = inspect([
+        { type: 'rate', value: 2 },
+        { type: 'size', value: 96 },
+      ])
+      expect(inspect([{ type: 'rate', value }], before)).toBe(before)
+      expect(inspect([{ type: 'size', value }], before)).toBe(before)
+    },
+  )
+
+  it('touches neither the public preferences, nor the production speeds, nor the speed SofiSprite reads', () => {
+    const preferences = readPreferences()
+    const production = JSON.stringify(PRODUCTION_RATES)
+
+    inspect(
+      SOFI_ANIMATION_IDS.flatMap((id) => [
+        { type: 'select' as const, id },
+        { type: 'rate' as const, value: 0.25 },
+        { type: 'paused' as const, value: true },
+        { type: 'pixelated' as const, value: true },
+      ]),
+    )
+
+    expect(readPreferences()).toEqual(preferences)
+    expect(window.localStorage.length).toBe(0)
+    expect(window.sessionStorage.length).toBe(0)
+    expect(JSON.stringify(PRODUCTION_RATES)).toBe(production)
+    for (const id of SOFI_ANIMATION_IDS) expect(rateFor(id)).toBe(1)
   })
 })

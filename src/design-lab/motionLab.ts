@@ -3,6 +3,10 @@ import {
   type SpeechState,
   type SpeechTiming,
 } from '../components/sofi/SofiSpeech/speechTimeline'
+import {
+  SOFI_ANIMATION_IDS,
+  type SofiAnimationId,
+} from '../components/sofi/visual/types'
 import type { SpeechAudioStatus } from '../infrastructure/audio/speechAudio'
 import { SPEECH } from './fixtures'
 
@@ -231,5 +235,89 @@ export function motionLabReducer(
     }
     case 'sound-off':
       return withLog(state, action.at, ['sonido desactivado'])
+  }
+}
+
+// Estado de sesión del inspector de recursos (catálogo §8): cada recurso guarda sus propios
+// ajustes mientras dure el Lab. Vive en memoria; no es una preferencia pública ni la
+// velocidad de producción (`visual/rates`).
+
+export type InspectorEntry<Background extends string> = {
+  rate: number
+  paused: boolean
+  size: number
+  background: Background
+  pixelated: boolean
+}
+
+export type InspectorState<Background extends string> = {
+  selected: SofiAnimationId
+  entries: Readonly<Record<SofiAnimationId, InspectorEntry<Background>>>
+}
+
+export type InspectorAction<Background extends string> =
+  | { type: 'select'; id: SofiAnimationId }
+  | { type: 'rate'; value: number }
+  | { type: 'paused'; value: boolean }
+  | { type: 'size'; value: number }
+  | { type: 'background'; value: Background }
+  | { type: 'pixelated'; value: boolean }
+
+// El tamaño y el fondo de partida los elige el inspector; la velocidad parte siempre de 1×,
+// la línea de tiempo original (catálogo §8), y sin pixelado, como se pinta en producción.
+export function createInspectorState<Background extends string>(defaults: {
+  size: number
+  background: Background
+}): InspectorState<Background> {
+  const entry: InspectorEntry<Background> = {
+    rate: 1,
+    paused: false,
+    size: defaults.size,
+    background: defaults.background,
+    pixelated: false,
+  }
+  return {
+    selected: SOFI_ANIMATION_IDS[0],
+    entries: Object.fromEntries(
+      SOFI_ANIMATION_IDS.map((id) => [id, entry]),
+    ) as InspectorState<Background>['entries'],
+  }
+}
+
+// Mismo criterio que `setSessionRate`, que recibirá la velocidad: un factor positivo.
+const isPositive = (value: number) => Number.isFinite(value) && value > 0
+
+function updateSelected<Background extends string>(
+  state: InspectorState<Background>,
+  patch: Partial<InspectorEntry<Background>>,
+): InspectorState<Background> {
+  const id = state.selected
+  return {
+    ...state,
+    entries: { ...state.entries, [id]: { ...state.entries[id], ...patch } },
+  }
+}
+
+export function inspectorReducer<Background extends string>(
+  state: InspectorState<Background>,
+  action: InspectorAction<Background>,
+): InspectorState<Background> {
+  switch (action.type) {
+    case 'select':
+      return { ...state, selected: action.id }
+    case 'rate':
+      return isPositive(action.value)
+        ? updateSelected(state, { rate: action.value })
+        : state
+    case 'size':
+      return isPositive(action.value)
+        ? updateSelected(state, { size: action.value })
+        : state
+    case 'paused':
+      return updateSelected(state, { paused: action.value })
+    case 'background':
+      return updateSelected(state, { background: action.value })
+    case 'pixelated':
+      return updateSelected(state, { pixelated: action.value })
   }
 }
