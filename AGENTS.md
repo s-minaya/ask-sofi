@@ -124,6 +124,8 @@ Prefer Test Driven Development when behavior has clear inputs and outputs.
 
 Tests should validate observable behavior and contracts rather than implementation details.
 
+Test execution policy (what to run and when): `tech-stack.md` §42.7.
+
 Normal automated tests must not depend on real Jev requests.
 
 Use the appropriate test boundary:

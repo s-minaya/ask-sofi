@@ -1553,6 +1553,16 @@ Objetivo:
 WCAG 2.2 AA
 ```
 
+### 42.7. Política de ejecución
+
+Qué se ejecuta y cuándo. No cambia qué se prueba ni los criterios de aceptación; solo evita esperas que no aportan evidencia.
+
+- **Durante RED/GREEN/REFACTOR:** solo las pruebas directamente afectadas (el archivo, o el test con `-t`/`-g`, y el proyecto de Playwright que corresponda). Los tipos y el lint se comprueban cuando corresponda y, en todo caso, antes de cerrar las tareas aplicables.
+- **Suites amplias** (Vitest completo, Playwright completo, `build`): únicamente en un hito de `<NNN>-tasks.md` que lo pida, en un cambio transversal (configuración, tokens, dependencias, código compartido por muchas features) o cuando la verificación de integración lo exija de verdad. Al cerrar una tarea se ejecutan sus pruebas, los tipos y el lint, no todo.
+- **No repetir lo que ya pasó** si desde entonces no ha cambiado nada relevante para esa prueba. Tampoco hay repeticiones en bucle ni pruebas de estrés sin una hipótesis concreta que la repetición vaya a confirmar o descartar, y con el número de ejecuciones decidido de antemano.
+- **Ante un fallo, primero la causa:** leer el error, la traza y el contexto antes de volver a ejecutar. Reintentar hasta que pase o subir un timeout no es un diagnóstico (un fallo intermitente se mide y se explica). Un test lento o inestable se arregla en su causa.
+- **La CI es la red de seguridad, no un sustituto:** `.github/workflows/ci.yml` ejecuta lint, formato, tipos, Vitest y build, y después Playwright en los tres motores. El desarrollo local puede apoyarse en ella para lo amplio y lento (la matriz completa de navegadores), pero un hito sigue sin marcarse sin su evidencia en `<NNN>-verification.md`, y lo que ese hito exige ejecutar localmente se ejecuta.
+
 ---
 
 ## 43. Accessibility-first HTML
