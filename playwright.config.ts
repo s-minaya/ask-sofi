@@ -3,7 +3,10 @@ import { defineConfig, devices } from '@playwright/test'
 // Puerto propio de las pruebas: distinto del 5173 de `npm run dev`, para no
 // chocar con un servidor que alguien tenga abierto para revisar la aplicación.
 const PORT = Number(process.env.E2E_PORT ?? 5199)
-const ORIGIN = `http://localhost:${PORT}`
+// IPv4 explícito en el servidor y en la URL: con `localhost`, Vite escucha solo en `::1`
+// y cualquier intento por IPv4 al mismo puerto se rechaza. Los dos lados cambian juntos.
+const HOST = '127.0.0.1'
+const ORIGIN = `http://${HOST}:${PORT}`
 
 // Las pruebas de movimiento (plan 008 §10, D-10) viven en `e2e/motion/` y son las únicas que
 // también corren en Firefox y WebKit: ahí es donde los motores pueden diferir (media queries,
@@ -46,7 +49,7 @@ export default defineConfig({
     // Siempre un servidor recién arrancado desde este proyecto: no se reutiliza
     // ninguno (uno antiguo sirve módulos obsoletos y uno ajeno no es este código).
     // Si el puerto está ocupado, falla en lugar de conectarse a otro proceso.
-    command: `npm run dev -- --port ${PORT} --strictPort`,
+    command: `npm run dev -- --host ${HOST} --port ${PORT} --strictPort`,
     url: ORIGIN,
     reuseExistingServer: false,
   },

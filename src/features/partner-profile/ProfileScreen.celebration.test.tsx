@@ -57,37 +57,64 @@ async function answer(
   }
 }
 
+// Todo el fichero corre con tiempo simulado: las esperas de la pantalla (la reacción
+// de Sofi, el asentamiento de «Guardar» y el salto) se avanzan a mano, no se duermen.
+// Testing Library drena cada acción de userEvent con un `setTimeout(0)` y solo avanza
+// el reloj simulado si ve un `jest` global; Vitest no lo define y todo se quedaría
+// esperando. Se expone ese único método solo durante cada test.
+function simulateTime() {
+  vi.useFakeTimers()
+  vi.stubGlobal('jest', {
+    advanceTimersByTime: (ms: number) => vi.advanceTimersByTime(ms),
+  })
+}
+function restoreTime() {
+  vi.unstubAllGlobals()
+  vi.useRealTimers()
+}
+// `advanceTimers` hace que la espera interna de userEvent corra con el reloj simulado,
+// y `advance` lo mueve dentro de `act` para que React pinte lo que cambia.
+const setupUser = () =>
+  userEvent.setup({ advanceTimers: (ms) => vi.advanceTimersByTime(ms) })
+const advance = (ms: number) => act(() => vi.advanceTimersByTimeAsync(ms))
+
 // La reacción de Sofi («Seis de seis…») ocupa el pie del bocadillo 1,8 s; la
 // indicación toma su sitio cuando acaba.
-const afterReaction = () =>
-  act(() => new Promise((done) => setTimeout(done, REACTION_MS + 100)))
-// «Guardar» entra en pantalla y la página se asienta (con tiempo real o simulado).
-const enter = () => {
+const afterReaction = () => advance(REACTION_MS + 100)
+// «Guardar» entra en pantalla y la página se asienta.
+const enter = async () => {
   act(() => setIntersection(saveBox(), 1))
-  return act(() => new Promise((done) => setTimeout(done, SETTLE_MS + 50)))
+  await advance(SETTLE_MS)
 }
-const enterFake = () => {
-  act(() => setIntersection(saveBox(), 1))
-  act(() => vi.advanceTimersByTime(SETTLE_MS))
+// Lo que hacía `findByRole` con 3 s de margen, avanzando el reloj simulado en lugar de
+// esperar: `findBy*` no avanza los temporizadores simulados de Vitest.
+const GO_SAVE_WAIT_MS = 3000
+const GO_SAVE_STEP_MS = 100
+async function goSave() {
+  for (let waited = 0; waited < GO_SAVE_WAIT_MS; waited += GO_SAVE_STEP_MS) {
+    const link = hint()
+    if (link) return link
+    await advance(GO_SAVE_STEP_MS)
+  }
+  return screen.getByRole('button', { name: SHEET_COPY.goSave })
 }
-const goSave = () =>
-  screen.findByRole('button', { name: SHEET_COPY.goSave }, { timeout: 3000 })
 
-describe('guiar a «Guardar»', { timeout: 15000 }, () => {
+describe('guiar a «Guardar»', () => {
   const scrollIntoView = vi.fn()
 
   beforeEach(() => {
+    simulateTime()
     installIntersectionObserver()
     Element.prototype.scrollIntoView = scrollIntoView
   })
   afterEach(() => {
     uninstallIntersectionObserver()
     scrollIntoView.mockReset()
-    vi.useRealTimers()
+    restoreTime()
   })
 
   it('con «Guardar» fuera de la pantalla, completar ofrece «Ir a guardar» en el diálogo', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
     await answer(user, PROFILE_AREAS.slice(0, 5))
     await afterReaction()
@@ -102,7 +129,7 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
   })
 
   it('no se ofrece si «Guardar» ya está entero en la pantalla', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
     await enter()
 
@@ -113,7 +140,7 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
   })
 
   it('aparece cuando «Guardar» sale de la pantalla y se retira cuando entra', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
     await enter()
     await answer(user, PROFILE_AREAS)
@@ -128,7 +155,7 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
   })
 
   it('sigue ahí al cambiar de pregunta mientras quede algo por guardar', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
     await answer(user, PROFILE_AREAS)
     await afterReaction()
@@ -139,7 +166,7 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
   })
 
   it('no se ofrece con cinco áreas aunque haya cambios', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
 
     await answer(user, PROFILE_AREAS.slice(0, 5))
@@ -149,7 +176,7 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
   })
 
   it('se retira al quitar una respuesta, al descartar y al guardar', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
     await answer(user, PROFILE_AREAS)
     await afterReaction()
@@ -172,10 +199,10 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
     await user.click(save())
     await afterReaction()
     expect(hint()).not.toBeInTheDocument()
-  }, 15000)
+  })
 
   it('«Ir a guardar» lleva «Guardar» a la vista y le da el foco, sin guardar', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
     await answer(user, PROFILE_AREAS)
 
@@ -193,7 +220,7 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
   })
 
   it('con movimiento reducido el desplazamiento es inmediato', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
     await answer(user, PROFILE_AREAS)
 
@@ -205,7 +232,7 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
   })
 
   it('se puede alcanzar y activar con el teclado', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
     await answer(user, PROFILE_AREAS)
 
@@ -216,7 +243,7 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
   })
 
   it('no mueve la página al responder: solo ofrece', async () => {
-    const user = userEvent.setup()
+    const user = setupUser()
     renderScreen()
 
     await answer(user, PROFILE_AREAS)
@@ -226,108 +253,103 @@ describe('guiar a «Guardar»', { timeout: 15000 }, () => {
   })
 })
 
-describe(
-  'el salto de «Guardar», cuando está en pantalla',
-  { timeout: 15000 },
-  () => {
-    beforeEach(() => installIntersectionObserver())
-    afterEach(() => {
-      uninstallIntersectionObserver()
-      vi.useRealTimers()
-    })
+describe('el salto de «Guardar», cuando está en pantalla', () => {
+  beforeEach(() => {
+    simulateTime()
+    installIntersectionObserver()
+  })
+  afterEach(() => {
+    uninstallIntersectionObserver()
+    restoreTime()
+  })
 
-    it('espera: con «Guardar» fuera de pantalla no se activa', async () => {
-      const user = userEvent.setup()
-      renderScreen()
+  it('espera: con «Guardar» fuera de pantalla no se activa', async () => {
+    const user = setupUser()
+    renderScreen()
 
-      await answer(user, PROFILE_AREAS)
+    await answer(user, PROFILE_AREAS)
 
-      expect(celebrating()).toBeNull()
-    })
+    expect(celebrating()).toBeNull()
+  })
 
-    it('se activa al entrar «Guardar» en pantalla, aunque la reacción ya acabara', async () => {
-      const user = userEvent.setup()
-      renderScreen()
-      await answer(user, PROFILE_AREAS)
-      // La reacción de Sofi dura 1,8 s: se deja correr entera.
-      await act(() => new Promise((done) => setTimeout(done, 2000)))
-      expect(celebrating()).toBeNull()
+  it('se activa al entrar «Guardar» en pantalla, aunque la reacción ya acabara', async () => {
+    const user = setupUser()
+    renderScreen()
+    await answer(user, PROFILE_AREAS)
+    // La reacción de Sofi dura 1,8 s: se deja correr entera.
+    await advance(2000)
+    expect(celebrating()).toBeNull()
 
-      await enter()
+    await enter()
 
-      expect(celebrating()).not.toBeNull()
-    })
+    expect(celebrating()).not.toBeNull()
+  })
 
-    it('si «Guardar» ya está en pantalla al completar, se activa en el momento', async () => {
-      const user = userEvent.setup()
-      renderScreen()
-      await enter()
+  it('si «Guardar» ya está en pantalla al completar, se activa en el momento', async () => {
+    const user = setupUser()
+    renderScreen()
+    await enter()
 
-      await answer(user, PROFILE_AREAS)
+    await answer(user, PROFILE_AREAS)
 
-      expect(celebrating()).not.toBeNull()
-    })
+    expect(celebrating()).not.toBeNull()
+  })
 
-    it('es breve y no se repite al salir y volver a entrar', async () => {
-      const user = userEvent.setup()
-      renderScreen()
-      await answer(user, PROFILE_AREAS)
-      vi.useFakeTimers()
-      enterFake()
-      expect(celebrating()).not.toBeNull()
+  it('es breve y no se repite al salir y volver a entrar', async () => {
+    const user = setupUser()
+    renderScreen()
+    await answer(user, PROFILE_AREAS)
+    await enter()
+    expect(celebrating()).not.toBeNull()
 
-      act(() => vi.advanceTimersByTime(CELEBRATE_MS))
-      expect(celebrating()).toBeNull()
+    await advance(CELEBRATE_MS)
+    expect(celebrating()).toBeNull()
 
-      act(() => setIntersection(saveBox(), 0))
-      enterFake()
-      act(() => vi.advanceTimersByTime(CELEBRATE_MS))
-      expect(celebrating()).toBeNull()
-    })
+    act(() => setIntersection(saveBox(), 0))
+    await enter()
+    await advance(CELEBRATE_MS)
+    expect(celebrating()).toBeNull()
+  })
 
-    it('si «Guardar» sale de la pantalla a mitad, no se da por visto', async () => {
-      const user = userEvent.setup()
-      renderScreen()
-      await answer(user, PROFILE_AREAS)
-      vi.useFakeTimers()
-      enterFake()
-      act(() => vi.advanceTimersByTime(CELEBRATE_MS / 2))
-      act(() => setIntersection(saveBox(), 0))
-      expect(celebrating()).toBeNull()
+  it('si «Guardar» sale de la pantalla a mitad, no se da por visto', async () => {
+    const user = setupUser()
+    renderScreen()
+    await answer(user, PROFILE_AREAS)
+    await enter()
+    await advance(CELEBRATE_MS / 2)
+    act(() => setIntersection(saveBox(), 0))
+    expect(celebrating()).toBeNull()
 
-      enterFake()
+    await enter()
 
-      expect(celebrating()).not.toBeNull()
-    })
+    expect(celebrating()).not.toBeNull()
+  })
 
-    it('al guardar sin haberse visto, ya no se debe', async () => {
-      const user = userEvent.setup()
-      renderScreen()
-      await answer(user, PROFILE_AREAS)
-      await user.click(save())
+  it('al guardar sin haberse visto, ya no se debe', async () => {
+    const user = setupUser()
+    renderScreen()
+    await answer(user, PROFILE_AREAS)
+    await user.click(save())
 
-      await enter()
+    await enter()
 
-      expect(celebrating()).toBeNull()
-    })
+    expect(celebrating()).toBeNull()
+  })
 
-    it('una nueva finalización lo vuelve a activar', async () => {
-      const user = userEvent.setup()
-      renderScreen()
-      await enter()
-      await answer(user, PROFILE_AREAS)
-      await act(
-        () => new Promise((done) => setTimeout(done, CELEBRATE_MS + 100)),
-      )
-      expect(celebrating()).toBeNull()
+  it('una nueva finalización lo vuelve a activar', async () => {
+    const user = setupUser()
+    renderScreen()
+    await enter()
+    await answer(user, PROFILE_AREAS)
+    await advance(CELEBRATE_MS + 100)
+    expect(celebrating()).toBeNull()
 
-      await user.click(screen.getByRole('button', { name: 'Quitar respuesta' }))
-      await answer(user, PROFILE_AREAS.slice(5))
+    await user.click(screen.getByRole('button', { name: 'Quitar respuesta' }))
+    await answer(user, PROFILE_AREAS.slice(5))
 
-      expect(celebrating()).not.toBeNull()
-    }, 10000)
-  },
-)
+    expect(celebrating()).not.toBeNull()
+  })
+})
 
 describe('duración', () => {
   // El CSS y quien lo apaga tienen que hablar de lo mismo.

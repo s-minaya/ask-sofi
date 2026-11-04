@@ -111,12 +111,41 @@ test('the whole entry can be done with the keyboard alone', async ({
   ).toBeFocused()
 })
 
-test('the ticker can be paused from the keyboard', async ({ page }) => {
+test('the ticker can be paused and resumed from the keyboard', async ({
+  page,
+}) => {
+  // Con movimiento reducido el Ticker no se anima y no habría nada que pausar: en esta
+  // prueba, y solo en ella, el sistema no pide reducir.
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/')
   const pause = page.getByRole('button', { name: 'Pausar titulares' })
+  // El estado real de la animación, no solo el atributo: es lo que el usuario ve moverse.
+  const marquee = page.locator('[class*="_track_"]')
+  const playState = () =>
+    marquee.evaluate((element) => {
+      const states = element
+        .getAnimations()
+        .filter(
+          (animation) =>
+            // CSS Modules renombra el `@keyframes` (`_marquee_<hash>`): se busca su nombre base.
+            animation instanceof CSSAnimation &&
+            animation.animationName.includes('marquee'),
+        )
+        .map((animation) => animation.playState)
+      return states.length === 1 ? states[0] : `${states.length} animaciones`
+    })
+
+  await expect.poll(playState).toBe('running')
+  await expect(pause).toHaveAttribute('aria-pressed', 'false')
+
   await pause.focus()
   await page.keyboard.press('Enter')
   await expect(pause).toHaveAttribute('aria-pressed', 'true')
+  await expect.poll(playState).toBe('paused')
+
+  await page.keyboard.press('Enter')
+  await expect(pause).toHaveAttribute('aria-pressed', 'false')
+  await expect.poll(playState).toBe('running')
 })
 
 // El expediente completo con el teclado (004, T028): abrir, responder, recorrer
