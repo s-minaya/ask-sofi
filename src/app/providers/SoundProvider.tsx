@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from 'react'
 import talkingSoundUrl from '../../assets/sofi/talking-sound.mp3'
+import type { EffectsAudio } from '../../infrastructure/audio/effectsAudio'
 import {
   createSpeechAudio,
   defaultCreateContext,
@@ -26,6 +27,12 @@ type SoundProviderProps = {
   createAudio?: (context: () => AudioContextLike) => SpeechAudio
   // Crea el AudioContext compartido (tests).
   createContext?: () => AudioContextLike
+  // Controlador de los efectos sonoros. No hay ninguno por defecto: todavía no se ha elegido ningún
+  // sonido (spec 008 §9). El proveedor los libera antes de cerrar el contexto compartido.
+  createEffects?: (deps: {
+    context: () => AudioContextLike
+    voice: SpeechAudio
+  }) => EffectsAudio<string>
   // Recuerda la elección de sonido entre visitas. Lo activa solo la aplicación
   // real: el Design Lab usa un audio simulado y no debe tocar las preferencias.
   persist?: boolean
@@ -44,6 +51,7 @@ const createDefaultAudio = (context: () => AudioContextLike) =>
 export function SoundProvider({
   createAudio = createDefaultAudio,
   createContext = defaultCreateContext,
+  createEffects,
   persist = false,
   deferAudio = false,
   children,
@@ -54,6 +62,9 @@ export function SoundProvider({
   const contextRef = useRef<AudioContextLike | null>(null)
   const getContext = () => (contextRef.current ??= createContext())
   const [audio] = useState(() => createAudio(getContext))
+  const [effects] = useState(() =>
+    createEffects?.({ context: getContext, voice: audio }),
+  )
   // Activo ahora mismo: siempre empieza en silencio, porque el navegador solo
   // deja preparar el audio dentro de un gesto.
   const [enabled, setEnabled] = useState(false)
@@ -69,14 +80,15 @@ export function SoundProvider({
 
   useEffect(
     () => () => {
+      effects?.dispose()
       audio.dispose()
-      // Lo último que se cierra: la voz ya no lo usa. Se olvida para que, si el proveedor
+      // Lo último que se cierra: ni la voz ni los efectos lo usan ya. Se olvida para que, si el proveedor
       // vuelve a mostrarse sin haberse desmontado, el siguiente gesto cree uno nuevo.
       const context = contextRef.current
       contextRef.current = null
       if (context) void context.close().catch(() => undefined)
     },
-    [audio],
+    [audio, effects],
   )
 
   // Tras borrar los datos la aplicación vuelve al silencio inicial.

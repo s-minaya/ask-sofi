@@ -436,6 +436,21 @@ D-17 a D-22 se aprobaron al cerrar T017–T026 y D-23 al autorizar T032–T034. 
 | D-22 | La página no visible (`hidden`) es una causa de pausa independiente de las demás |
 | D-23 | Durante `memory-wipe`, el modo efectivo inicial se captura y se conserva con el único `data-motion` de `<html>`, aunque el borrado restablezca la preferencia a `system`. Al terminar o interrumpirse la confirmación se aplica la preferencia vigente, sin restaurar datos borrados. El proveedor de movimiento no sobrescribe la reacción en curso |
 
+### 11.4 Infraestructura de efectos sonoros (2026-11-04) — propuestas pendientes de aprobación
+
+El plan §11.1 fija las restricciones; estas son las decisiones de implementación que no fijaba, tomadas al hacer T051–T053. El código está en `src/infrastructure/audio/effectsAudio.ts`, `src/app/providers/SoundProvider.tsx` y `src/assets/sofi/effects/`. **Son propuestas:** la autora las aprueba (o las corrige) por su número.
+
+| Decisión | Propuesta |
+|---|---|
+| D-24 | `createEffectsAudio({ context, effects, voice })` registra los efectos por identificador y expone `prepare()` (dentro del gesto: pide y reanuda el contexto prestado y descarga los archivos), `play(id)`, `setSituation(...)`, `disable()` y `dispose()`. `play` no devuelve nada que esperar y nunca lanza, para no condicionar jamás lo que ocurre en la aplicación. Sin `prepare()` o tras `disable()`/`dispose()` no suena nada. No hay identificadores ni archivos: no se ha elegido ningún sonido |
+| D-25 | Un efecto a la vez: uno nuevo sustituye al que suena (no se encola ni se descarta el nuevo) |
+| D-26 | La voz manda: un efecto no suena mientras la voz suena (`getStatus() === 'playing'`) y no queda en cola; si la voz empieza mientras suena uno, el efecto se corta |
+| D-27 | `setSituation({ safety, quickExit, sensitive, dataErased })`: con seguridad, salida rápida o estado sensible no suena ningún efecto y el que suena se corta en el acto. `dataErased` habilita los efectos marcados `afterErasure` (los de `memory-wipe`), que sin él no suenan; seguridad y salida rápida prevalecen sobre el borrado, como en D-18 |
+| D-28 | `SoundProvider` gana la prop `createEffects({ context, voice })`, sin valor por defecto, y libera los efectos y la voz antes de cerrar el contexto compartido. **No** expone los efectos en `SoundContext` ni los conecta a `unlock`, `disable` ni al borrado de datos: eso es T100–T101 |
+| D-29 | Manifiesto de licencias en `src/assets/sofi/effects/licenses.json` (`{ "effects": [] }`). Cada entrada: `file`, `title`, `author`, `source` (https), `license`, `licenseUrl` (https), `attribution` (obligatoria con CC-BY) y `verifiedOn` (fecha ISO). Licencias admitidas: `CC0-1.0`, `CC-BY-3.0`, `CC-BY-4.0`, `MIT`, `Apache-2.0` y `LicenseRef-AskSofi-Original` (creado por la autora). Quedan fuera NC, ND, SA, las licencias propias de un sitio y las desconocidas. Ningún campo puede mencionar Myinstants ni Nintendo. El contrato está en `effectsLicenses.test.ts` |
+
+**Pregunta abierta para T100–T101 (y `009`).** Al borrar los datos, `SoundProvider` vuelve al silencio inicial (`subscribeToUserDataCleared` desactiva el sonido). Los efectos de `memory-wipe` solo pueden sonar tras el borrado efectivo (spec §9), con el sonido activado: hay que decidir cómo encajan, porque con el sonido ya desactivado no sonaría ninguno. No se resuelve aquí: `createEffectsAudio` solo garantiza que nunca suenan antes del borrado.
+
 ## 12. Riesgos y pendientes
 
 - **Firefox y WebKit:** la puerta A0 se superó con pruebas de concepto (§2). Falta confirmarlo con la implementación (§10). Safari de macOS y de iOS corresponde a `015`.

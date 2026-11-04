@@ -51,7 +51,7 @@ export function defaultCreateContext(): AudioContextLike {
   return new Context()
 }
 
-async function defaultFetchData(src: string): Promise<ArrayBuffer> {
+export async function defaultFetchData(src: string): Promise<ArrayBuffer> {
   const response = await fetch(src)
   if (!response.ok) throw new Error(`Audio no disponible (${response.status})`)
   return response.arrayBuffer()

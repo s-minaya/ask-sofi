@@ -1,58 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { fakeAudioContext } from '../../test/fakeAudio'
 import { createSpeechAudio, type AudioContextLike } from './speechAudio'
 
-type FakeSource = {
-  buffer: AudioBuffer | null
-  loop: boolean
-  connect: ReturnType<typeof vi.fn>
-  disconnect: ReturnType<typeof vi.fn>
-  start: ReturnType<typeof vi.fn>
-  stop: ReturnType<typeof vi.fn>
-}
-
-// Doble de AudioContext: permite decidir si el navegador deja sonar o no.
-function fakeContext({ running = false, allowResume = true } = {}) {
-  const sources: FakeSource[] = []
-  const gains: { disconnect: ReturnType<typeof vi.fn> }[] = []
-  const context = {
-    state: (running ? 'running' : 'suspended') as AudioContextState,
-    currentTime: 0,
-    destination: {} as AudioNode,
-    resume: vi.fn(() => {
-      if (!allowResume) return new Promise<void>(() => {})
-      context.state = 'running'
-      return Promise.resolve()
-    }),
-    close: vi.fn(() => Promise.resolve()),
-    createBufferSource: vi.fn(() => {
-      const source: FakeSource = {
-        buffer: null,
-        loop: false,
-        connect: vi.fn(),
-        disconnect: vi.fn(),
-        start: vi.fn(),
-        stop: vi.fn(),
-      }
-      sources.push(source)
-      return source as unknown as AudioBufferSourceNode
-    }),
-    createGain: vi.fn(() => {
-      const gain = { gain: { value: 1 }, connect: vi.fn(), disconnect: vi.fn() }
-      gains.push(gain)
-      return gain as unknown as GainNode
-    }),
-    decodeAudioData: vi.fn(() =>
-      Promise.resolve({ duration: 21 } as AudioBuffer),
-    ),
-  }
-  return { context, sources, gains }
-}
-
 function setup(
-  options: Parameters<typeof fakeContext>[0] = {},
+  options: Parameters<typeof fakeAudioContext>[0] = {},
   fetchData = vi.fn(() => Promise.resolve(new ArrayBuffer(8))),
 ) {
-  const fake = fakeContext(options)
+  const fake = fakeAudioContext(options)
   const audio = createSpeechAudio({
     src: '/talking-sound.mp3',
     createContext: () => fake.context as unknown as AudioContextLike,
@@ -194,7 +148,7 @@ describe('speechAudio', () => {
   })
 
   describe('con un contexto prestado (D-11)', () => {
-    function setupBorrowed(fake = fakeContext()) {
+    function setupBorrowed(fake = fakeAudioContext()) {
       const borrow = vi.fn(() => fake.context as unknown as AudioContextLike)
       const audio = createSpeechAudio({
         src: '/talking-sound.mp3',
@@ -250,8 +204,8 @@ describe('speechAudio', () => {
     })
 
     it('tras dispose() vuelve a pedir el contexto en lugar de reutilizar el anterior', async () => {
-      const first = fakeContext()
-      const second = fakeContext()
+      const first = fakeAudioContext()
+      const second = fakeAudioContext()
       const contexts = [first, second]
       const context = vi.fn(
         () => contexts.shift()!.context as unknown as AudioContextLike,

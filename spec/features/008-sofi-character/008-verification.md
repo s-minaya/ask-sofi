@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -29,6 +29,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T043–T044 — contrato de build y límite de incrustación (A4) | Las 35 tiras de producción salen como archivos (antes, 15 iban incrustadas) y ninguna del Lab llega a la build; 11 chunks diferidos propios, controladores y keyframes únicos fuera de la entrada. CSS de entrada idéntico (9 871 B; +91 B sobre EX1, objetivo provisional sin aplicar); chunks diferidos −36 % de CSS y −77 % de JS. 11 pruebas de build y 4 estáticas con sensibilidad comprobada | §11 |
 | T045–T046 y VT4 — movimiento en tres motores (A4) | Proyectos de Firefox y WebKit solo para `e2e/motion/`; los seis modos en `SofiPortrait`, `Spinner`, `Loader` y `Ticker`, la especificidad medida con las reglas reales y `holdMotion` (13 pruebas): **13 de 13 en Chromium, Firefox y WebKit, con los mismos resultados.** Los 12 módulos con el mixin: 16 de 16 reglas reducidas excluyen `full`, también en el CSS de la build. Sin incompatibilidades. Sensibilidad comprobada; una incidencia de `profile.spec.ts` sin explicar (§12.6) | §12 |
 | T047–T050 — contexto de audio compartido (A5) | `createSpeechAudio` admite un contexto prestado (`context`) que `dispose()` no cierra; `SoundProvider` lo crea la primera vez que se pide, dentro del gesto que desbloquea el sonido, y lo cierra al desmontarse después de liberar la voz. 11 pruebas nuevas (6 + 5) con cada RED visto fallar y 5 mutaciones detectadas; las 12 suites que dependen de los dos módulos (137 pruebas) pasan. Efectos (T051–T052) y audio real pendientes | §13 |
+| T051–T053 — efectos sonoros: controlador y licencias (A5) | `createEffectsAudio` con contexto siempre prestado, un efecto a la vez, sin tapar la voz, en silencio en seguridad, salida rápida y estados sensibles, `memory-wipe` solo tras el borrado efectivo y sin condicionar nunca la aplicación; el proveedor libera efectos y voz antes de cerrar el contexto. Manifiesto de licencias vacío y su contrato. 68 pruebas nuevas (34 + 2 + 32) con cada RED visto fallar y 19 mutaciones detectadas; las 14 suites dependientes (205 pruebas) pasan. Decisiones D-24 a D-29 **pendientes de aprobación** (plan §11.4). Sin sonidos elegidos ni audio real | §14 |
 
 ---
 
@@ -1081,7 +1082,84 @@ No se ejecutaron la suite completa de Vitest, Playwright ni `build`: el cambio n
 
 ### 13.6 Pendiente y notas
 
-- **Efectos (T051–T052):** `createEffectsAudio` todavía no existe. El proveedor ya cierra el contexto después de liberar la voz; la liberación de los efectos entra en ese mismo punto con T052. «Voz y efectos» de T049 queda, por tanto, cubierto solo para la voz hasta entonces.
+- **Efectos (T051–T052):** resuelto en §14: el proveedor libera también los efectos antes de cerrar el contexto.
 - **Gesto real del navegador:** en jsdom se comprueba que el contexto se crea y se reanuda de forma síncrona durante el despacho del clic, sin esperas intermedias. Que el navegador lo considere una activación de usuario (política de reproducción automática) y que el audio suene no se puede comprobar aquí: es manual y queda pendiente (VT6, `015`). No se ha oído ningún audio.
 - **`Activity`:** el caso de ocultar y volver a mostrar el proveedor sin desmontarlo no existe hoy en la aplicación; se prueba porque es la forma de ejecutar la limpieza del efecto sin perder el estado, y evita que un contexto cerrado se reutilice.
 - **Sin concentrador:** D-11 descarta un `close()` simulado y un concentrador; el proveedor solo guarda y cierra el contexto, sin enrutar voz ni efectos.
+
+---
+
+## 14. A5 — Efectos sonoros: controlador y licencias (T051–T053)
+
+Fecha: 2026-11-04. Antes de empezar: `main` en `bb5d4ed` (T047–T050) con su CI en GitHub Actions terminada en éxito (ejecución nº 26, leída de la API pública del repositorio: `foundation` 124 s, `browser` 445 s; el paso de Playwright tardó 341 s frente a los 282 s de la nº 23 sin que haya cambiado ninguna prueba de navegador); árbol de trabajo limpio salvo los 13 ZIP sin versionar. Las restricciones son las de spec §9 y plan §11.1; las decisiones de implementación que no fijaban son D-24 a D-29 de plan §11.4, **propuestas pendientes de aprobación**. No se ha elegido ni incorporado ningún sonido.
+
+### 14.1 Qué se hizo
+
+| Tareas | Resultado |
+|---|---|
+| T051 | RED. `effectsAudio.test.ts` (34 pruebas) con el esqueleto inerte de `createEffectsAudio` (sus métodos no hacen nada): **20 fallan y 14 pasan** (las que afirman que no suena nada se cumplen sin código; la sensibilidad de §14.4 demuestra que sí discriminan). Más 2 pruebas de liberación en `SoundProvider.test.tsx`: **las 2 fallan** (el proveedor ignoraba `createEffects`) |
+| T052 | GREEN. `createEffectsAudio` (D-24 a D-27) y la integración en `SoundProvider` (D-28): libera efectos y voz y después cierra el contexto. 34 de 34 y 11 de 11 |
+| T053 | Contrato en `effectsLicenses.test.ts` (32 pruebas) y `src/assets/sofi/effects/licenses.json` vacío (D-29). RED: las 2 pruebas sobre el manifiesto real fallaban por `ENOENT` (las 30 sobre datos sintéticos no dependen de él); con el manifiesto, 32 de 32 |
+
+Cambio de pruebas compartido: el doble de `AudioContext` de `speechAudio.test.ts` pasa a `src/test/fakeAudio.ts` (`fakeAudioContext`, con `onended` y `end()` en las fuentes) porque ahora lo usan la voz y los efectos. Las aserciones de `speechAudio.test.ts` no cambian (17 de 17). `defaultFetchData` de `speechAudio.ts` pasa a exportarse para no duplicarla.
+
+### 14.2 Contrato de `createEffectsAudio`
+
+- **Contexto siempre prestado:** no hay `createContext` ni cierre. `prepare()` lo pide antes de cualquier espera (en el gesto) y lo reanuda; `dispose()` lo olvida sin cerrarlo y el siguiente `prepare()` lo vuelve a pedir.
+- **Sin sonido activado no suena nada:** antes de `prepare()`, tras `disable()` (que además corta el efecto en curso) y tras `dispose()`. Tampoco suena con el contexto suspendido o que el navegador no deja reanudar; `prepare()` no espera a esa reanudación.
+- **Un efecto a la vez:** el nuevo sustituye al que suena; al terminar por sí solo el hueco queda libre sin cortar nada.
+- **Nunca mientras habla la voz:** no suena si `voice.getStatus() === 'playing'` y no queda en cola; si la voz empieza mientras suena uno, se corta. Deja de escuchar a la voz en `dispose()`.
+- **Seguridad, salida rápida y estado sensible:** silencio absoluto y corte en el acto, incluso tras un borrado efectivo.
+- **`memory-wipe`:** los efectos marcados `afterErasure` no suenan hasta `dataErased`; los demás no cambian.
+- **Sin condicionar la aplicación:** `play()` devuelve `undefined` y no lanza ante una fuente que falla, un efecto desconocido, una voz o un contexto rotos; `prepare()` no rechaza si el contexto no se puede obtener ni si un archivo no carga (los demás efectos siguen sonando; que el siguiente `prepare()` reintente el que falló está implementado, pero sin prueba propia).
+
+### 14.3 Proveedor y contrato de licencias
+
+- **`SoundProvider`:** prop nueva `createEffects({ context, voice })`, sin valor por defecto. El `context` es el mismo getter de D-11 (la prueba comprueba que devuelve el contexto compartido y que no crea uno al montar) y `voice` es la voz del proveedor. En la limpieza llama a `effects.dispose()`, `audio.dispose()` y por último cierra el contexto (la prueba comprueba el orden de las dos primeras respecto al cierre). Los contratos existentes no cambian: las 9 pruebas anteriores del proveedor siguen en verde y no se ha tocado `SoundContext`, `src/design-lab/simulatedAudio.ts` ni los `createAudio` de los tests.
+- **Contrato de licencias:** cada audio de la carpeta tiene su entrada, y cada entrada su archivo, sin duplicados ni rutas; campos obligatorios; `source` y `licenseUrl` en https; fecha ISO real; solo las licencias de D-29 (NC, ND, SA, licencias de sitio y desconocidas se rechazan); CC-BY exige atribución; ningún campo puede mencionar Myinstants ni Nintendo. La comprobación es de metadatos: que la licencia declarada sea verdadera es la verificación humana de T097.
+
+### 14.4 Sensibilidad
+
+Cada mutación se aplicó al código, se ejecutó su archivo de pruebas y se restauró (el diff de los archivos de producción era idéntico antes y después).
+
+| Mutación | Pruebas que la detectan |
+|---|---|
+| E1 `play()` ignora seguridad, salida rápida y estado sensible | 3 (una por situación) |
+| E2 `setSituation()` no corta el efecto que suena | 3 |
+| E3 los de `memory-wipe` suenan sin borrado efectivo | `no suenan hasta que el borrado total es efectivo` |
+| E4 suena aunque la voz esté sonando | `no suena mientras la voz suena, y no queda en cola` |
+| E5 la voz que empieza no corta el efecto | `si la voz empieza mientras suena un efecto, el efecto se corta` |
+| E6 `dispose()` cierra el contexto prestado | `dispose() no lo cierra` |
+| E7 un efecto nuevo no corta el anterior | 3 |
+| E8 suena sin haber activado el sonido | `tras silenciar, y el que sonaba se corta al instante` |
+| E9 `play()` propaga los errores | `no lanza si la fuente falla al empezar` |
+| E10 `dispose()` sigue escuchando a la voz | `tras dispose() deja de escuchar a la voz` |
+| E11 suena con el contexto suspendido | 2 |
+| E12 al terminar por sí solo no libera el hueco | `al terminar por sí solo libera el hueco sin cortar nada más` |
+| E13 el contexto se reanuda tras una espera, fuera del gesto | `no lo pide hasta que se prepara, y entonces lo reanuda en el gesto` |
+| E14 un archivo que falla rechaza `prepare()` | `un archivo que no carga no impide los demás` |
+| P1 el proveedor no libera los efectos | `al desmontarse libera la voz y los efectos…` |
+| P2 el proveedor libera los efectos tras cerrar el contexto | la misma |
+
+Contrato de licencias, sobre la carpeta real (se ensució y se restauró; manifiesto y carpeta idénticos al final): L1 un audio sin licencia registrada, L2 una entrada `CC-BY-NC-4.0` y L3 una entrada de `myinstants.com` con licencia válida fallan en la prueba del manifiesto real; el control L4 (entrada completa y válida con su archivo) pasa. **Límite:** el filtro `-t` del guion se partió por los espacios y seleccionó 7 pruebas del archivo en lugar de 1 (en L1–L3 falló exactamente 1 de las 7; en L4 pasaron las 7), de modo que la atribución a la prueba del manifiesto real es por exclusión: es la única que depende de la carpeta. Los casos sintéticos del contrato comprueban cada regla con el mensaje concreto que esperan.
+
+### 14.5 Comprobaciones técnicas
+
+Según `tech-stack.md` §42.7: pruebas dirigidas durante RED/GREEN y, al cerrar, las pertinentes. `fakeAudio.ts` y `SoundProvider` los usan muchos tests, así que se ejecutaron todos los que dependen de los módulos tocados.
+
+| Comprobación | Resultado |
+|---|---|
+| `npx vitest run` sobre `src/infrastructure/audio/` y `SoundProvider.test.tsx` | 94 pruebas (17 voz + 34 efectos + 32 licencias + 11 proveedor), todas pasan |
+| `npx vitest related` sobre `fakeAudio.ts`, `SoundProvider.tsx`, `speechAudio.ts`, `effectsAudio.ts` y el contrato de licencias | 14 archivos, 205 pruebas, todas pasan |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check src spec/features/008-sofi-character` | Sin errores (un error de lint por un parámetro sin usar en la prueba, corregido) |
+| `src/styles/sprites/`, `package.json`, `package-lock.json`, `src/design-lab/`, `SoundContext` | Sin cambios |
+
+No se ejecutaron la suite completa de Vitest, Playwright ni `build`: no hay cambios de configuración, estilos ni dependencias, el manifiesto no entra en la build (nadie lo importa) y la CI ejecuta esos pasos; T054 pide la batería completa.
+
+### 14.6 Pendiente y notas
+
+- **Conexión (T100–T101):** `createEffects` no tiene valor por defecto y el proveedor no expone los efectos ni los prepara, silencia ni conecta al borrado de datos. Hasta entonces, en la aplicación real no se crea ningún controlador de efectos.
+- **Pregunta abierta de `memory-wipe`** (plan §11.4): al borrar los datos `SoundProvider` vuelve al silencio inicial; hay que decidir cómo encaja un efecto que solo puede sonar tras el borrado. No se resuelve aquí.
+- **Audio real:** no se ha oído ningún sonido ni se ha reproducido ningún archivo; las pruebas usan dobles de `AudioContext`. La reproducción real, con el gesto del navegador, queda para VT6/T098 y `015`.
+- **Licencias:** el contrato valida metadatos. La lista de licencias admitidas (D-29) es una propuesta; ampliarla es editar una constante de la prueba, con aprobación.
+- **Voz entre fragmentos:** «mientras habla la voz» es el estado de audio `playing` (el bucle de `SofiSpeech` suena mientras habla y se detiene en las pausas), no el booleano `speaking` del texto; en una pausa del texto un efecto puede sonar, y la voz lo corta si reanuda (D-26).

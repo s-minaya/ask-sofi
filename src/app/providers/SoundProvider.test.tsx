@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Activity } from 'react'
+import { Activity, type ComponentProps } from 'react'
 import { describe, expect, it, onTestFinished, vi } from 'vitest'
 import { useSound } from '../../hooks/useSound'
+import { createEffectsAudio } from '../../infrastructure/audio/effectsAudio'
 import {
   createSpeechAudio,
   type AudioContextLike,
@@ -147,6 +148,20 @@ describe('SoundProvider', () => {
         speeches.push(speech)
         return speech
       }
+      // Los efectos reales, sin ninguno registrado (no hay sonidos elegidos todavía).
+      const effects: ReturnType<typeof createEffectsAudio>[] = []
+      const createEffects = vi.fn(
+        (
+          deps: Parameters<
+            NonNullable<ComponentProps<typeof SoundProvider>['createEffects']>
+          >[0],
+        ) => {
+          const created = createEffectsAudio({ ...deps, effects: {} })
+          vi.spyOn(created, 'dispose')
+          effects.push(created)
+          return created
+        },
+      )
       // Con `visible`, Activity no cambia nada; ocultarlo ejecuta la limpieza de los efectos
       // sin desmontar el proveedor, que conserva su estado.
       const tree = (mode: 'visible' | 'hidden') => (
@@ -154,6 +169,7 @@ describe('SoundProvider', () => {
           <SoundProvider
             createAudio={createAudio}
             createContext={createContext}
+            createEffects={createEffects}
             {...props}
           >
             <Probe />
@@ -166,6 +182,8 @@ describe('SoundProvider', () => {
         createContext,
         createdInGesture,
         speeches,
+        effects,
+        createEffects,
         unmount: view.unmount,
         hide: () => view.rerender(tree('hidden')),
         show: () => view.rerender(tree('visible')),
@@ -226,6 +244,41 @@ describe('SoundProvider', () => {
       expect(
         vi.mocked(speeches[0].dispose).mock.invocationCallOrder[0],
       ).toBeLessThan(context.close.mock.invocationCallOrder[0])
+    })
+
+    it('crea los efectos una vez con el contexto compartido y la voz, sin crear aún ningún contexto', async () => {
+      const { contexts, createContext, createEffects, speeches, user } =
+        setupShared({ deferAudio: true })
+
+      expect(createEffects).toHaveBeenCalledTimes(1)
+      expect(createContext).not.toHaveBeenCalled()
+      const deps = createEffects.mock.calls[0][0]
+      expect(deps.voice).toBe(speeches[0])
+
+      await user.click(press('Desbloquear'))
+
+      expect(deps.context()).toBe(contexts[0])
+      expect(createContext).toHaveBeenCalledTimes(1)
+    })
+
+    it('al desmontarse libera la voz y los efectos, y solo después cierra el contexto', async () => {
+      const { contexts, effects, speeches, unmount, user } = setupShared({
+        deferAudio: true,
+      })
+      await user.click(press('Desbloquear'))
+      const [context] = contexts
+
+      unmount()
+
+      expect(effects[0].dispose).toHaveBeenCalledTimes(1)
+      expect(speeches[0].dispose).toHaveBeenCalledTimes(1)
+      const closed = context.close.mock.invocationCallOrder[0]
+      expect(
+        vi.mocked(effects[0].dispose).mock.invocationCallOrder[0],
+      ).toBeLessThan(closed)
+      expect(
+        vi.mocked(speeches[0].dispose).mock.invocationCallOrder[0],
+      ).toBeLessThan(closed)
     })
 
     it('si el proveedor se oculta y se muestra de nuevo, no reutiliza el contexto cerrado', async () => {
