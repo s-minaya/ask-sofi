@@ -320,7 +320,7 @@ Se amplía `Motion & Sound` (catálogo §8):
 |---|---|
 | Velocidad, pausa y reinicio con Web Animations y `setRate` | Se adapta: por recurso, en estado de sesión |
 | Línea de tiempo con `getKeyframes()`, miniaturas y desplazamiento manual | Se adapta a React (4.4 conserva `BLINK_TIMELINE` y su test de contrato) |
-| Tamaño, fondos y pixelado | Se adapta con `LabRange`, `LabChoice` y `LabCheck` |
+| Tamaño, fondos y pixelado | Se adapta con `LabRange`, `LabChoice` y `LabCheck`. Aprobado (2026-11-05): tamaño de partida de 192 px, de 64 a 512 px en pasos de 8 px; fondos, los que ya tiene `LabStage` (base, liso y puntos), sin fondos nuevos; pixelado desactivado de partida. Tamaño, fondo y pixelado son de cada recurso; el contenedor (escenario entero, busto apoyado e insignia, con las medidas de producción a 192 px escaladas con el tamaño) y el ancho (completo o 320 px) son comunes a todos |
 | Peso y memoria decodificada | Se adapta: sirve a los objetivos de §7 |
 | Escenarios de las demos (eureka → talking, inactividad limitada al escenario, temporizadores de Web Animations) | Se adapta la idea con el adaptador real |
 | Plantillas de DOM, `localStorage`, recarga por EventSource, servidor propio | Se descarta |

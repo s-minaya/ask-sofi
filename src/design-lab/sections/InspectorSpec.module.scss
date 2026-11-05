@@ -22,12 +22,29 @@
 
 .stageInner {
   display: grid;
+  // Una sola columna que cede: sin esto crece con su contenido y el ancho estrecho no limita nada.
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
 }
 
 // Los efectos de algunos recursos sobresalen de su caja (catálogo §4, 003): nada recorta aquí.
 .sprite {
   max-width: 100%;
+}
+
+// Sin suavizado al escalar: el pixel art se ve con sus píxeles. La propiedad se hereda, así que
+// llega a las capas y pseudoelementos de cualquier recurso sin tocar sus parciales.
+.pixelated {
+  image-rendering: pixelated;
+}
+
+// Recortes representativos (busto apoyado, insignia): Sofi dentro de su recuadro, para comprobar
+// que nada se corta. Con un ancho estrecho el recuadro cede, como en una pantalla angosta.
+.crop {
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  @include u.sticker;
 }
 
 // Pausa todo lo que se pinta: la pieza, sus pseudoelementos y las capas del controlador. Es una

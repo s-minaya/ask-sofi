@@ -3,16 +3,28 @@ import { STILL_HERE_IDLE_MS } from '../components/sofi/useSofiController'
 import { SOFI_REGISTRY } from '../components/sofi/visual/registry'
 import { SOFI_ANIMATION_IDS } from '../components/sofi/visual/types'
 import {
+  BACKGROUND_DEFAULT,
+  BACKGROUND_OPTIONS,
+  CONTAINER_OPTIONS,
   PLAYBACK_NAMES,
   RATE_MAX,
   RATE_MIN,
   RATE_STEP,
   RESOURCE_INFO,
+  SIZE_DEFAULT,
+  SIZE_MAX,
+  SIZE_MIN,
+  SIZE_STEP,
+  WIDTH_OPTIONS,
   availability,
+  containerBox,
   formatRate,
+  formatSize,
   hasSpeedControl,
   isGag,
   provideLabOnlyLoaders,
+  stageBackground,
+  stageMaxWidth,
 } from './spriteInspector'
 
 // Catálogo §3: 001–006 y 008–015; el 007 sigue reservado y no se reasigna.
@@ -121,5 +133,95 @@ describe('recursos solo del Lab', () => {
       (id) => id !== 'eureka' && id !== 'suspicious' && id !== 'sofi-blink',
     ))
       expect(SOFI_REGISTRY[id].load).toBeTypeOf('function')
+  })
+})
+
+describe('tamaño del inspector', () => {
+  it('parte de 192 px y va de 64 a 512 px en pasos de 8 px', () => {
+    expect([SIZE_DEFAULT, SIZE_MIN, SIZE_MAX, SIZE_STEP]).toEqual([
+      192, 64, 512, 8,
+    ])
+    // El valor de partida cae en una marca del control.
+    expect((SIZE_DEFAULT - SIZE_MIN) % SIZE_STEP).toBe(0)
+  })
+
+  it('escribe el tamaño en píxeles', () => {
+    expect(formatSize(192)).toBe('192 px')
+    expect(formatSize(64)).toBe('64 px')
+  })
+})
+
+describe('fondos del escenario', () => {
+  it('son los tres que ya tiene LabStage y se traducen a sus propiedades', () => {
+    expect(BACKGROUND_OPTIONS.map((option) => option.value)).toEqual([
+      'base',
+      'plain',
+      'dots',
+    ])
+    expect(stageBackground('base')).toEqual({ plain: false, dots: false })
+    expect(stageBackground('plain')).toEqual({ plain: true, dots: false })
+    expect(stageBackground('dots')).toEqual({ plain: false, dots: true })
+  })
+
+  it('parte de los puntos, el fondo del Lab para ver a Sofi', () => {
+    expect(BACKGROUND_DEFAULT).toBe('dots')
+  })
+})
+
+describe('contenedores representativos', () => {
+  it('son el escenario entero, el busto apoyado en el borde y la insignia', () => {
+    expect(CONTAINER_OPTIONS.map((option) => option.value)).toEqual([
+      'stage',
+      'box',
+      'badge',
+    ])
+  })
+
+  it('el escenario entero no recorta nada', () => {
+    expect(containerBox('stage', 192)).toBeNull()
+  })
+
+  it('el busto apoyado y la insignia son los recortes aprobados a 192 px', () => {
+    // Pantalla de error (README de dirección artística, decisión 6) y ficha de la insignia.
+    expect(containerBox('box', 192)).toEqual({
+      width: 155,
+      height: 190,
+      offsetX: 20,
+      offsetY: 7,
+      background: 'var(--tone-white)',
+    })
+    expect(containerBox('badge', 192)).toEqual({
+      width: 96,
+      height: 96,
+      offsetX: 50,
+      offsetY: 36,
+      background: 'var(--tone-pink-soft)',
+    })
+  })
+
+  it('el recorte escala con el tamaño del sprite para conservar la composición', () => {
+    expect(containerBox('box', 96)).toMatchObject({
+      width: 78,
+      height: 95,
+      offsetX: 10,
+      offsetY: 4,
+    })
+    expect(containerBox('badge', 384)).toMatchObject({
+      width: 192,
+      height: 192,
+      offsetX: 100,
+      offsetY: 72,
+    })
+  })
+})
+
+describe('ancho del escenario', () => {
+  it('ofrece el completo y el estrecho de móvil que ya usa el Lab (320 px)', () => {
+    expect(WIDTH_OPTIONS.map((option) => option.value)).toEqual([
+      'full',
+      'narrow',
+    ])
+    expect(stageMaxWidth('full')).toBeUndefined()
+    expect(stageMaxWidth('narrow')).toBe('320px')
   })
 })

@@ -27,7 +27,9 @@ import {
 } from '../../components/sofi/visual/types'
 import { readPreferences } from '../../infrastructure/storage/preferencesStorage'
 import { RESOURCE_INFO, availability } from '../spriteInspector'
+import labStyles from '../parts/LabParts.module.scss'
 import { InspectorSpec } from './InspectorSpec'
+import inspectorStyles from './InspectorSpec.module.scss'
 
 // T058: el inspector pinta con el componente real y sus controladores. Aquí se simulan solo los
 // módulos dueños y la decodificación (como en `SofiSprite`) y las Web Animations, que jsdom no
@@ -269,6 +271,225 @@ describe('InspectorSpec · poking conserva su velocidad original', () => {
       expect(compare()).toBeInTheDocument()
     },
   )
+})
+
+const size = () => screen.getByLabelText('Tamaño') as HTMLInputElement
+const pixelated = () => screen.getByLabelText('Pixelado') as HTMLInputElement
+const pick = async (group: string, name: string) => {
+  fireEvent.click(
+    within(screen.getByRole('group', { name: group })).getByRole('button', {
+      name,
+    }),
+  )
+  await flush()
+}
+// El escenario de `LabStage` y su interior, el que fija el ancho máximo.
+const labStage = () => stage().parentElement!.parentElement as HTMLElement
+const stageInner = () => stage().parentElement as HTMLElement
+
+describe('InspectorSpec · tamaño', () => {
+  it('es un control de 64 a 512 px en pasos de 8 px que parte de 192 px', async () => {
+    await open()
+    expect(size()).toHaveAttribute('min', '64')
+    expect(size()).toHaveAttribute('max', '512')
+    expect(size()).toHaveAttribute('step', '8')
+    expect(size().value).toBe('192')
+    expect(
+      screen.getByText('192 px', { selector: 'output' }),
+    ).toBeInTheDocument()
+    expect(stage().style.width).toBe('192px')
+  })
+
+  it('cambia el tamaño del sprite y lo escribe en píxeles', async () => {
+    await open('sofing')
+    fireEvent.change(size(), { target: { value: '320' } })
+
+    expect(stage().style.width).toBe('320px')
+    expect(
+      screen.getByText('320 px', { selector: 'output' }),
+    ).toBeInTheDocument()
+  })
+
+  it('conserva el tamaño de cada recurso al cambiar de uno a otro', async () => {
+    await open('sofing')
+    fireEvent.change(size(), { target: { value: '320' } })
+    await choose('rolling')
+    expect(size().value).toBe('192')
+    fireEvent.change(size(), { target: { value: '96' } })
+
+    await choose('sofing')
+    expect(size().value).toBe('320')
+    expect(stage().style.width).toBe('320px')
+    await choose('rolling')
+    expect(size().value).toBe('96')
+  })
+})
+
+describe('InspectorSpec · fondo', () => {
+  it('ofrece los tres fondos de LabStage y parte de los puntos', async () => {
+    await open()
+    const group = within(screen.getByRole('group', { name: 'Fondo' }))
+    expect(
+      group.getAllByRole('button').map((button) => button.textContent),
+    ).toEqual(['Base', 'Liso', 'Puntos'])
+    expect(labStage()).toHaveClass(labStyles.stageDots)
+    expect(labStage()).not.toHaveClass(labStyles.stagePlain)
+  })
+
+  it('cambia el fondo del escenario', async () => {
+    await open()
+    await pick('Fondo', 'Liso')
+    expect(labStage()).toHaveClass(labStyles.stagePlain)
+    expect(labStage()).not.toHaveClass(labStyles.stageDots)
+
+    await pick('Fondo', 'Base')
+    expect(labStage()).not.toHaveClass(labStyles.stagePlain)
+    expect(labStage()).not.toHaveClass(labStyles.stageDots)
+  })
+
+  it('conserva el fondo de cada recurso al cambiar de uno a otro', async () => {
+    await open('sofing')
+    await pick('Fondo', 'Liso')
+    await choose('rolling')
+    expect(labStage()).toHaveClass(labStyles.stageDots)
+
+    await choose('sofing')
+    expect(labStage()).toHaveClass(labStyles.stagePlain)
+  })
+})
+
+describe('InspectorSpec · pixelado', () => {
+  it('parte desactivado', async () => {
+    await open()
+    expect(pixelated()).not.toBeChecked()
+    expect(stage()).not.toHaveClass(inspectorStyles.pixelated)
+  })
+
+  it('se activa y se desactiva sobre lo que se pinta', async () => {
+    await open('sofing')
+    fireEvent.click(pixelated())
+    expect(stage()).toHaveClass(inspectorStyles.pixelated)
+
+    fireEvent.click(pixelated())
+    expect(stage()).not.toHaveClass(inspectorStyles.pixelated)
+  })
+
+  it('conserva el ajuste de cada recurso al cambiar de uno a otro', async () => {
+    await open('sofing')
+    fireEvent.click(pixelated())
+    await choose('rolling')
+    expect(pixelated()).not.toBeChecked()
+
+    await choose('sofing')
+    expect(pixelated()).toBeChecked()
+    expect(stage()).toHaveClass(inspectorStyles.pixelated)
+  })
+
+  it('se mantiene al reiniciar y al lanzar un evento nuevo', async () => {
+    await open('sofing')
+    fireEvent.click(pixelated())
+    await press('Reiniciar')
+    await press('Nuevo evento')
+    expect(stage()).toHaveClass(inspectorStyles.pixelated)
+  })
+})
+
+describe('InspectorSpec · contenedores y ancho', () => {
+  it('parte del escenario entero: el sprite va suelto, sin recorte', async () => {
+    await open('sofing')
+    expect(
+      within(screen.getByRole('group', { name: 'Contenedor' }))
+        .getAllByRole('button')
+        .map((button) => button.textContent),
+    ).toEqual(['Escenario entero', 'Busto apoyado', 'Insignia'])
+    expect(painted()).toHaveClass(sofiSpriteStyles.root)
+  })
+
+  it.each([
+    ['Busto apoyado', '155px', '190px', '-20px', '-7px'],
+    ['Insignia', '96px', '96px', '-50px', '-36px'],
+  ])(
+    '%s recorta como en producción a 192 px',
+    async (name, width, height, left, top) => {
+      await open('sofing')
+      await pick('Contenedor', name)
+
+      const crop = stage().firstElementChild as HTMLElement
+      expect(crop.style.width).toBe(width)
+      expect(crop.style.height).toBe(height)
+      const placed = crop.firstElementChild as HTMLElement
+      expect(placed.style.marginLeft).toBe(left)
+      expect(placed.style.marginTop).toBe(top)
+      expect(placed.style.width).toBe('192px')
+      expect(placed.firstElementChild).toHaveClass(sofiSpriteStyles.root)
+    },
+  )
+
+  it('el recorte escala con el tamaño del sprite', async () => {
+    await open('sofing')
+    await pick('Contenedor', 'Busto apoyado')
+    fireEvent.change(size(), { target: { value: '96' } })
+
+    const crop = stage().firstElementChild as HTMLElement
+    expect(crop.style.width).toBe('78px')
+    expect(crop.style.height).toBe('95px')
+    expect((crop.firstElementChild as HTMLElement).style.width).toBe('96px')
+  })
+
+  it('un gag también va dentro del recorte y conserva su controlador', async () => {
+    await open('i-see-you')
+    await pick('Contenedor', 'Insignia')
+
+    const host = stage().querySelector('[data-i-see-you]')
+    expect(host).not.toBeNull()
+    expect(stage().firstElementChild).toContainElement(host as HTMLElement)
+  })
+
+  it('el contenedor se conserva al cambiar de recurso, para compararlos en el mismo marco', async () => {
+    await open('sofing')
+    await pick('Contenedor', 'Insignia')
+    await choose('rolling')
+
+    expect((stage().firstElementChild as HTMLElement).style.width).toBe('96px')
+  })
+
+  it('el ancho estrecho limita el escenario a 320 px, y el completo no', async () => {
+    await open()
+    expect(stageInner().style.maxWidth).toBe('')
+
+    await pick('Ancho', 'Estrecho · 320')
+    expect(stageInner().style.maxWidth).toBe('320px')
+
+    await pick('Ancho', 'Completo')
+    expect(stageInner().style.maxWidth).toBe('')
+  })
+})
+
+describe('InspectorSpec · poking con los ajustes de T059', () => {
+  it('sigue sin velocidad ni comparar, pero sí tiene tamaño, fondo y pixelado', async () => {
+    await open('poking')
+
+    expect(screen.queryByLabelText('Velocidad')).toBeNull()
+    expect(size()).toBeInTheDocument()
+    expect(pixelated()).toBeInTheDocument()
+    expect(screen.getByRole('group', { name: 'Fondo' })).toBeInTheDocument()
+  })
+
+  it('los ajustes de aspecto no escriben ninguna velocidad de sesión', async () => {
+    await open()
+    const changed = vi.fn()
+    const unsubscribe = subscribeToRates(changed)
+    await choose('poking')
+    const afterChoosing = changed.mock.calls.length
+
+    fireEvent.change(size(), { target: { value: '256' } })
+    fireEvent.click(pixelated())
+    await pick('Fondo', 'Liso')
+    await pick('Contenedor', 'Insignia')
+
+    expect(changed.mock.calls.length).toBe(afterChoosing)
+    unsubscribe()
+  })
 })
 
 describe('InspectorSpec · comparar con 1×', () => {

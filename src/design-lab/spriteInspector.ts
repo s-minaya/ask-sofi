@@ -136,3 +136,99 @@ export function provideLabOnlyLoaders(): void {
   SOFI_REGISTRY.eureka.load ??= () => Promise.resolve(eureka)
   SOFI_REGISTRY.suspicious.load ??= () => Promise.resolve(suspicious)
 }
+
+// Tamaño del sprite en el escenario (decisión aprobada): el valor de partida es una marca del
+// control y un tamaño de las pantallas de producción (README de dirección artística, §8).
+export const SIZE_DEFAULT = 192
+export const SIZE_MIN = 64
+export const SIZE_MAX = 512
+export const SIZE_STEP = 8
+
+export function formatSize(size: number): string {
+  return `${size} px`
+}
+
+// Fondos del escenario: los tres que ya tiene `LabStage` (el suyo, liso y de puntos). No se
+// crean fondos nuevos.
+export type StageBackground = 'base' | 'plain' | 'dots'
+
+export const BACKGROUND_DEFAULT: StageBackground = 'dots'
+
+export const BACKGROUND_OPTIONS = [
+  { value: 'base', label: 'Base' },
+  { value: 'plain', label: 'Liso' },
+  { value: 'dots', label: 'Puntos' },
+] as const satisfies ReadonlyArray<{ value: StageBackground; label: string }>
+
+export function stageBackground(background: StageBackground): {
+  plain: boolean
+  dots: boolean
+} {
+  return { plain: background === 'plain', dots: background === 'dots' }
+}
+
+// Contenedores representativos (catálogo §8): el escenario entero y los dos recortes ya
+// aprobados con el busto apoyado en el borde. Las medidas son las de producción a 192 px.
+export type Container = 'stage' | 'box' | 'badge'
+
+export const CONTAINER_OPTIONS = [
+  { value: 'stage', label: 'Escenario entero' },
+  { value: 'box', label: 'Busto apoyado' },
+  { value: 'badge', label: 'Insignia' },
+] as const satisfies ReadonlyArray<{ value: Container; label: string }>
+
+export type ContainerBox = {
+  width: number
+  height: number
+  offsetX: number
+  offsetY: number
+  background: string
+}
+
+// Recuadro de la pantalla de error (decisión 6) e insignia de la consulta (ficha 3.1).
+const CROPS_AT_192: Record<Exclude<Container, 'stage'>, ContainerBox> = {
+  box: {
+    width: 155,
+    height: 190,
+    offsetX: 20,
+    offsetY: 7,
+    background: 'var(--tone-white)',
+  },
+  badge: {
+    width: 96,
+    height: 96,
+    offsetX: 50,
+    offsetY: 36,
+    background: 'var(--tone-pink-soft)',
+  },
+}
+
+// Con otro tamaño el recorte escala con el sprite: así se ve la misma composición y se comprueba
+// que nada se corta al ampliarla o reducirla.
+export function containerBox(
+  container: Container,
+  size: number,
+): ContainerBox | null {
+  if (container === 'stage') return null
+  const crop = CROPS_AT_192[container]
+  const scale = size / SIZE_DEFAULT
+  return {
+    width: Math.round(crop.width * scale),
+    height: Math.round(crop.height * scale),
+    offsetX: Math.round(crop.offsetX * scale),
+    offsetY: Math.round(crop.offsetY * scale),
+    background: crop.background,
+  }
+}
+
+// Layouts ancho y estrecho: el escenario completo o el ancho del móvil estrecho del Lab.
+export type StageWidth = 'full' | 'narrow'
+
+export const WIDTH_OPTIONS = [
+  { value: 'full', label: 'Completo' },
+  { value: 'narrow', label: 'Estrecho · 320' },
+] as const satisfies ReadonlyArray<{ value: StageWidth; label: string }>
+
+export function stageMaxWidth(width: StageWidth): string | undefined {
+  return width === 'narrow' ? '320px' : undefined
+}

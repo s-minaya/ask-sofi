@@ -38,16 +38,31 @@ import {
   LabSub,
 } from '../parts/LabParts'
 import {
+  BACKGROUND_DEFAULT,
+  BACKGROUND_OPTIONS,
+  CONTAINER_OPTIONS,
   PLAYBACK_NAMES,
   RATE_MAX,
   RATE_MIN,
   RATE_STEP,
   RESOURCE_INFO,
+  SIZE_DEFAULT,
+  SIZE_MAX,
+  SIZE_MIN,
+  SIZE_STEP,
+  WIDTH_OPTIONS,
   availability,
+  containerBox,
   formatRate,
+  formatSize,
   hasSpeedControl,
   isGag,
   provideLabOnlyLoaders,
+  stageBackground,
+  stageMaxWidth,
+  type Container,
+  type StageBackground,
+  type StageWidth,
 } from '../spriteInspector'
 import styles from './InspectorSpec.module.scss'
 
@@ -57,9 +72,6 @@ import styles from './InspectorSpec.module.scss'
 
 provideLabOnlyLoaders()
 
-// El tamaño y el fondo de partida son provisionales; sus controles llegan con T059.
-type StageBackground = 'dots'
-const STAGE_SIZE = 240
 const reducer = inspectorReducer<StageBackground>
 type Dispatch = (action: InspectorAction<StageBackground>) => void
 
@@ -76,17 +88,21 @@ const CYCLE_OPTIONS = [
 export function InspectorSpec() {
   const [state, dispatch] = useReducer(reducer, undefined, () =>
     createInspectorState<StageBackground>({
-      size: STAGE_SIZE,
-      background: 'dots',
+      size: SIZE_DEFAULT,
+      background: BACKGROUND_DEFAULT,
     }),
   )
+  // El marco en el que se mira (recorte y ancho) es común a todos los recursos: así se comparan
+  // en el mismo contenedor. Tamaño, fondo y pixelado, en cambio, son de cada uno.
+  const [container, setContainer] = useState<Container>('stage')
+  const [width, setWidth] = useState<StageWidth>('full')
 
   return (
     <LabSpec
       id="m-inspector"
       kicker="4.5 · Inspector"
       title="Recursos de Sofi"
-      desc="Elige uno de los 14 recursos y pruébalo con el componente real: cada uno guarda su velocidad mientras dure el Lab (salvo poking, que conserva la original). Puedes pausarlo, reiniciarlo, compararlo con 1×, verlo en bucle o en una sola pasada, lanzarle un evento nuevo o cancelarlo a mitad."
+      desc="Elige uno de los 14 recursos y pruébalo con el componente real: cada uno guarda su velocidad mientras dure el Lab (salvo poking, que conserva la original). Puedes pausarlo, reiniciarlo, compararlo con 1×, verlo en bucle o en una sola pasada, lanzarle un evento nuevo o cancelarlo a mitad. También ajustas su tamaño, su fondo, el pixelado y el contenedor en el que se ve."
       codes={
         <>
           <LabCode>{'<SofiSprite animation>'}</LabCode>
@@ -109,6 +125,10 @@ export function InspectorSpec() {
           id={state.selected}
           entry={state.entries[state.selected]}
           dispatch={dispatch}
+          container={container}
+          onContainer={setContainer}
+          width={width}
+          onWidth={setWidth}
         />
       </div>
     </LabSpec>
@@ -119,9 +139,21 @@ type ResourceInspectorProps = {
   id: SofiAnimationId
   entry: InspectorEntry<StageBackground>
   dispatch: Dispatch
+  container: Container
+  onContainer: (container: Container) => void
+  width: StageWidth
+  onWidth: (width: StageWidth) => void
 }
 
-function ResourceInspector({ id, entry, dispatch }: ResourceInspectorProps) {
+function ResourceInspector({
+  id,
+  entry,
+  dispatch,
+  container,
+  onContainer,
+  width,
+  onWidth,
+}: ResourceInspectorProps) {
   const playback = SOFI_REGISTRY[id].playback
   const [run, runDispatch] = useReducer(
     inspectorRunReducer,
@@ -132,6 +164,7 @@ function ResourceInspector({ id, entry, dispatch }: ResourceInspectorProps) {
   const rate = effectiveRate(entry.rate, run)
   const frozen = entry.paused || run.held
   const info = RESOURCE_INFO[id]
+  const box = containerBox(container, entry.size)
 
   // La velocidad llega a `SofiSprite` y al controlador por `visual/rates`, la misma vía que usará
   // producción. Solo se sobrescribe el recurso que se mira y se deja limpio al irse.
@@ -141,28 +174,57 @@ function ResourceInspector({ id, entry, dispatch }: ResourceInspectorProps) {
     return clearSessionRates
   }, [id, rate, adjustable])
 
+  const sprite =
+    isGag(id) && !run.cancelled ? (
+      <GagHost key={run.token} kind={id} frozen={frozen} />
+    ) : (
+      <SofiSprite
+        key={run.token}
+        animation={run.cancelled ? 'sofi-blink' : id}
+        style={{ width: '100%' }}
+        onFirstCycle={() => runDispatch({ type: 'first-cycle' })}
+        onEnd={() => runDispatch({ type: 'end' })}
+      />
+    )
+
   return (
     <div className={styles.layout}>
       <LabStage
-        dots
+        {...stageBackground(entry.background)}
+        maxWidth={stageMaxWidth(width)}
         className={styles.stage}
         innerClassName={styles.stageInner}
       >
         <div
-          className={cx(styles.sprite, frozen && styles.frozen)}
+          className={cx(
+            styles.sprite,
+            frozen && styles.frozen,
+            entry.pixelated && styles.pixelated,
+          )}
           data-frozen={frozen}
-          style={{ width: entry.size }}
+          style={box ? undefined : { width: entry.size }}
         >
-          {isGag(id) && !run.cancelled ? (
-            <GagHost key={run.token} kind={id} frozen={frozen} />
+          {box ? (
+            <div
+              className={styles.crop}
+              style={{
+                width: box.width,
+                height: box.height,
+                background: box.background,
+              }}
+            >
+              <div
+                style={{
+                  width: entry.size,
+                  marginLeft: -box.offsetX,
+                  marginTop: -box.offsetY,
+                }}
+              >
+                {sprite}
+              </div>
+            </div>
           ) : (
-            <SofiSprite
-              key={run.token}
-              animation={run.cancelled ? 'sofi-blink' : id}
-              style={{ width: '100%' }}
-              onFirstCycle={() => runDispatch({ type: 'first-cycle' })}
-              onEnd={() => runDispatch({ type: 'end' })}
-            />
+            sprite
           )}
         </div>
       </LabStage>
@@ -260,7 +322,44 @@ function ResourceInspector({ id, entry, dispatch }: ResourceInspectorProps) {
             Cancelar a mitad
           </Button>
         </LabRow>
-        <LabNote>Tamaño y fondo de partida, provisionales.</LabNote>
+
+        <hr className={styles.sep} />
+
+        <LabRange
+          label="Tamaño"
+          value={entry.size}
+          min={SIZE_MIN}
+          max={SIZE_MAX}
+          step={SIZE_STEP}
+          display={formatSize(entry.size)}
+          onChange={(value) => dispatch({ type: 'size', value })}
+        />
+        <LabChoice
+          stacked
+          label="Fondo"
+          options={BACKGROUND_OPTIONS}
+          value={entry.background}
+          onChange={(value) => dispatch({ type: 'background', value })}
+        />
+        <LabCheck
+          label="Pixelado"
+          checked={entry.pixelated}
+          onChange={(value) => dispatch({ type: 'pixelated', value })}
+        />
+        <LabChoice
+          stacked
+          label="Contenedor"
+          options={CONTAINER_OPTIONS}
+          value={container}
+          onChange={onContainer}
+        />
+        <LabChoice
+          stacked
+          label="Ancho"
+          options={WIDTH_OPTIONS}
+          value={width}
+          onChange={onWidth}
+        />
       </div>
     </div>
   )

@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -33,6 +33,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T054 — cierre del bloque A | Formato, lint, tipos, build y `verify:bundle` sin errores; Vitest completo 100 archivos y 1 813 pruebas; CSS de entrada igual que en §11 (9 871 B). Playwright en los tres motores: la CI (nº 26 y nº 27), no en local. De los 27 criterios de la spec, **7 verificados, 14 parciales y 6 pendientes** de otros bloques; ninguna casilla de la spec se marca. Recursos reverificados (61 de 61 archivos y 13 de 13 ZIP) | §15 |
 | T055–T057 — playground y estado de sesión del inspector (B1) | Playground leído en `17aca4f` sin modificarlo, con las 6 filas de plan §8 contrastadas: 9 divergencias y una coincidencia (el pixelado) registradas. Ninguna contradice el plan: varias dejan decisiones a T058–T061 y T064. `createInspectorState` e `inspectorReducer` guardan la velocidad, la pausa, el tamaño, el fondo y el pixelado de cada recurso, y se conservan al cambiar de recurso, sin tocar preferencias públicas, `PRODUCTION_RATES` ni `rateFor`. 8 pruebas nuevas (RED: 3 fallan y 5 pasan) y 9 mutaciones detectadas. Sin conectar a ningún componente (T058) | §16 |
 | T058 — inspector de los 14 recursos (B1) | Selector y ficha, reproducir, pausar, reiniciar, velocidad con `LabRange`, comparar con 1×, bucle o pasada, evento nuevo y cancelación, con `PENDING_IN_LAB` retirado. `poking` conserva 1× (excepción aprobada, spec §8). Corrige `useSofiController`: las capas CSS de `are-u-still-here` e `i-see-you` ya siguen la velocidad (medido en Chromium; VT3 sigue pasando). 565 pruebas en `design-lab` y `sofi`, axe 0 en 32 estados, e2e 57 de 57. Firefox y WebKit: T074 | §17 |
+| T059 — tamaño, fondos, pixelado y contenedores (B1) | Tamaño de 64 a 512 px en pasos de 8 px (192 px de partida), los tres fondos de `LabStage`, pixelado desactivado de partida y conservado por recurso; contenedores escenario entero, busto apoyado e insignia con los recortes aprobados escalados, y ancho completo o de 320 px. 593 pruebas en `design-lab` y `sofi`, axe 0 en 10 estados, e2e de accesibilidad 42 de 42. Hallazgo sin decidir: el recuadro del busto recorta elementos de varios recursos (§18.4) | §18 |
 
 ---
 
@@ -1423,3 +1424,66 @@ Sin errores en la consola. La sincronía de los controladores con su temporizado
 - **1× frente a la velocidad de producción:** el inspector parte de 1× y escribe una sobrescritura de 1×. Si con AV3 alguna velocidad de producción deja de ser 1×, hay que decidir si parte de 1× o de ella (T082).
 - **Primer instante de una capa nueva:** el `MutationObserver` corre antes de pintar, pero no se ha medido a nivel de fotograma si una capa llega a pintarse un fotograma a 1×. No se ha observado ningún salto.
 - **Siguiente tarea:** T059. No se ha aprobado ningún `AV#` ni se han tocado T087–T088.
+
+---
+
+## 18. B1 — Tamaño, fondos, pixelado y contenedores (T059)
+
+Fecha: 2026-11-05. Antes de empezar: `main` en `bc53011` (T058) con su CI en éxito (nº 30). Decisiones aprobadas y registradas en plan §8: tamaño de partida de 192 px, rango de 64 a 512 px en pasos de 8 px, y los fondos que ya tiene `LabStage` (sin fondos nuevos ni revisión de contraste).
+
+### 18.1 Qué se entrega
+
+- **Controles nuevos del inspector** (`InspectorSpec.tsx`, `spriteInspector.ts`): `LabRange` «Tamaño» (192 px de partida), `LabChoice` «Fondo» (Base, Liso y Puntos, los tres de `LabStage`; parte de Puntos, como en T058), `LabCheck` «Pixelado» (desactivado de partida), `LabChoice` «Contenedor» y `LabChoice` «Ancho». Usan el estado de T056–T057: tamaño, fondo y pixelado se conservan por recurso.
+- **Pixelado:** `image-rendering: pixelated` en el contenedor del recurso. La propiedad se hereda, así que alcanza a las capas y a los pseudoelementos sin tocar los parciales.
+- **Contenedores** (catálogo §8): el escenario entero (sprite suelto), el **busto apoyado** (155 × 190 px a 192 px, desplazamiento 20/7, fondo blanco; la pantalla de error, decisión 6 del README de dirección artística) y la **insignia** (96 × 96, desplazamiento 50/36, rosa suave; ficha 3.1 del Lab). Los recortes escalan con el tamaño del sprite para conservar la composición. Valen también para las máquinas. Se eligen una vez para todos los recursos, para compararlos en el mismo marco.
+- **Ancho:** completo o 320 px (el móvil estrecho que ya usa la Preview). Para que limite de verdad, `.stageInner` pasa a una columna `minmax(0, 1fr)`; sin ella crecía con su contenido y el ancho estrecho no limitaba nada (visto en la captura de 512 px, corregido).
+- **Retirado:** la nota «Tamaño y fondo de partida, provisionales» y el 240 px provisional de T058.
+- **Excepción de `poking`:** sin cambios. Sigue sin velocidad ni «comparar»; sí tiene los ajustes de aspecto, que no escriben ninguna velocidad de sesión.
+- No se tocan producción, los parciales ni los spritesheets.
+
+### 18.2 Pruebas
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `spriteInspector.test.ts` (tamaño, fondos, contenedores y ancho) | 9 de 9 nuevas fallaban | 19 de 19 |
+| `InspectorSpec.test.tsx` (tamaño, fondo, pixelado, contenedores, ancho y `poking`) | 19 de 19 nuevas fallaban; las otras 58 pasaban | 77 de 77 |
+| `npx vitest run src/design-lab src/components/sofi` | — | **28 archivos, 593 pruebas** (antes, 565) |
+| `npx tsc -b`, `npx eslint src/design-lab`, `npx prettier --check src spec/features/008-sofi-character` | — | Sin errores |
+| `npx playwright test e2e/a11y.spec.ts` (Chromium) | — | 42 de 42 |
+
+**Sensibilidad** (10 mutaciones, todas detectadas; archivos restaurados): sin clase de pixelado (3 fallan), pixelado siempre activo (2), el fondo no llega a `LabStage` (2), el tamaño no llega al sprite (2), el recorte ignora el tamaño (1), sin desplazamiento (2), ancho estrecho ignorado (1), recorte sin escalar (2), tamaño de partida de 240 px (8) y rango hasta 1024 px (2). La prueba de «parte desactivado» cubre el pixelado de partida. No hay prueba de la corrección del `scss` (jsdom no calcula el layout): la cubre la medición de §18.3.
+
+### 18.3 Navegador real (Chromium)
+
+| Comprobación | Resultado |
+|---|---|
+| Pixelado | De partida, `image-rendering: auto` en el contenedor, el sprite y su `::before`. Activo: `pixelated` en los tres, en claro y en oscuro |
+| Tamaño | 64, 192 y 512 px dan cajas de 64, 192 y 512 px. Teclado: las flechas avanzan de 8 en 8 (192 → 208), `End` llega a 512 y `Home` a 64 |
+| Ancho estrecho | El interior mide 320 px. A 512 px el sprite suelto se reduce a 320 px; el busto apoyado se recorta a 320 px. A 192 px y completo, el busto mide 155 px |
+| Desbordamiento a 390 y 320 px, con 512 px y los tres contenedores | Ninguno (`scrollWidth` igual al ancho de la ventana) |
+| axe, en claro y en oscuro: 192 px, busto, insignia, favoriting con pixelado, liso y 320 px, y estrecho con 512 px y busto | 0 violaciones en las 10 comprobaciones. Sin errores de consola |
+
+Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shots59\`: `light-` y `dark-` más `box-<recurso>.png` e `badge-<recurso>.png` de los 14, `inspector-pixelado-liso-320.png`, `inspector-estrecho-512-busto.png`, `light-narrow-512-box-fixed.png`, y las hojas `sheet-box.png` y `sheet-badge.png`.
+
+### 18.4 Lo que enseña el recuadro del busto apoyado (hallazgo, sin decidir)
+
+A 192 px, en el recuadro de 155 × 190 px, la composición de varios recursos queda recortada por los bordes: el sello de `favoriting` queda fuera, y el portátil de `sofing`, la pose invertida de `rolling` y los bordes de `uncertain` y `memory-wipe` (manos y destellos) se ven parcialmente. Es lo que pide comprobar el catálogo («que brazos, estrellas, sellos o saltos no se corten»), pero qué recurso se admite en qué contenedor es una decisión visual que no se toma aquí. Queda a la vista para el `AV#` correspondiente.
+
+### 18.5 Criterios de T059
+
+| Criterio | Estado |
+|---|---|
+| Tamaño (192 px; 64–512 px; pasos de 8 px) | Cumplido, con ajuste individual conservado al cambiar de recurso |
+| Fondos | Los de `LabStage`; conservado por recurso |
+| Pixelado | Desactivado de partida; conservado por recurso |
+| Contenedores: escenario entero, insignia, busto apoyado | Cumplido con los recortes aprobados |
+| Layouts ancho y estrecho | Cumplido: completo y 320 px |
+| Ambos temas | El Lab usa un único tema global: axe y capturas en claro y oscuro. Sin el contorno crema del retrato (no se ha decidido ponerlo en el inspector) |
+| Reutiliza `LabRange`, `LabChoice`, `LabCheck`, `LabStage` y el estado del inspector | Sí |
+
+### 18.6 Límites y pendiente
+
+- Solo Chromium. El resto de motores, en T073–T074.
+- El contenedor y el ancho son del inspector, no de cada recurso: si se prefiere por recurso, es un cambio de estado de T056–T057.
+- El recorte escalado con redondeo a píxel puede diferir 1 px de uno diseñado a mano a otro tamaño: se parte de las medidas de 192 px.
+- **Siguiente tarea:** T060. No se ha aprobado ningún `AV#`.
