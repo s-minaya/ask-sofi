@@ -4,17 +4,23 @@ import {
   type SpeechState,
 } from '../components/sofi/SofiSpeech/speechTimeline'
 import { PRODUCTION_RATES, rateFor } from '../components/sofi/visual/rates'
+import type { Playback } from '../components/sofi/visual/registry'
 import { SOFI_ANIMATION_IDS } from '../components/sofi/visual/types'
 import { readPreferences } from '../infrastructure/storage/preferencesStorage'
 import {
   SPEECH_TEXTS,
+  createInspectorRun,
   createInspectorState,
+  effectiveRate,
   createMotionLabState,
   formatElapsed,
   inspectorReducer,
+  inspectorRunReducer,
   motionLabReducer,
   speechText,
   type InspectorAction,
+  type InspectorRun,
+  type InspectorRunAction,
   type InspectorState,
   type MotionLabAction,
   type MotionLabState,
@@ -315,5 +321,151 @@ describe('inspectorReducer', () => {
     expect(window.sessionStorage.length).toBe(0)
     expect(JSON.stringify(PRODUCTION_RATES)).toBe(production)
     for (const id of SOFI_ANIMATION_IDS) expect(rateFor(id)).toBe(1)
+  })
+})
+
+function drive(
+  playback: Playback,
+  actions: ReadonlyArray<InspectorRunAction>,
+  run: InspectorRun = createInspectorRun(playback),
+) {
+  return actions.reduce(inspectorRunReducer, run)
+}
+
+describe('inspectorRunReducer', () => {
+  it('starts as the resource is in production: its own playback, nothing cancelled, held or compared', () => {
+    expect(createInspectorRun('loop')).toEqual({
+      playback: 'loop',
+      token: 0,
+      cancelled: false,
+      comparing: false,
+      cycle: 'loop',
+      held: false,
+    })
+    expect(createInspectorRun('once').cycle).toBe('once')
+    expect(createInspectorRun('machine').cycle).toBe('loop')
+  })
+
+  it('rebuilds the instance with every new event, also when it is already running', () => {
+    const run = drive('once', [{ type: 'event' }, { type: 'event' }])
+    expect(run.token).toBe(2)
+  })
+
+  it('restarts what is shown from the beginning, keeping what was chosen', () => {
+    const run = drive('loop', [
+      { type: 'cycle', value: 'once' },
+      { type: 'compare', value: true },
+      { type: 'cancel' },
+      { type: 'restart' },
+    ])
+    expect(run.token).toBe(2)
+    expect(run.cancelled).toBe(true)
+    expect(run.comparing).toBe(true)
+    expect(run.cycle).toBe('once')
+  })
+
+  it('lets a single pass held after its first cycle play again when restarted', () => {
+    const held = drive('loop', [
+      { type: 'cycle', value: 'once' },
+      { type: 'first-cycle' },
+    ])
+    expect(held.held).toBe(true)
+    expect(drive('loop', [{ type: 'restart' }], held).held).toBe(false)
+  })
+
+  it('cancels halfway and a new event brings the resource back', () => {
+    const cancelled = drive('once', [{ type: 'cancel' }])
+    expect(cancelled.cancelled).toBe(true)
+    expect(cancelled.token).toBe(0)
+    const back = drive('once', [{ type: 'event' }], cancelled)
+    expect(back.cancelled).toBe(false)
+    expect(back.token).toBe(1)
+  })
+
+  it('compares with the original speed without touching anything else', () => {
+    const run = drive('loop', [{ type: 'compare', value: true }])
+    expect(run).toEqual({ ...createInspectorRun('loop'), comparing: true })
+    expect(
+      drive('loop', [{ type: 'compare', value: false }], run).comparing,
+    ).toBe(false)
+  })
+
+  it('keeps a new event from changing the comparison', () => {
+    const run = drive('loop', [
+      { type: 'compare', value: true },
+      { type: 'event' },
+    ])
+    expect(run.comparing).toBe(true)
+  })
+
+  it('applies the chosen speed, or the original while comparing', () => {
+    const run = createInspectorRun('loop')
+    expect(effectiveRate(0.5, run)).toBe(0.5)
+    expect(effectiveRate(0.5, { ...run, comparing: true })).toBe(1)
+  })
+
+  describe('loop seen as a single pass', () => {
+    it('holds after the first cycle and never again until the next event', () => {
+      const run = drive('loop', [
+        { type: 'cycle', value: 'once' },
+        { type: 'first-cycle' },
+      ])
+      expect(run.held).toBe(true)
+      expect(drive('loop', [{ type: 'event' }], run).held).toBe(false)
+    })
+
+    it('restarts from the beginning when the mode changes', () => {
+      const run = drive('loop', [{ type: 'cycle', value: 'once' }])
+      expect(run.token).toBe(1)
+      expect(run.cycle).toBe('once')
+    })
+
+    it('does not hold a loop that is shown as a loop', () => {
+      expect(drive('loop', [{ type: 'first-cycle' }]).held).toBe(false)
+    })
+
+    it('does not hold a resource that was cancelled', () => {
+      const run = drive('loop', [
+        { type: 'cycle', value: 'once' },
+        { type: 'cancel' },
+        { type: 'first-cycle' },
+      ])
+      expect(run.held).toBe(false)
+    })
+  })
+
+  describe('single pass seen as a loop', () => {
+    it('starts again at the end of every pass', () => {
+      const run = drive('once', [
+        { type: 'cycle', value: 'loop' },
+        { type: 'end' },
+        { type: 'end' },
+      ])
+      expect(run.token).toBe(3)
+    })
+
+    it('stays at the end of its pass when it is shown as a single pass', () => {
+      const run = drive('once', [{ type: 'end' }])
+      expect(run.token).toBe(0)
+      expect(run.held).toBe(false)
+    })
+
+    it('does not start again after being cancelled', () => {
+      const run = drive('once', [
+        { type: 'cycle', value: 'loop' },
+        { type: 'cancel' },
+        { type: 'end' },
+      ])
+      expect(run.token).toBe(1)
+    })
+  })
+
+  it('leaves the cycle of a state machine to its controller', () => {
+    const run = drive('machine', [
+      { type: 'cycle', value: 'once' },
+      { type: 'first-cycle' },
+      { type: 'end' },
+    ])
+    expect(run).toEqual(createInspectorRun('machine'))
   })
 })

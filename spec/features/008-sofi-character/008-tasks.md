@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; T032–T034 (modo efectivo durante `memory-wipe`) también; T035–T038 (`SofiSprite` y `SofiPortrait`) también; T039–T042 y VT3 (habla y controladores) también; T043–T044 (contrato de build y límite de incrustación) también; T045–T046 y VT4 (movimiento en tres motores) también; T047–T050 (contexto de audio compartido) también; T051–T053 (efectos sonoros: controlador y manifiesto de licencias, con D-24 a D-29 aprobadas en plan §11.4) también; T054 (cierre del bloque A) también, así que el bloque A está cerrado; T055–T057 (playground frente a plan §8 y estado de sesión del inspector) también; la siguiente tarea es T058.
+Approved — 2026-10-27. Ningún bloque está abierto. T001, EX1, T002–T008 con VT1 y el bloque A2 (T009–T016 con VT2) están completados; T017–T026 (A3, parte 1) también; T027–T031 (registro, velocidades y estáticas) también; T032–T034 (modo efectivo durante `memory-wipe`) también; T035–T038 (`SofiSprite` y `SofiPortrait`) también; T039–T042 y VT3 (habla y controladores) también; T043–T044 (contrato de build y límite de incrustación) también; T045–T046 y VT4 (movimiento en tres motores) también; T047–T050 (contexto de audio compartido) también; T051–T053 (efectos sonoros: controlador y manifiesto de licencias, con D-24 a D-29 aprobadas en plan §11.4) también; T054 (cierre del bloque A) también, así que el bloque A está cerrado; T055–T057 (playground frente a plan §8 y estado de sesión del inspector) también; T058 (inspector de los 14 recursos, con `poking` a 1× por excepción aprobada) también; la siguiente tarea es T059.
 
 ## Cómo leer este desglose
 
@@ -133,7 +133,7 @@ Depende de A. Se amplía `Motion & Sound` sin crear un segundo laboratorio. Los 
 - [x] **T055** — Antes de cada capacidad del inspector que se adapte, releer la parte correspondiente del playground del repositorio de spritesheets (`playground/`, solo lectura; ese repositorio no se modifica) y contrastarla con la tabla de plan §8. Registrar las divergencias, si las hay, en `008-verification.md` sin presuponer que lo demás sea reutilizable.
 - [x] **T056** — RED del estado de sesión del inspector (`motionLab.ts`): velocidad, pausa, tamaño, fondo y pixelado por recurso, conservados al cambiar de entrada, sin tocar preferencias públicas ni las velocidades de producción.
 - [x] **T057** — GREEN.
-- [ ] **T058** — Inspector de los 14 recursos: selector y ficha (nombre, intención, bucle/pasada/máquina, estado de activación); reproducir, pausar, reiniciar y comparar con 1×; velocidad individual sobre todas las capas y el controlador; bucle frente a pasada única; reinicio por nuevo evento; cancelación a mitad de transición. Reutiliza `LabRange`, `LabChoice`, `LabCheck` y `LabStage`. **Al mostrar `SofiSprite` aquí, retirar su excepción temporal `PENDING_IN_LAB` de `src/design-lab/coverage.test.ts` (la propia prueba lo exige).**
+- [x] **T058** — Inspector de los 14 recursos: selector y ficha (nombre, intención, bucle/pasada/máquina, estado de activación); reproducir, pausar, reiniciar y comparar con 1×; velocidad individual sobre todas las capas y el controlador; bucle frente a pasada única; reinicio por nuevo evento; cancelación a mitad de transición. Reutiliza `LabRange`, `LabChoice`, `LabCheck` y `LabStage`. **Al mostrar `SofiSprite` aquí, retirar su excepción temporal `PENDING_IN_LAB` de `src/design-lab/coverage.test.ts` (la propia prueba lo exige).**
 - [ ] **T059** — Tamaño, fondos y pixelado, y contenedores representativos: escenario entero, insignia, busto apoyado en borde, layouts ancho y estrecho, ambos temas.
 - [ ] **T060** — Línea de tiempo por fotograma con `getKeyframes()`, miniaturas y desplazamiento manual. 4.4 conserva `BLINK_TIMELINE` y su test de contrato.
 - [ ] **T061** — Peso y memoria decodificada por recurso (sirve a EX1–EX4).
@@ -161,7 +161,7 @@ El agente presenta cada propuesta con capturas y ejemplos; no marca ningún `AV#
 
 - [ ] **AV1** — Indicador de actividad: formas de píxel, ritmo de ida y vuelta y copy de las etiquetas (T068).
 - [ ] **AV2** — Duración y límite del primer ciclo (T065). El valor aprobado es el de la feature; su recalibración con latencias reales es trabajo posterior.
-- [ ] **AV3** — Velocidad de producción de cada recurso (T058).
+- [ ] **AV3** — Velocidad de producción de cada recurso, salvo `poking`, que conserva 1× (T058; spec 008 §8).
 - [ ] **AV4** — Poses reducidas, salvo `memory-wipe`, y versión reducida de los gags (T066, T069).
 - [ ] **AV5** — Pausas de `talking` y paso `blink → talking` (T070).
 - [ ] **AV6** — Ubicación de los gags e inactividad definitiva de `are-u-still-here` (T066).

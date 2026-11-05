@@ -75,6 +75,7 @@ Fuentes que no se repiten aquí: significado, disparadores, interrupciones, rete
 ### 8. Velocidad
 
 - La velocidad de producción de cada animación se define en un único lugar de Ask Sofi, como factor sobre la línea de tiempo de su parcial (1× por defecto). Se aplica a la vez a todas sus capas, pseudoelementos y efectos incluidos, y a los tiempos de su controlador. El parcial sigue siendo la única fuente de duraciones: no se copian a JS. No es una preferencia pública (catálogo §8, §12).
+- **Excepción aprobada (2026-11-05): `poking` conserva su velocidad original (1×).** No se experimenta con ella: el inspector no le ofrece control de velocidad ni «comparar con 1×», y AV3 no la fija. Los otros 13 recursos sí. Esta es la única fuente de la excepción; el catálogo §8 solo la remite aquí.
 
 ### 9. Sonido
 

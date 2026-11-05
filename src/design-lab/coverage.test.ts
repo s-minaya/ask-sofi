@@ -21,11 +21,9 @@ const COVERED_BY_PARENT: Record<string, string> = {
 }
 
 // Excepciones temporales: componentes que aún NO se ven en el Lab. No los cubre ningún otro
-// componente; la deuda se salda al mostrarlos. SofiSprite: inspector de recursos (T058 de
-// 008-tasks.md). Al mostrarlo, la última prueba obliga a retirar la excepción.
-const PENDING_IN_LAB: Record<string, string> = {
-  SofiSprite: 'T058',
-}
+// componente; la deuda se salda al mostrarlos y la última prueba obliga a retirar la excepción.
+// Vacía desde que el inspector de recursos (T058) muestra SofiSprite.
+const PENDING_IN_LAB: Record<string, string> = {}
 
 const mentionedInLab = (name: string) =>
   new RegExp(`\\b${name}\\b`).test(

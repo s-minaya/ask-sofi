@@ -42,3 +42,11 @@ export function clearSessionRates(): void {
   session.clear()
   listeners.forEach((listener) => listener())
 }
+
+// Velocidad común sobre el subárbol, pseudoelementos incluidos (E5). jsdom no implementa Web
+// Animations: sin ellas no hay velocidad que aplicar.
+export function applyRate(element: Element, rate: number): void {
+  for (const animation of element.getAnimations?.({ subtree: true }) ?? []) {
+    if (animation.playbackRate !== rate) animation.playbackRate = rate
+  }
+}

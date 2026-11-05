@@ -3,6 +3,7 @@ import {
   type SpeechState,
   type SpeechTiming,
 } from '../components/sofi/SofiSpeech/speechTimeline'
+import type { Playback } from '../components/sofi/visual/registry'
 import {
   SOFI_ANIMATION_IDS,
   type SofiAnimationId,
@@ -320,4 +321,87 @@ export function inspectorReducer<Background extends string>(
     case 'pixelated':
       return updateSelected(state, { pixelated: action.value })
   }
+}
+
+// Lo transitorio de la instancia que se está mirando (catálogo §8): nuevo evento, cancelación,
+// comparación con 1× y bucle frente a una pasada. Se pierde al cambiar de recurso, a
+// diferencia de los ajustes del inspector, que se conservan.
+
+export type InspectorCycle = 'loop' | 'once'
+
+export type InspectorRun = {
+  // Reproducción funcional del recurso en el registro. Una máquina la dirige su controlador.
+  playback: Playback
+  // Cambia con cada evento nuevo: quien pinta rehace la instancia y empieza desde el principio.
+  token: number
+  // Interrumpido a mitad: Sofi cede a `sofi-blink` hasta el siguiente evento.
+  cancelled: boolean
+  // Comparación temporal con la velocidad original; no sustituye a la elegida.
+  comparing: boolean
+  // Lo que se pide ver; parte del propio del recurso.
+  cycle: InspectorCycle
+  // Un bucle visto como pasada única ya dio su primera vuelta y se queda quieto.
+  held: boolean
+}
+
+export type InspectorRunAction =
+  | { type: 'event' }
+  | { type: 'restart' }
+  | { type: 'cancel' }
+  | { type: 'compare'; value: boolean }
+  | { type: 'cycle'; value: InspectorCycle }
+  | { type: 'first-cycle' }
+  | { type: 'end' }
+
+export function createInspectorRun(playback: Playback): InspectorRun {
+  return {
+    playback,
+    token: 0,
+    cancelled: false,
+    comparing: false,
+    cycle: playback === 'once' ? 'once' : 'loop',
+    held: false,
+  }
+}
+
+export function inspectorRunReducer(
+  run: InspectorRun,
+  action: InspectorRunAction,
+): InspectorRun {
+  switch (action.type) {
+    case 'event':
+      return { ...run, token: run.token + 1, cancelled: false, held: false }
+    case 'restart':
+      // Lo que se ve empieza otra vez, con lo elegido intacto: sigue cancelado si lo estaba.
+      return { ...run, token: run.token + 1, held: false }
+    case 'cancel':
+      return { ...run, cancelled: true, held: false }
+    case 'compare':
+      return { ...run, comparing: action.value }
+    case 'cycle':
+      // Una máquina no tiene bucle ni pasada: la dirige su controlador.
+      if (run.playback === 'machine') return run
+      return {
+        ...run,
+        cycle: action.value,
+        token: run.token + 1,
+        cancelled: false,
+        held: false,
+      }
+    case 'first-cycle':
+      // Solo un bucle visto como pasada única se queda quieto tras su primera vuelta.
+      return !run.cancelled && run.playback === 'loop' && run.cycle === 'once'
+        ? { ...run, held: true }
+        : run
+    case 'end':
+      // Solo una pasada vista como bucle vuelve a empezar al terminar.
+      return !run.cancelled && run.playback === 'once' && run.cycle === 'loop'
+        ? { ...run, token: run.token + 1 }
+        : run
+  }
+}
+
+// La velocidad que se aplica: la elegida, o la original mientras se compara.
+export function effectiveRate(rate: number, run: InspectorRun): number {
+  return run.comparing ? 1 : rate
 }

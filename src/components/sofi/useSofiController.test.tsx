@@ -535,3 +535,178 @@ describe('useSofiController · un solo gag activo', () => {
     expect(probe.snapshot().frames).toBe(0)
   })
 })
+
+// Velocidad de las capas CSS: `setRate` del controlador solo mueve sus temporizadores. Las
+// animaciones CSS que crea el controlador (otra capa, otro estado) nacen a 1× y deben seguir
+// la velocidad del recurso, como pide la spec §8 («todas sus capas y los tiempos de su
+// controlador»). jsdom no tiene Web Animations: se simulan con un registro de escrituras.
+describe('useSofiController · velocidad de las capas CSS', () => {
+  class FakeAnimation {
+    rate = 1
+    writes = 0
+    get playbackRate() {
+      return this.rate
+    }
+    set playbackRate(value: number) {
+      this.rate = value
+      this.writes++
+    }
+  }
+  let animations: FakeAnimation[]
+  const born = () => {
+    const animation = new FakeAnimation()
+    animations.push(animation)
+    return animation
+  }
+  // Una animación CSS nueva en una capa: el navegador avisa con `animationstart`, que sube.
+  const startAnimation = (host: HTMLElement) => {
+    born()
+    const layer = host.firstElementChild ?? host
+    act(() => {
+      layer.dispatchEvent(new Event('animationstart', { bubbles: true }))
+    })
+  }
+
+  beforeEach(() => {
+    animations = []
+    Object.defineProperty(Element.prototype, 'getAnimations', {
+      configurable: true,
+      value: () => animations,
+    })
+  })
+  afterEach(() => {
+    delete (Element.prototype as { getAnimations?: unknown }).getAnimations
+  })
+
+  describe.each([STILL_HERE, I_SEE_YOU])('$kind', (spec) => {
+    it('las capas que nacen después de montar siguen la velocidad de sesión', async () => {
+      setSessionRate(spec.kind, 2)
+      render(<Scene spec={spec} ambient={ambient} />)
+      await flush()
+
+      startAnimation(hostOf())
+      startAnimation(hostOf())
+
+      // También las que ya existían: la velocidad es común a todas.
+      expect(animations.map((animation) => animation.rate)).toEqual([2, 2])
+    })
+
+    it('un cambio de velocidad en vivo llega a las capas que ya corren, sin esperar a un evento', async () => {
+      render(<Scene spec={spec} ambient={ambient} />)
+      await flush()
+      startAnimation(hostOf())
+      expect(animations[0].rate).toBe(1)
+
+      act(() => setSessionRate(spec.kind, 0.5))
+      expect(animations[0].rate).toBe(0.5)
+
+      // Y la capa que nace después también.
+      startAnimation(hostOf())
+      expect(animations.map((animation) => animation.rate)).toEqual([0.5, 0.5])
+    })
+
+    // Una capa con retardo (los Zzz de are-u-still-here) no avisa con `animationstart` hasta
+    // que vence: sin esto nacería a 1× y avanzaría así todo su retardo.
+    it('las capas nacen ya a la velocidad común, al cambiar de estado o de capas, sin esperar a animationstart', async () => {
+      setSessionRate(spec.kind, 4)
+      render(<Scene spec={spec} ambient={ambient} />)
+      await flush()
+
+      born()
+      await act(async () => {
+        hostOf().setAttribute('data-state-change', 'x')
+        await Promise.resolve()
+      })
+      expect(animations[0].rate).toBe(4)
+
+      born()
+      await act(async () => {
+        hostOf().append(document.createElement('span'))
+        await Promise.resolve()
+      })
+      expect(animations.map((animation) => animation.rate)).toEqual([4, 4])
+    })
+
+    it('desmontar, o cambiar de velocidad, desconecta el observador de capas', async () => {
+      const observe = vi.spyOn(MutationObserver.prototype, 'observe')
+      const disconnect = vi.spyOn(MutationObserver.prototype, 'disconnect')
+      setSessionRate(spec.kind, 2)
+      const { unmount } = render(<Scene spec={spec} ambient={ambient} />)
+      await flush()
+      act(() => setSessionRate(spec.kind, 3))
+      act(() => setSessionRate(spec.kind, 1))
+      const observedByAdapter = observe.mock.calls.filter(
+        ([target]) => target === hostOf(),
+      ).length
+      expect(observedByAdapter).toBeGreaterThan(0)
+      unmount()
+
+      expect(disconnect.mock.calls.length).toBeGreaterThanOrEqual(
+        observe.mock.calls.length,
+      )
+      observe.mockRestore()
+      disconnect.mockRestore()
+    })
+
+    it('al volver a 1× las capas vuelven a su velocidad original', async () => {
+      setSessionRate(spec.kind, 3)
+      render(<Scene spec={spec} ambient={ambient} />)
+      await flush()
+      startAnimation(hostOf())
+      expect(animations[0].rate).toBe(3)
+
+      act(() => setSessionRate(spec.kind, 1))
+      expect(animations[0].rate).toBe(1)
+      // Ya a 1×, lo que nace no se toca.
+      startAnimation(hostOf())
+      expect(animations[1].writes).toBe(0)
+    })
+
+    it('desmontar, con la velocidad cambiada, no deja ni una escucha (VT3)', async () => {
+      const { rerender, unmount } = render(
+        <Scene spec={spec} ambient={ambient} calm={false} />,
+      )
+      await flush()
+      const baseline = probe.snapshot()
+
+      setSessionRate(spec.kind, 2)
+      rerender(<Scene spec={spec} ambient={ambient} />)
+      await flush()
+      act(() => setSessionRate(spec.kind, 4))
+      act(() => setSessionRate(spec.kind, 0.5))
+      expect(probe.snapshot()).not.toEqual(baseline)
+
+      unmount()
+      expect(probe.snapshot()).toEqual(baseline)
+    })
+
+    it('tras desmontar ya no toca ninguna animación', async () => {
+      setSessionRate(spec.kind, 2)
+      const { unmount } = render(<Scene spec={spec} ambient={ambient} />)
+      await flush()
+      const host = hostOf()
+      unmount()
+
+      startAnimation(host)
+      act(() => setSessionRate(spec.kind, 4))
+      expect(animations.every((animation) => animation.writes === 0)).toBe(true)
+    })
+  })
+
+  it('poking a su velocidad original no toca ninguna animación, ni al nacer ni al cambiar de estado', async () => {
+    render(<Scene spec={POKING} ambient={ambient} />)
+    await flush()
+
+    startAnimation(hostOf())
+    startAnimation(hostOf())
+    act(() => {
+      fireEvent.pointerDown(hostOf())
+    })
+    startAnimation(hostOf())
+
+    expect(animations.length).toBe(3)
+    expect(animations.every((animation) => animation.writes === 0)).toBe(true)
+    // Sin velocidad distinta de 1× no hay ni una escucha de más.
+    expect(probe.snapshot().listeners.join()).not.toContain('animationstart')
+  })
+})

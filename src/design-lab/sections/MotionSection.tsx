@@ -44,6 +44,7 @@ import {
   LabStage,
 } from '../parts/LabParts'
 import { createSimulatedAudio } from '../simulatedAudio'
+import { InspectorSpec } from './InspectorSpec'
 import styles from './MotionSection.module.scss'
 
 type Dispatch = (action: MotionLabAction) => void
@@ -673,6 +674,7 @@ export function MotionSection() {
           { href: '#m-sound', num: '4.2', label: 'Controlador de sonido' },
           { href: '#m-sync', num: '4.3', label: 'Sincronía con sprites' },
           { href: '#m-blink', num: '4.4', label: 'Parpadeo' },
+          { href: '#m-inspector', num: '4.5', label: 'Recursos' },
         ]}
         aside={
           <Burst
@@ -698,6 +700,7 @@ export function MotionSection() {
         <SyncSpec speech={lab.speech} />
       </SoundProvider>
       <BlinkSpec />
+      <InspectorSpec />
     </>
   )
 }

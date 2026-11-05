@@ -8,7 +8,7 @@ import {
 import { useReducedMotion } from '../../hooks/useReducedMotion'
 import { loadedClassOf, loadSprite } from './SofiSprite/loadSprite'
 import type { Ambient, GagId } from './visual/ambient'
-import { rateFor, subscribeToRates } from './visual/rates'
+import { applyRate, rateFor, subscribeToRates } from './visual/rates'
 
 // Adaptador de los controladores de los gags (plan 008 §6): `poking`, `are-u-still-here` e
 // `i-see-you`. Monta el controlador del ZIP tal cual, sin modificarlo, y lo destruye en la
@@ -141,6 +141,32 @@ export function useSofiController(
   useEffect(() => {
     controller.current?.setRate(rate)
   }, [rate])
+
+  // `setRate` solo mueve los temporizadores del controlador. Las animaciones CSS de sus capas
+  // nacen a 1× con cada estado, así que se les aplica la velocidad al cambiarla, cuando el
+  // controlador cambia de estado o de capas (así nacen ya a la velocidad común, también las que
+  // tienen retardo y no avisan hasta que vence, como los Zzz) y en cada `animationstart` (como
+  // `SofiSprite`, E5). A 1× no se toca nada: la velocidad original de un gag, como la de
+  // `poking`, queda tal cual la dejan sus parciales.
+  const touched = useRef(false)
+  useEffect(() => {
+    if (!host || !enabled || !className) return
+    if (rate === 1) {
+      if (touched.current) applyRate(host, 1)
+      touched.current = false
+      return
+    }
+    touched.current = true
+    const apply = () => applyRate(host, rate)
+    apply()
+    const layers = new MutationObserver(apply)
+    layers.observe(host, { attributes: true, childList: true, subtree: true })
+    host.addEventListener('animationstart', apply)
+    return () => {
+      layers.disconnect()
+      host.removeEventListener('animationstart', apply)
+    }
+  }, [host, enabled, className, rate])
 
   return enabled ? className : undefined
 }

@@ -1,0 +1,60 @@
+@use 'utilities' as u;
+
+.inspector {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.layout {
+  display: grid;
+  gap: 1.75rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 2.5rem;
+    align-items: start;
+  }
+}
+
+.stage {
+  padding: 2rem clamp(1rem, 3vw, 2.5rem) 2.25rem;
+}
+
+.stageInner {
+  display: grid;
+  justify-items: center;
+}
+
+// Los efectos de algunos recursos sobresalen de su caja (catálogo §4, 003): nada recorta aquí.
+.sprite {
+  max-width: 100%;
+}
+
+// Pausa todo lo que se pinta: la pieza, sus pseudoelementos y las capas del controlador. Es una
+// declaración de estilo, así que alcanza también a lo que nazca después (otra iteración, una capa
+// nueva) sin volver a recorrer las animaciones.
+.frozen,
+.frozen *,
+.frozen *::before,
+.frozen *::after {
+  animation-play-state: paused !important;
+}
+
+.panel {
+  display: grid;
+  gap: 1.375rem;
+  align-content: start;
+  padding: 1.5rem clamp(1rem, 2vw, 1.75rem) 1.75rem;
+  border: var(--stroke-structure) solid var(--color-border);
+}
+
+.ficha {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.sep {
+  margin: 0;
+  border: 0;
+  border-top: var(--stroke-detail) solid var(--color-rule-soft);
+}

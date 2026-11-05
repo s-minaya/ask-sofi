@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -32,6 +32,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T051–T053 — efectos sonoros: controlador y licencias (A5) | `createEffectsAudio` con contexto siempre prestado, un efecto a la vez, sin tapar la voz, en silencio en seguridad, salida rápida y estados sensibles, `memory-wipe` solo tras el borrado efectivo y sin condicionar nunca la aplicación; el proveedor libera efectos y voz antes de cerrar el contexto. Manifiesto de licencias vacío y su contrato. 68 pruebas nuevas (34 + 2 + 32) con cada RED visto fallar y 19 mutaciones detectadas; las 14 suites dependientes (205 pruebas) pasan. Decisiones D-24 a D-29 aprobadas (plan §11.4). Sin sonidos elegidos ni audio real | §14 |
 | T054 — cierre del bloque A | Formato, lint, tipos, build y `verify:bundle` sin errores; Vitest completo 100 archivos y 1 813 pruebas; CSS de entrada igual que en §11 (9 871 B). Playwright en los tres motores: la CI (nº 26 y nº 27), no en local. De los 27 criterios de la spec, **7 verificados, 14 parciales y 6 pendientes** de otros bloques; ninguna casilla de la spec se marca. Recursos reverificados (61 de 61 archivos y 13 de 13 ZIP) | §15 |
 | T055–T057 — playground y estado de sesión del inspector (B1) | Playground leído en `17aca4f` sin modificarlo, con las 6 filas de plan §8 contrastadas: 9 divergencias y una coincidencia (el pixelado) registradas. Ninguna contradice el plan: varias dejan decisiones a T058–T061 y T064. `createInspectorState` e `inspectorReducer` guardan la velocidad, la pausa, el tamaño, el fondo y el pixelado de cada recurso, y se conservan al cambiar de recurso, sin tocar preferencias públicas, `PRODUCTION_RATES` ni `rateFor`. 8 pruebas nuevas (RED: 3 fallan y 5 pasan) y 9 mutaciones detectadas. Sin conectar a ningún componente (T058) | §16 |
+| T058 — inspector de los 14 recursos (B1) | Selector y ficha, reproducir, pausar, reiniciar, velocidad con `LabRange`, comparar con 1×, bucle o pasada, evento nuevo y cancelación, con `PENDING_IN_LAB` retirado. `poking` conserva 1× (excepción aprobada, spec §8). Corrige `useSofiController`: las capas CSS de `are-u-still-here` e `i-see-you` ya siguen la velocidad (medido en Chromium; VT3 sigue pasando). 565 pruebas en `design-lab` y `sofi`, axe 0 en 32 estados, e2e 57 de 57. Firefox y WebKit: T074 | §17 |
 
 ---
 
@@ -1340,3 +1341,85 @@ No se ejecutaron la suite completa de Vitest, Playwright ni `build`, porque no c
 - **Valores de partida y opciones (T059):** el tamaño, el fondo y sus opciones se eligen en T059. El estado no fija ninguno.
 - **1× frente a la velocidad de producción:** el catálogo §8 pide empezar en 1×, y hoy las dos cosas coinciden porque `PRODUCTION_RATES` está vacío. Si con AV3 alguna velocidad de producción deja de ser 1×, habrá que decidir si el inspector parte de 1× o de esa velocidad. No se decide aquí.
 - **Sesión:** el estado vive en el `useReducer` de quien lo monte, así que se pierde al recargar, igual que la sobrescritura de `visual/rates`.
+
+---
+
+## 17. B1 — Inspector de los 14 recursos (T058)
+
+Fecha: 2026-11-05. Antes de empezar: `main` en `eef8c9d` (T055–T057) con su CI en éxito (nº 29). Se corrigió una decisión durante la tarea (§17.2): `poking` conserva su velocidad original y no se experimenta con ella.
+
+### 17.1 Qué se entrega
+
+- **Inspector** (`Motion & Sound`, sección 4.5, `InspectorSpec.tsx`): selector de los 14 recursos y ficha (número, intención, tipo —bucle, una pasada o máquina—, activación, disponibilidad y estado); pausar y reproducir, reiniciar, velocidad de 0,25× a 4× en pasos de 0,25× con `LabRange`, «Comparar con 1×» (temporal, conserva la velocidad elegida), «Ver como» bucle o una pasada, «Nuevo evento» y «Cancelar a mitad». Reutiliza `LabRange`, `LabChoice`, `LabCheck`, `LabStage` y el estado de sesión de T056–T057 (`motionLab.ts`). Los datos de la ficha y las reglas puras viven en `spriteInspector.ts`; el estado transitorio (evento, cancelación, comparar, ciclo), en `inspectorRunReducer`.
+- **`PENDING_IN_LAB`** de `coverage.test.ts` queda vacío (la propia prueba lo exigía al mostrar `SofiSprite`).
+- **Cargadores solo del Lab:** `eureka` y `suspicious` no tienen cargador de producción (E12). `provideLabOnlyLoaders()` se los añade en el Lab con `??=`, sin tocar `loadSprite` ni el registro. El Lab no existe en la build pública (`import.meta.env.DEV`).
+- **Reiniciar:** rehace la instancia (`key`), conservando pausa y velocidad. Un primer diseño que rebobinaba con Web Animations no servía: una pasada única terminada desaparece de `getAnimations()`.
+
+### 17.2 Excepción aprobada: `poking` a 1× y sincronía de las capas CSS
+
+- **Decisión de la autora (2026-11-05):** `poking` conserva su velocidad original. No tiene control de velocidad ni «comparar con 1×» en el inspector y no escribe ninguna velocidad de sesión. Los otros 13 recursos conservan ambos. La regla está en la spec §8 (fuente única) y el catálogo §8 la remite; AV3 la cita en `008-tasks.md`.
+- **Incidencia previa (medida en Chromium):** `useSofiController` solo llamaba a `controller.setRate`, que mueve los temporizadores. Las animaciones CSS de las capas que crea el controlador nacían a 1×: con la sesión a 2×, `poking-huff` iba a 1×. Ocurría igual en `are-u-still-here` e `i-see-you`. La spec §8 pide la velocidad sobre «todas sus capas y los tiempos de su controlador».
+- **Corrección** (`useSofiController.ts`, plan §5.5): con una velocidad distinta de 1×, el adaptador reaplica `applyRate` (movida de `SofiSprite` a `visual/rates`, sin cambios de comportamiento) al anfitrión al cambiar la velocidad, en un `MutationObserver` del anfitrión (atributos, hijos y subárbol) y en `animationstart`. La medición mostró que `animationstart` no basta: las capas con retardo (los `Zzz` de `are-u-still-here`, 600/1100/1600 ms) no avisan hasta que vence, y nacían y avanzaban a 1× ese tiempo. A 1× no escucha ni toca nada, y al volver a 1× restituye lo tocado. Los controladores y los spritesheets no se han modificado (`git diff -- src/styles/sprites` vacío).
+
+### 17.3 Pruebas
+
+Según `tech-stack.md` §42.7: archivos afectados durante RED y GREEN y, al cerrar, las suites de `src/design-lab` y `src/components/sofi`.
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `inspectorRunReducer` y `effectiveRate` (`motionLab.test.ts`) | Vistas fallar antes del código | 38 de 38 |
+| `spriteInspector` (ficha, velocidad, cargadores del Lab, `hasSpeedControl`) | Las de ficha, velocidad y cargadores, antes del código. **`hasSpeedControl` se escribió antes que su prueba**: su detección consta por la mutación M6 | 10 de 10 |
+| Adaptador, capas CSS (`useSofiController.test.tsx`, 15 nuevas) | 6 de las 11 primeras fallaban antes del código (las 5 restantes, la de `poking` y las de limpieza, pasaban en vacío: son guardas). Las 4 del observador fallaban antes de añadirlo (las de «nacen ya a la velocidad común» y «desconecta el observador», en los dos gags) | 50 de 50. **VT3 sigue pasando**: las pruebas de limpieza previas, más una con la velocidad cambiada: la sonda vuelve a la línea base |
+| `InspectorSpec.test.tsx` | La de `poking` sin controles fallaba antes del cambio; las demás se escribieron junto al componente. Para «Reiniciar» se cambiaron prueba y código a la vez (RED solo del reductor): lo cubren C6 y R1–R3 | 58 de 58 (43 de antes más 15 de `poking`) |
+| `npx vitest run src/design-lab src/components/sofi` | — | **28 archivos, 565 pruebas, todas pasan** (antes de esta corrección, 534) |
+
+**Sensibilidad.** Del inspector: 13 mutaciones, 12 detectadas a la primera y una reforzada (C4a: un evento nuevo no rehacía una máquina). De la corrección, sobre `useSofiController.ts`: sin escucha de `animationstart` (6 fallan), sin aplicar al cambiar la velocidad (2), sin restituir a 1× (2), sin quitar la escucha (6), sin observar (4), sin desconectar el observador (2), observando solo atributos (2) y escuchando también a 1× (1: protege a `poking`). Sobre el inspector (M6–M8): `poking` con control de velocidad (3 fallan), escribiendo la sesión (1) y mostrando siempre los controles (2). Archivos restaurados byte a byte.
+
+### 17.4 Navegador real (Chromium)
+
+Método: Playwright contra el servidor de desarrollo, leyendo `getAnimations({ subtree: true })` cada 50 ms y registrando, por estado, la velocidad de cada capa. Una capa con más de 150 ms de vida a una velocidad distinta de la común se cuenta como fallo. Los guiones están fuera del repositorio (carpeta de trabajo de la sesión).
+
+| Recurso | Antes de la corrección | Después |
+|---|---|---|
+| `are-u-still-here` a 4× (`idle`, `drowsy`, `nodding`, `asleep`) | Todas las capas a 1× | Todas a 4×, ninguna fuera de velocidad (los `Zzz` con retardo, también) |
+| `i-see-you` a 2× (mirada en 4 sentidos) | Todas a 1× | Todas a 2× |
+| `i-see-you` a 2×, pillada (`caught`, `smirk`, `tease`, `giggle`) | No medido | `caught`, `tease` y `giggle` a 2×; `smirk` no tiene capas CSS |
+| `i-see-you` a 3×, comparar con 1×, 0,5× y evento nuevo | — | 3× → 1× al comparar → 3× al dejarlo → 0,5×, que se conserva tras «Nuevo evento» |
+| `poking` (sin control de velocidad ni de comparar; `curious`, `skeptical`, `stop`, `offended`, `hide`) | Todas a 1× | Todas a 1×, con las mismas capas por estado (`hop/pop/bob`, `flinch`, `jolt/pop/throb`, `huff`, `duck/hide-rise/grab`): comportamiento original |
+| Los otros 13 recursos a 2×, comparar, 0,25× y pausa | — | 2× → 1× → 0,25× → en pausa, en los 13 (11 CSS, `memory-wipe` y los gags) |
+| «Una pasada» sobre `talking` | — | Corre 6 433 ms y se queda quieta («Primera pasada completada») |
+
+Sin errores en la consola. La sincronía de los controladores con su temporizador (a 10× el `drowsy` a los 15 s; a 0,5× se duplica lo que falta) ya constaba en §10.3 y sigue pasando.
+
+### 17.5 Accesibilidad, responsive y build
+
+| Comprobación | Resultado |
+|---|---|
+| axe sobre el inspector en 32 estados (14 recursos, comparar con pausa y cancelado; claro y oscuro) | 0 violaciones, 23 reglas pasan |
+| Teclado | El rango avanza de 0,25 en 0,25 con las flechas, `Home` y `End` llegan a los extremos y la tabulación sigue el orden visual (comprobado antes de la excepción; en `poking` desaparecen dos controles y el resto no cambia) |
+| Desbordamiento horizontal | Ninguno a 390 y a 320 px (comprobado antes de la excepción) |
+| `npx playwright test e2e/a11y.spec.ts e2e/production-build.spec.ts` (Chromium) | **57 de 57**. Incluye el contrato de E12: ni `eureka` ni `suspicious` llegan a la build. CSS de entrada 49 424 B, `gzipSync` 9 871 B (igual que en §11) |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check src spec/features/008-sofi-character` | Sin errores |
+| `src/styles/sprites/`, repositorio de spritesheets, preferencias públicas, `PRODUCTION_RATES` | Sin cambios |
+
+### 17.6 Criterios de T058
+
+| Criterio | Estado |
+|---|---|
+| Selector y ficha de los 14 | Cumplido |
+| Reproducir, pausar, reiniciar y comparar con 1× | Cumplido. «Comparar» es temporal y conserva la velocidad |
+| Velocidad individual sobre todas las capas y el controlador | Cumplido para 13. `poking`, a 1× por decisión de la autora |
+| Bucle frente a pasada única, reinicio por evento nuevo y cancelación | Cumplido (jsdom y Chromium) |
+| `LabRange`, `LabChoice`, `LabCheck` y `LabStage` | Reutilizados |
+| `PENDING_IN_LAB` retirado | Cumplido |
+| Accesibilidad de los controles | axe, teclado y 320 px, arriba |
+
+### 17.7 Límites y pendiente
+
+- **Firefox y WebKit:** el inspector y la corrección solo se han medido en Chromium. La velocidad y el ciclo en los tres motores van en T074; la limpieza del adaptador, en T073–T076.
+- **Disparar las máquinas** (pinchazo, inactividad, mirada) en escena queda para T064 y T066; el inspector las prueba con el puntero y esperando.
+- **Datos de la ficha:** son un resumen del catálogo §3 que vive en el Lab (el tipo, la disponibilidad y los 150 s se leen del registro y del adaptador). Duplican texto, no reglas.
+- **Tamaño y fondo:** 240 px y puntos fijos, provisionales; sus controles son de T059. El inspector no hace nada especial con movimiento reducido (T062).
+- **1× frente a la velocidad de producción:** el inspector parte de 1× y escribe una sobrescritura de 1×. Si con AV3 alguna velocidad de producción deja de ser 1×, hay que decidir si parte de 1× o de ella (T082).
+- **Primer instante de una capa nueva:** el `MutationObserver` corre antes de pintar, pero no se ha medido a nivel de fotograma si una capa llega a pintarse un fotograma a 1×. No se ha observado ningún salto.
+- **Siguiente tarea:** T059. No se ha aprobado ningún `AV#` ni se han tocado T087–T088.

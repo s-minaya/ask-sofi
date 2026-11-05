@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { cx } from '../../../utils/cx'
 import { className as blinkClass } from '../sprites/sofi-blink'
-import { rateFor, subscribeToRates } from '../visual/rates'
+import { applyRate, rateFor, subscribeToRates } from '../visual/rates'
 import { SOFI_REGISTRY } from '../visual/registry'
 import type { SofiAnimationId } from '../visual/types'
 import { loadedClassOf, loadSprite } from './loadSprite'
@@ -112,12 +112,4 @@ function Sprite({
       style={style}
     />
   )
-}
-
-// Velocidad común sobre el subárbol, pseudoelementos incluidos (E5). jsdom no implementa Web
-// Animations: sin ellas no hay velocidad que aplicar.
-function applyRate(element: Element, rate: number) {
-  for (const animation of element.getAnimations?.({ subtree: true }) ?? []) {
-    if (animation.playbackRate !== rate) animation.playbackRate = rate
-  }
 }

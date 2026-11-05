@@ -365,7 +365,7 @@ Excepción acotada al principio §2.3, solo para `sofing` durante un análisis:
 El inspector de cada entrada debe permitir:
 
 - Elegir una de las **14 animaciones**, ver el nombre, intención, si es bucle/una pasada/máquina y su estado de activación.
-- **Velocidad personalizada e independiente por spritesheet**, partiendo de `1×` (timing original); controles de pausar, reproducir, reiniciar y comparar con la velocidad original. La velocidad individual elegida debe mantenerse al cambiar entre entradas durante la sesión del laboratorio.
+- **Velocidad personalizada e independiente por spritesheet**, partiendo de `1×` (timing original), salvo `poking`, que conserva 1× (excepción en la spec 008 §8); controles de pausar, reproducir, reiniciar y comparar con la velocidad original. La velocidad individual elegida debe mantenerse al cambiar entre entradas durante la sesión del laboratorio.
 - Acelerar/ralentizar **todas las capas y efectos sincronizados**, no solo el cuerpo principal: sombras, sellos, partículas, pseudoelementos, líneas, `Zzz` y animaciones gestionadas con JS cuando corresponda.
 - Probar bucle frente a pasada única, reinicio por nuevo evento y cancelación durante una transición.
 - Simular eventos reales: `speaking`/pausa/«Ver todo», petición pendiente/completada, falta de contexto, respuesta incierta, favorito guardado, toque secuencial, puntero, inactividad/despertar, confirmación de borrado y salida rápida.
