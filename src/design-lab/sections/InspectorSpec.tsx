@@ -64,7 +64,9 @@ import {
   type StageBackground,
   type StageWidth,
 } from '../spriteInspector'
+import { keepResourceTimings } from '../spriteWeight'
 import { FrameTimeline } from './FrameTimeline'
+import { ResourceWeight } from './ResourceWeight'
 import styles from './InspectorSpec.module.scss'
 
 // Inspector de los 14 recursos (catálogo §8, T058): cada uno se pinta con `SofiSprite` o, si es
@@ -72,6 +74,9 @@ import styles from './InspectorSpec.module.scss'
 // alteran las preferencias públicas ni las velocidades de producción.
 
 provideLabOnlyLoaders()
+// Sin esto el búfer de recursos del navegador (250) se llena con los módulos del Lab y la ficha de
+// peso no encuentra las tiras que se miran después.
+keepResourceTimings()
 
 const reducer = inspectorReducer<StageBackground>
 type Dispatch = (action: InspectorAction<StageBackground>) => void
@@ -240,6 +245,7 @@ function ResourceInspector({
           onRestart={() => runDispatch({ type: 'restart' })}
           machine={isGag(id) && !run.cancelled}
         />
+        <ResourceWeight id={id} />
       </div>
 
       <div className={styles.panel}>

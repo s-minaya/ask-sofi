@@ -26,7 +26,7 @@ import {
   type SofiAnimationId,
 } from '../../components/sofi/visual/types'
 import { readPreferences } from '../../infrastructure/storage/preferencesStorage'
-import { RESOURCE_INFO, availability } from '../spriteInspector'
+import { RESOURCE_INFO, availability, stripsOf } from '../spriteInspector'
 import labStyles from '../parts/LabParts.module.scss'
 import { InspectorSpec } from './InspectorSpec'
 import inspectorStyles from './InspectorSpec.module.scss'
@@ -631,6 +631,47 @@ describe('InspectorSpec · línea de tiempo', () => {
     await tick()
 
     expect(timelineRegion().queryByRole('slider')).toBeNull()
+  })
+})
+
+describe('InspectorSpec · peso y memoria', () => {
+  it('al cargarse amplía el búfer de recursos del navegador, que el Lab llena', async () => {
+    const original = performance.setResourceTimingBufferSize
+    const set = vi.fn()
+    performance.setResourceTimingBufferSize = set
+    vi.resetModules()
+    await import('./InspectorSpec')
+    performance.setResourceTimingBufferSize = original
+    expect(set).toHaveBeenCalled()
+  })
+
+  const weight = () =>
+    within(screen.getByRole('region', { name: 'Peso y memoria' }))
+  const tiras = (count: number) => `${count} ${count === 1 ? 'tira' : 'tiras'}`
+
+  it('cada recurso tiene su ficha de peso, con las tiras de su módulo', async () => {
+    await open('sofing')
+    const sofing = Object.keys(await stripsOf('sofing')).length
+    expect(weight().getByText(tiras(sofing))).toBeInTheDocument()
+
+    await choose('rolling')
+    const rolling = Object.keys(await stripsOf('rolling')).length
+    expect(weight().getByText(tiras(rolling))).toBeInTheDocument()
+  })
+
+  it.each(['poking', 'eureka', 'sofi-blink'] as const)(
+    'las máquinas, los recursos solo del Lab y el estático también la tienen: %s',
+    async (id) => {
+      await open(id)
+      expect(weight().getByText('Memoria decodificada')).toBeInTheDocument()
+    },
+  )
+
+  it('sin mediciones del navegador (jsdom) lo dice y no inventa cifras', async () => {
+    await open('sofing')
+    expect(
+      weight().getAllByText('— · sin medir', { selector: 'dd' }),
+    ).toHaveLength(3)
   })
 })
 

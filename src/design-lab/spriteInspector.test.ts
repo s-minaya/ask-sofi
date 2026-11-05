@@ -25,6 +25,7 @@ import {
   provideLabOnlyLoaders,
   stageBackground,
   stageMaxWidth,
+  stripsOf,
 } from './spriteInspector'
 
 // Catálogo §3: 001–006 y 008–015; el 007 sigue reservado y no se reasigna.
@@ -223,5 +224,31 @@ describe('ancho del escenario', () => {
     ])
     expect(stageMaxWidth('full')).toBeUndefined()
     expect(stageMaxWidth('narrow')).toBe('320px')
+  })
+})
+
+describe('tiras de cada recurso', () => {
+  beforeAll(() => {
+    provideLabOnlyLoaders()
+  })
+
+  it.each(SOFI_ANIMATION_IDS)(
+    '%s: sus tiras son las de su módulo dueño',
+    async (id) => {
+      const strips = await stripsOf(id)
+      const paths = Object.keys(strips)
+
+      expect(paths.length).toBeGreaterThan(0)
+      for (const path of paths) {
+        expect(path).toMatch(new RegExp(`/sprites/${id}(-[^/]+)?\\.webp$`))
+        expect(strips[path]).toBeTruthy()
+      }
+    },
+  )
+
+  it('para medirlas no se carga ningún módulo que no estuviera ya', async () => {
+    // El estático viaja en la entrada: no pasa por ningún cargador.
+    expect(SOFI_REGISTRY['sofi-blink'].load).toBeUndefined()
+    expect(Object.keys(await stripsOf('sofi-blink'))).not.toHaveLength(0)
   })
 })

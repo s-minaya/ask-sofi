@@ -1,3 +1,4 @@
+import * as blink from '../components/sofi/sprites/sofi-blink'
 import * as eureka from '../components/sofi/sprites/eureka'
 import * as suspicious from '../components/sofi/sprites/suspicious'
 import { STILL_HERE_IDLE_MS } from '../components/sofi/useSofiController'
@@ -231,4 +232,14 @@ export const WIDTH_OPTIONS = [
 
 export function stageMaxWidth(width: StageWidth): string | undefined {
   return width === 'narrow' ? '320px' : undefined
+}
+
+// Las tiras de un recurso: las de su módulo dueño. Para medirlas no se carga nada que no se
+// hubiera cargado ya al pintarlo: `sofi-blink` viaja en la entrada y el resto pasa por el
+// cargador que el registro (o el Lab) ya tiene.
+export async function stripsOf(
+  id: SofiAnimationId,
+): Promise<Readonly<Record<string, string>>> {
+  if (id === 'sofi-blink') return blink.strips
+  return (await SOFI_REGISTRY[id].load?.())?.strips ?? {}
 }

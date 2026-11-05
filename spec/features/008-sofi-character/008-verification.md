@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -35,6 +35,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T058 — inspector de los 14 recursos (B1) | Selector y ficha, reproducir, pausar, reiniciar, velocidad con `LabRange`, comparar con 1×, bucle o pasada, evento nuevo y cancelación, con `PENDING_IN_LAB` retirado. `poking` conserva 1× (excepción aprobada, spec §8). Corrige `useSofiController`: las capas CSS de `are-u-still-here` e `i-see-you` ya siguen la velocidad (medido en Chromium; VT3 sigue pasando). 565 pruebas en `design-lab` y `sofi`, axe 0 en 32 estados, e2e 57 de 57. Firefox y WebKit: T074 | §17 |
 | T059 — tamaño, fondos, pixelado y contenedores (B1) | Tamaño de 64 a 512 px en pasos de 8 px (192 px de partida), los tres fondos de `LabStage`, pixelado desactivado de partida y conservado por recurso; contenedores escenario entero, busto apoyado e insignia con los recortes aprobados escalados, y ancho completo o de 320 px. 593 pruebas en `design-lab` y `sofi`, axe 0 en 10 estados, e2e de accesibilidad 42 de 42. Hallazgo sin decidir: el recuadro del busto recorta elementos de varios recursos (§18.4) | §18 |
 | T060 — línea de tiempo por fotograma (B1) | Derivada de `getKeyframes()` de la animación real de la tira, sin duraciones ni fotogramas propios: tramos a escala con el lenguaje de 4.4, miniaturas y desplazamiento manual (puntero, miniatura y teclado), también sobre una pasada ya terminada. Fidelidad en Chromium: 660 de 660 frente al fotograma pintado, y los tramos suman el ciclo en los 11 recursos CSS. Las máquinas no admiten una línea fiel: nota, sin alternativa. 641 pruebas, axe 0. Una incidencia corregida (pasada terminada) | §19 |
+| T061 — peso y memoria decodificada (B1) | Por recurso y por tira: bytes del archivo (medidos con Resource Timing, idénticos al disco en los 14: 830,2 KB, la cifra de E3), memoria estimada (ancho × alto × 4, declarada como estimación) y transferencia de red, que **no se puede medir en el Lab** porque el service worker de MSW atiende las peticiones (no se presenta como caché ni como cero). Sin servidor, dependencias ni mediciones duplicadas; una duplicación de la máscara de `memory-wipe` hallada y corregida (16 peticiones, ninguna repetida). 712 pruebas, axe 0 | §20 |
 
 ---
 
@@ -1573,3 +1574,87 @@ Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shot
 | Accesibilidad en navegador | axe 0, teclado y 320 px |
 
 **Siguiente tarea:** T061. No se ha aprobado ningún `AV#`.
+
+---
+
+## 20. B1 — Peso y memoria decodificada (T061)
+
+Fecha: 2026-11-05. Antes de empezar: `main` en `e8dec13` (T060), con la CI nº 32 en éxito en su segundo intento (el primero se canceló al agotar los 20 minutos en «Install Playwright browsers», sin relación con el código); árbol de trabajo limpio salvo los 13 ZIP.
+
+### 20.1 Playground, otra vez en modo lectura (T055)
+
+`playground.js` del repositorio de spritesheets, en `17aca4f` y sin modificarlo:
+
+| En el playground | En el inspector |
+|---|---|
+| **Bytes:** suma de `assets[].bytes`, que sale de un servidor propio (`fs.statSync` de cada archivo) | Sin servidor: los bytes de cada tira son los que el navegador registra al cargarla (Resource Timing, `decodedBodySize`) |
+| **Memoria:** `ancho × alto × 4` tras `Image.decode()` de todas las imágenes | Igual, y presentada como estimación (no cuenta mipmaps, copia en la GPU ni formato interno) |
+| Una sola cifra de «descarga», que es el tamaño del archivo | Se separan los **bytes del archivo** y la **transferencia de red**: no son lo mismo |
+| Totales de toda la página | Por recurso y por tira |
+| Decodifica todas las imágenes de la lista, se hayan pedido o no | Solo las que el navegador ya cargó: pedir una tira para medirla cambiaría la estrategia de carga |
+
+### 20.2 Qué se entrega
+
+- **`spriteWeight.ts`** (lógica pura): `readTiming`, `decodedMemory`, `formatBytes`, `summarize`, `measureStrips`, `keepResourceTimings` y el entorno real del navegador (`browserEnvironment`). Lo que no se sabe es `null`, nunca un cero.
+- **`ResourceWeight.tsx`** («Peso y memoria»), bajo la línea de tiempo: tiras, bytes del archivo (medido), transferencia de red, memoria decodificada (estimación `ancho × alto × 4`) y una fila por tira con su tamaño. Se mide después de la carga que ya existe (`loadSprite`) y se vuelve a medir sola si una tira acaba de cargar más tarde (`PerformanceObserver`); deja de vigilar al completarse, al cambiar de recurso y al salir.
+- **`stripsOf(id)`** (`spriteInspector.ts`): las tiras del módulo dueño, sin cargar nada que no estuviera cargado.
+- No se añaden servidor, dependencias ni mediciones duplicadas; producción, `src/styles/` y los spritesheets, sin cambios. 4.4 y su `BLINK_TIMELINE`, tampoco.
+
+### 20.3 Tres hallazgos de la medición en navegador (corregidos)
+
+1. **La transferencia de red no se puede medir en el Lab.** MSW registra un service worker en desarrollo que atiende **todas** las peticiones: el navegador informa de `transferSize = 0` con `encodedBodySize` completo, también en la primera carga con la caché fría (comprobado con una petición nueva: 119 278 B de cuerpo y 0 de red). Mostrarlo como «0 B, desde la caché» habría sido falso. Con un service worker delante, la ficha dice «no medible aquí: lo atiende el service worker de MSW» y no cuenta la tira como parcial. La transferencia real de cada pantalla sigue midiéndola `scripts/measureLoad.ts` (T001), que es donde corresponde.
+2. **El búfer de recursos del navegador (250 entradas) se llena con los módulos del Lab:** en los recursos que se miraban después de los primeros, la ficha decía «sin medir». `keepResourceTimings()` lo amplía una vez al cargar el inspector y de nuevo cada vez que se llena.
+3. **La primera versión duplicaba una descarga.** Decodificar la máscara `memory-wipe-dissolve.webp` sin `crossOrigin` es una segunda petición de la misma imagen (E13). Con la ficha había 17 peticiones de tira y sin ella, 16. Ahora la decodificación usa CORS en las tiras que el registro declara como máscara, como hace la carga: **16 peticiones, ninguna repetida**, igual que sin la ficha.
+
+Un cuarto, de presentación: la ficha avisaba de «medición parcial» con todo medido, porque la red es siempre desconocida en el Lab. Corregido (RED visto), y a 320 px los términos pasan encima de sus valores.
+
+### 20.4 Pruebas
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `spriteWeight.test.ts` | Vista fallar antes del módulo; los casos del service worker, el búfer, las máscaras y la completitud, antes del código | 29 |
+| `ResourceWeight.test.tsx` | **No se vio fallar antes del componente** (pruebas y componente escritos seguidos, y ejecutados después). Sí se vieron fallar la vigilancia (2), las máscaras (1), el service worker (1) y la completitud (1) antes de su código | 21 |
+| `spriteInspector.test.ts` (`stripsOf`, 15) y `InspectorSpec.test.tsx` (peso y búfer, 6) | Fallaban antes de `stripsOf` (15); las de la integración se escribieron con el componente | 34 y 89 |
+| `npx vitest run src/design-lab src/components/sofi` | — | **32 archivos, 712 pruebas** (antes, 641) |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check src spec/features/008-sofi-character` | — | Sin errores |
+| `npx playwright test e2e/a11y.spec.ts` (Chromium) | — | 42 de 42 |
+
+**Sensibilidad** (26 mutaciones, todas detectadas tras reforzar cinco): bytes comprimidos en vez de descomprimidos, red como cuerpo, revalidación contada como descarga, ceros en lugar de «sin dato», memoria ×3, escalón de 1 000, suma siempre completa, decodificar lo no cargado, suma desconocida a cero, sin ordenar por inicio (**sobrevivía; añadida la prueba de dos descargas**), medir sin esperar a la carga (**sobrevivía; ahora se comprueba que la decodificación precede a la medida**), no descartar lo que llega tarde y pintar el resultado de otro recurso (**sobrevivían; añadidas las dos pruebas de carrera**), lecturas fuera de orden (**sobrevivía; añadida la prueba de la lectura lenta**), memoria presentada como medida, caché confundida con descarga, estático sin tiras, y las de vigilancia, service worker y búfer (X1–X10). Archivos restaurados.
+
+### 20.5 Navegador real (Chromium)
+
+Método: Playwright contra el servidor de desarrollo, cada recurso por turno, y contraste **independiente** con los archivos en disco (`fs.statSync` y cabecera WebP con `sharp`).
+
+| Comprobación | Resultado |
+|---|---|
+| Bytes del archivo de los 14 recursos frente al disco | **Idénticos en los 14** (por ejemplo `sofing` 116,5 KB; `rolling` 59,1 KB en 2 tiras; `memory-wipe` 102,0 KB en 12). Suma: **830,2 KB**, la cifra de E3 |
+| Memoria estimada frente a ancho × alto × 4 con las dimensiones de la cabecera WebP | **Idéntica en los 14.** Suma de los 14: 28,9 MB (la de cada uno es independiente: la memoria de un recurso no se carga a la vez que la de los demás) |
+| Número de tiras por recurso | 1, 1, 2, 2, 3, 4, 2, 1, 3, 2, 3, 2, 2 y 12 |
+| Peticiones de tiras durante la visita de los 14 | 40 imágenes, ninguna más de una vez. Con y sin la ficha, las mismas (16 en la comprobación de `memory-wipe`, `sofing` y `rolling`) |
+| Transferencia de red | «No medible aquí» en los 14 (§20.3, 1) |
+| axe (claro y oscuro; `sofi-blink`, `sofing`, `rolling`, `poking`, `memory-wipe` y `eureka`) | 0 violaciones en las 12 comprobaciones. Sin errores de consola |
+| Desbordamiento horizontal con `memory-wipe` (12 filas) | Ninguno a 390 y 320 px |
+
+Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shots61\`: `light-` y `dark-weight-rolling.png` y `-memory-wipe.png`, `light-` y `dark-inspector-sofing.png`, y `narrow-390-` y `narrow-320-weight-memory-wipe.png`.
+
+### 20.6 Limitaciones reales
+
+- **Transferencia de red:** no se mide en el Lab (service worker de MSW). Es la que pide EX1–EX4 y sale de `scripts/measureLoad.ts`, con un build y `vite preview`. Una alternativa (apagar MSW en el Lab, medir con CDP) cambiaría el arranque del Lab o añadiría un arnés: no se introduce sin consultar.
+- **Servidor de desarrollo:** los bytes son los del archivo servido sin minificar ni comprimir. Los de producción pueden diferir (T043 midió las 35 tiras de la build).
+- **Memoria:** es una estimación. No cuenta mipmaps, la copia en la GPU ni el formato interno. Las dimensiones salen de la decodificación (`Image.decode()`), que usa la caché del navegador; con la caché desactivada sería una segunda petición.
+- **Solo lo ya cargado:** una tira que el navegador aún no ha pedido sale «sin medir». Para los gags eso no ocurre: la carga decodifica todas sus tiras antes de montar el controlador.
+- **Sin CSS ni JS:** el peso del módulo dueño y de su parcial no se incluye; en desarrollo no son representativos. Los de la build constan en §11.
+- **Búfer de recursos:** `keepResourceTimings()` amplía el del Lab (solo en desarrollo). Las entradas anteriores a esa llamada no se recuperan.
+- **Un único motor.** Solo Chromium.
+
+### 20.7 Criterios de T061
+
+| Criterio | Estado |
+|---|---|
+| Peso por recurso | Cumplido: bytes del archivo, medidos, en los 14 |
+| Memoria decodificada por recurso | Cumplido, como estimación declarada |
+| Distinguir bytes reales, transferencia y estimación | Cumplido; la transferencia, «no medible aquí» y remitida al arnés (§20.6) |
+| Sin servidor propio ni dependencias ni mediciones duplicadas | Cumplido |
+| No alterar la estrategia de carga ni producción | Cumplido: 16 peticiones, ninguna repetida |
+
+**Siguiente tarea:** T062. No se ha aprobado ningún `AV#`.

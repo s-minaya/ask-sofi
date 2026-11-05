@@ -73,6 +73,19 @@
   border: var(--stroke-structure) solid var(--color-border);
 }
 
+// En estrecho, los nombres de las tiras (hasta 24 caracteres) y sus cifras no caben en dos
+// columnas: el término pasa encima de su valor.
+.weight dl {
+  @include u.bp-until(u.$bp-header - 1px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+
+    > div:not(:first-child) > dt {
+      margin-top: 0.5rem;
+    }
+  }
+}
+
 .ficha {
   display: grid;
   gap: 0.875rem;
