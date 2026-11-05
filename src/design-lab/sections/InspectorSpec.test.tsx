@@ -492,6 +492,148 @@ describe('InspectorSpec · poking con los ajustes de T059', () => {
   })
 })
 
+describe('InspectorSpec · línea de tiempo', () => {
+  const timelineRegion = () =>
+    within(screen.getByRole('region', { name: 'Línea de tiempo' }))
+
+  // Web Animations no existe en jsdom: una animación de tira mínima, con lo que lee la línea.
+  function fakeStripAnimation(target: Element) {
+    const written: number[] = []
+    const animation = {
+      playState: 'running',
+      writes: written,
+      set currentTime(value: number) {
+        written.push(value)
+      },
+      get currentTime() {
+        return 0
+      },
+      effect: {
+        target,
+        pseudoElement: null,
+        getKeyframes: () => [
+          { computedOffset: 0, backgroundPositionX: '0%', easing: 'steps(1)' },
+          {
+            computedOffset: 0.5,
+            backgroundPositionX: '50%',
+            easing: 'steps(1)',
+          },
+          { computedOffset: 1, backgroundPositionX: '0%', easing: 'steps(1)' },
+        ],
+        getComputedTiming: () => ({ duration: 2000, progress: 0 }),
+      },
+    }
+    return animation
+  }
+  let live: ReturnType<typeof fakeStripAnimation>[]
+
+  beforeEach(() => {
+    live = []
+    Object.defineProperty(Element.prototype, 'getAnimations', {
+      configurable: true,
+      value() {
+        if (!(this as Element).hasAttribute('data-frozen')) return []
+        const sprite = (this as Element).firstElementChild!
+        ;(sprite as HTMLElement).style.setProperty('--sprite-frames', '3')
+        if (!live.length || !live.at(-1)!.effect.target.isConnected)
+          live.push(fakeStripAnimation(sprite))
+        return [live.at(-1)]
+      },
+    })
+  })
+  afterEach(() => {
+    delete (Element.prototype as { getAnimations?: unknown }).getAnimations
+  })
+
+  const frame = () => new Promise((resolve) => requestAnimationFrame(resolve))
+  const tick = () => act(async () => void (await frame()))
+
+  it('está debajo del escenario y dibuja los fotogramas de la animación real', async () => {
+    await open('sofing')
+    await tick()
+
+    expect(
+      timelineRegion().getByRole('slider', {
+        name: 'Posición en la animación',
+      }),
+    ).toBeInTheDocument()
+    expect(
+      timelineRegion().getAllByRole('button', { name: /Ir al fotograma/ }),
+    ).toHaveLength(3)
+  })
+
+  it('recorrerla pausa el recurso, como el botón de pausa', async () => {
+    await open('sofing')
+    await tick()
+    expect(screen.getByRole('button', { name: 'Pausar' })).toBeInTheDocument()
+
+    fireEvent.click(
+      timelineRegion().getByRole('button', { name: /Ir al fotograma 1/ }),
+    )
+    await flush()
+
+    expect(
+      screen.getByRole('button', { name: 'Reproducir' }),
+    ).toBeInTheDocument()
+    expect(stage()).toHaveAttribute('data-frozen', 'true')
+    expect(live[0].writes).toEqual([1500])
+  })
+
+  it('recorrer una pasada que ya terminó la reinicia sin perder la pausa', async () => {
+    await open('sofing')
+    await tick()
+    const before = painted()
+    // La pasada termina: el navegador deja de exponer su animación.
+    live[0].playState = 'idle'
+    Object.defineProperty(Element.prototype, 'getAnimations', {
+      configurable: true,
+      value: () => [],
+    })
+    await tick()
+
+    fireEvent.click(
+      timelineRegion().getByRole('button', { name: /Ir al fotograma 1/ }),
+    )
+    await flush()
+
+    expect(painted()).not.toBe(before)
+    expect(
+      screen.getByRole('button', { name: 'Reproducir' }),
+    ).toBeInTheDocument()
+  })
+
+  it('una máquina no tiene línea de tiempo única y lo dice', async () => {
+    await open('poking')
+    await tick()
+
+    expect(
+      timelineRegion().getByText(/máquina de estados/i),
+    ).toBeInTheDocument()
+    expect(timelineRegion().queryByRole('slider')).toBeNull()
+  })
+
+  it('una máquina cancelada cede a sofi-blink y entonces sí tiene línea de tiempo', async () => {
+    await open('poking')
+    await press('Cancelar a mitad')
+    await tick()
+
+    expect(
+      timelineRegion().getByRole('slider', {
+        name: 'Posición en la animación',
+      }),
+    ).toBeInTheDocument()
+  })
+
+  it('el cambio de recurso empieza una línea de tiempo nueva', async () => {
+    await open('sofing')
+    await tick()
+    await choose('poking')
+    await tick()
+
+    expect(timelineRegion().queryByRole('slider')).toBeNull()
+  })
+})
+
 describe('InspectorSpec · comparar con 1×', () => {
   it('pasa a 1× sin perder la velocidad elegida y la recupera al dejar de comparar', async () => {
     await open('sofing')

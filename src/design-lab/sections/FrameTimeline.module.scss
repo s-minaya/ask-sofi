@@ -1,0 +1,150 @@
+@use 'utilities' as u;
+
+// Línea de tiempo del inspector (T060). Mantiene el lenguaje de 4.4 · Parpadeo: tramos a escala,
+// crema F0, mantequilla F1 y rosa F2, rótulo en los tramos largos y un cabezal. Los fotogramas
+// F3 a F5 (que 4.4 no tiene) toman tonos de la paleta; son provisionales hasta su aprobación.
+
+.timeline {
+  display: grid;
+  gap: 0.875rem;
+  min-width: 0;
+}
+
+.facts {
+  margin: 0;
+  font: 700 0.75rem/1.4 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.barWrap {
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  height: 3.5rem;
+  border: var(--stroke-structure) solid var(--color-border);
+  cursor: ew-resize;
+  // El dedo arrastra el cabezal, no la página.
+  touch-action: none;
+  user-select: none;
+
+  > span:not(.head) {
+    display: flex;
+    align-items: flex-end;
+    padding: 0 0 0.375rem 0.375rem;
+    border-right: var(--stroke-detail) solid var(--tone-ink);
+    color: var(--tone-ink);
+    font: 700 0.6875rem/1 var(--font-ui);
+    white-space: nowrap;
+    overflow: hidden;
+
+    &:last-of-type {
+      border-right: 0;
+    }
+  }
+
+  &:focus-visible {
+    @include u.focus-ring;
+  }
+}
+
+.head {
+  position: absolute;
+  top: -0.375rem;
+  bottom: -0.375rem;
+  left: 0;
+  width: 0.1875rem;
+  margin-left: -0.09375rem;
+  background: var(--color-text);
+  pointer-events: none;
+}
+
+.ends {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  font: 700 0.75rem/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.frame0 {
+  background: var(--lab-paper);
+}
+
+.frame1 {
+  background: var(--tone-butter);
+}
+
+.frame2 {
+  background: var(--tone-pink);
+}
+
+.frame3 {
+  background: var(--tone-lilac);
+}
+
+.frame4 {
+  background: var(--tone-pink-soft);
+}
+
+.frame5 {
+  background: var(--tone-mist);
+}
+
+.frames {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.thumb {
+  display: grid;
+  gap: 0.375rem;
+  width: 100%;
+  padding: 0.375rem;
+  border: var(--stroke-structure) solid var(--color-border);
+  color: var(--tone-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:focus-visible {
+    @include u.focus-ring;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  // El fotograma que se ve ahora.
+  &[aria-current='true'] {
+    outline: 0.1875rem solid var(--color-text);
+    outline-offset: 0.125rem;
+  }
+}
+
+.thumbImage {
+  display: block;
+  width: 100%;
+  background-repeat: no-repeat;
+  // Fondo propio de la miniatura: el sprite se lee sobre blanco, como en el retrato.
+  background-color: var(--tone-white);
+}
+
+.thumbLabel {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.25rem;
+  font: 700 0.6875rem/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}

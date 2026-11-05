@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -34,6 +34,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T055–T057 — playground y estado de sesión del inspector (B1) | Playground leído en `17aca4f` sin modificarlo, con las 6 filas de plan §8 contrastadas: 9 divergencias y una coincidencia (el pixelado) registradas. Ninguna contradice el plan: varias dejan decisiones a T058–T061 y T064. `createInspectorState` e `inspectorReducer` guardan la velocidad, la pausa, el tamaño, el fondo y el pixelado de cada recurso, y se conservan al cambiar de recurso, sin tocar preferencias públicas, `PRODUCTION_RATES` ni `rateFor`. 8 pruebas nuevas (RED: 3 fallan y 5 pasan) y 9 mutaciones detectadas. Sin conectar a ningún componente (T058) | §16 |
 | T058 — inspector de los 14 recursos (B1) | Selector y ficha, reproducir, pausar, reiniciar, velocidad con `LabRange`, comparar con 1×, bucle o pasada, evento nuevo y cancelación, con `PENDING_IN_LAB` retirado. `poking` conserva 1× (excepción aprobada, spec §8). Corrige `useSofiController`: las capas CSS de `are-u-still-here` e `i-see-you` ya siguen la velocidad (medido en Chromium; VT3 sigue pasando). 565 pruebas en `design-lab` y `sofi`, axe 0 en 32 estados, e2e 57 de 57. Firefox y WebKit: T074 | §17 |
 | T059 — tamaño, fondos, pixelado y contenedores (B1) | Tamaño de 64 a 512 px en pasos de 8 px (192 px de partida), los tres fondos de `LabStage`, pixelado desactivado de partida y conservado por recurso; contenedores escenario entero, busto apoyado e insignia con los recortes aprobados escalados, y ancho completo o de 320 px. 593 pruebas en `design-lab` y `sofi`, axe 0 en 10 estados, e2e de accesibilidad 42 de 42. Hallazgo sin decidir: el recuadro del busto recorta elementos de varios recursos (§18.4) | §18 |
+| T060 — línea de tiempo por fotograma (B1) | Derivada de `getKeyframes()` de la animación real de la tira, sin duraciones ni fotogramas propios: tramos a escala con el lenguaje de 4.4, miniaturas y desplazamiento manual (puntero, miniatura y teclado), también sobre una pasada ya terminada. Fidelidad en Chromium: 660 de 660 frente al fotograma pintado, y los tramos suman el ciclo en los 11 recursos CSS. Las máquinas no admiten una línea fiel: nota, sin alternativa. 641 pruebas, axe 0. Una incidencia corregida (pasada terminada) | §19 |
 
 ---
 
@@ -1487,3 +1488,88 @@ A 192 px, en el recuadro de 155 × 190 px, la composición de varios recursos qu
 - El contenedor y el ancho son del inspector, no de cada recurso: si se prefiere por recurso, es un cambio de estado de T056–T057.
 - El recorte escalado con redondeo a píxel puede diferir 1 px de uno diseñado a mano a otro tamaño: se parte de las medidas de 192 px.
 - **Siguiente tarea:** T060. No se ha aprobado ningún `AV#`.
+
+---
+
+## 19. B1 — Línea de tiempo por fotograma (T060)
+
+Fecha: 2026-11-05. Antes de empezar: `main` en `9b8088b` (T059) con su CI en éxito (nº 31); árbol de trabajo limpio salvo los 13 ZIP.
+
+### 19.1 Playground, otra vez en modo lectura (T055)
+
+Se releyó `playground.js` (`addCard`, `tick`) del repositorio de spritesheets, en `17aca4f` y sin modificarlo. Lo que se adapta y lo que cambia:
+
+| En el playground | En el inspector |
+|---|---|
+| Toma la primera animación del propio elemento (`sprite.getAnimations()[0]`) y de ella la duración y los `getKeyframes()` | Igual, pero sin suponer que es la primera: busca la del elemento (no la de un pseudoelemento) cuyos fotogramas clave mueven `background-position-x` |
+| Traduce `backgroundPositionX` a fotograma con `round(% / 100 × (fotogramas − 1))`, sin comprobar nada | Solo acepta una posición que cae en un fotograma y entre fotogramas exige `steps(…)`. Si no, **no dibuja** una línea de tiempo (no inventa) |
+| El desplazamiento escribe `currentTime` en todas las animaciones del subárbol y pausa todo | Igual, pero la pausa es la del recurso que se mira (T056–T057) |
+| Salta a un fotograma al centro de su primer tramo, porque en el borde el navegador puede redondear al anterior | Igual |
+| Las flechas mueven 100 ms | Igual, y se añaden `Inicio` y `Fin` (patrón de deslizador) |
+| Si no hay animación, quita la línea de tiempo | Igual, con aviso |
+| Nada para una pasada ya terminada | Se reinicia y se coloca al nacer la nueva (§19.2) |
+
+### 19.2 Qué se entrega
+
+- **`spriteTimeline.ts`** (lógica pura): `frameOf`, `buildTimeline`, `stepDuration`, `frameDuration`, `frameAtProgress`, `seekTimeOfFrame`, `progressAtPointer`, `timeAtProgress` y `nudgeTime`. Recibe los fotogramas clave y la duración de la propia animación; no guarda ninguna duración ni ningún fotograma.
+- **`FrameTimeline.tsx`** (y su `.module.scss`), bajo el escenario del inspector: tramos a escala con el lenguaje de 4.4 (F0 crema, F1 mantequilla, F2 rosa, rótulo en los tramos de 1 s o más, cabezal), un deslizador accesible (`role="slider"`, `aria-valuetext` con el fotograma y el tiempo), una miniatura por fotograma con lo que dura en el ciclo y desplazamiento manual por puntero, miniatura y teclado.
+- **Pasada única terminada:** el navegador deja de exponer su animación. Recorrerla pausa, reinicia el recurso (la misma acción que «Reiniciar») y, cuando nace la nueva, se coloca en el punto pedido, una sola vez.
+- **Máquinas** (`poking`, `are-u-still-here`, `i-see-you`): sin línea de tiempo (§19.5).
+- **4.4 intacta:** `BLINK_TIMELINE`, `foundationsData.ts`, `MotionSection.tsx` y su prueba de contrato sin cambios. Producción, `src/styles/` y los spritesheets, tampoco.
+- **`poking`:** conserva su velocidad original. No se toca.
+
+### 19.3 Pruebas
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `spriteTimeline.test.ts` | Vista fallar (el módulo no existía); un error de mis datos de prueba corregido después | 27 de 27 |
+| `FrameTimeline.test.tsx` | **No se vio fallar antes del código**: escribí las pruebas y el componente seguidos y ejecuté después. La regresión de la pasada terminada sí: fallaba antes de la corrección (§19.4). La detección del resto consta por mutación | 15 de 15 |
+| `InspectorSpec.test.tsx` (6 nuevas: debajo del escenario, recorrer pausa, pasada terminada, máquina, máquina cancelada, cambio de recurso) | Escritas con el componente; el fallo de dos de ellas fue de la prueba (`getByRole('slider')` también encontraba los rangos del panel) | 83 de 83 |
+| `npx vitest run src/design-lab src/components/sofi` | — | **30 archivos, 641 pruebas** (antes, 593) |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check src spec/features/008-sofi-character` | — | Sin errores |
+| `npx playwright test e2e/a11y.spec.ts` (Chromium) | — | 42 de 42 |
+
+**Sensibilidad** (18 mutaciones, todas detectadas tras reforzar una; archivos restaurados): recorrer sin pausar (6 fallan), sin reiniciar una pasada terminada (3), reiniciar varias veces (1), no colocar lo pendiente (2), **no limpiar lo pendiente (0 al principio; se añadió la prueba «lo pedido se usa una sola vez» y ahora falla 1)**, mover solo la animación del cuerpo (3), dibujar línea para una máquina (2), cabezal quieto (1), `Fin` a 1 (1), tolerancia de fotograma amplia (2), aceptar cualquier interpolación (2), progreso que llega a 1 (1), saltar al borde del tramo (5), sin dar la vuelta al ciclo (1), contar tramos de longitud cero (4), y en el inspector: la línea sin la máquina (2), recorrer sin pausar (2) y sin reiniciar (1).
+
+### 19.4 Navegador real (Chromium)
+
+Método: Playwright contra el servidor de desarrollo. Guiones fuera del repositorio (carpeta de trabajo de la sesión).
+
+| Comprobación | Resultado |
+|---|---|
+| **Fidelidad** en los 11 recursos CSS: 60 puntos de la barra por recurso; el fotograma que dice la línea de tiempo frente al `background-position-x` realmente pintado en el sprite | **660 de 660** coinciden |
+| Los tramos y las miniaturas suman el ciclo | Exacto en los 11: 4 200, 6 440, 5 800, 6 410, 4 150, 6 280, 8 400, 3 000, 3 500, 4 380 y 6 500 ms, los de la propia animación |
+| Miniatura 3 de `sofing` a 2× | Pausa el recurso, pinta el fotograma 3, no cambia la velocidad (sigue en 2×), queda quieto en pausa y al reproducir avanza desde ahí (67 % → 86 %) |
+| Teclado | `Inicio` 1 %, `→` 2 %, `Fin` 100 % y `→` da la vuelta (2 %) |
+| Pasada única terminada (`favoriting`, 4 150 ms, 0 animaciones tras terminar) | Recorrer el fotograma 2 la reinicia en pausa y la deja con 5 animaciones a 2 350 ms, con el fotograma 2 pintado |
+| Máquinas | Las tres muestran la nota y ningún deslizador. Cancelada una, cede a `sofi-blink` y muestra su línea de tiempo |
+| axe (claro y oscuro; `sofing`, `favoriting`, `memory-wipe` y `poking`) | 0 violaciones en las 8 comprobaciones. Sin errores de consola |
+| Desbordamiento horizontal | Ninguno a 390 y a 320 px |
+
+**Incidencia encontrada y corregida con esta medición:** la primera versión daba por viva a una pasada ya terminada porque Chromium la sigue conectada y con estado `finished`; recorrerla movía una lista vacía y no hacía nada (`favoriting`: fotograma 0 pintado en lugar del 2). Ahora «viva» es «sigue entre las animaciones del elemento». Prueba de regresión añadida y vista fallar antes.
+
+Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shots60\`: `light-` y `dark-inspector-sofing.png`, `light-` y `dark-timeline-memory-wipe.png`, `light-` y `dark-timeline-poking.png`, `light-timeline-rolling.png`, `light-timeline-error.png` y `narrow-390-timeline.png` y `narrow-320-timeline.png`.
+
+### 19.5 Limitaciones reales
+
+- **Máquinas.** `poking`, `are-u-still-here` e `i-see-you` no admiten una representación fiel con `getKeyframes()`: el elemento solo tiene la animación de parpadeo de su reposo y cada estado crea sus propias capas (a veces con retardos de 600 a 1 600 ms) mientras los temporizadores del controlador deciden cuándo cambian. Dibujar la del reposo como si fuera la de la máquina engañaría. **No se introduce ninguna alternativa:** el inspector lo dice. Una línea de tiempo por estado (por ejemplo, la de `poking-huff` en `offended`) sería una decisión de diseño nueva y queda para consultar.
+- **Una sola pista.** La línea es la de la tira del cuerpo. Las capas y los efectos (pseudoelementos, giros, opacidad, recortes) tienen sus propias pistas, que se mueven con el cabezal pero no se dibujan. `memory-wipe` cambia además el tamaño del fondo y el temblor del cuerpo: se ve en el sprite, no en las miniaturas.
+- **Miniaturas.** Pintan la tira cruda del cuerpo, sin las capas de cara de `needs-context`, `error`, `eureka`, `suspicious` y `uncertain` (van en un `::before`): no son el fotograma compuesto.
+- **Primer salto en marcha.** Al recorrer un recurso que se está reproduciendo, la pausa se aplica un fotograma después: el primer salto puede quedar hasta 16 ms por delante (medido: 16,5 ms en `sofing`). Después queda quieto.
+- **Colores de F3 a F5.** 4.4 solo define F0 a F2. Los fotogramas 3, 4 y 5 usan lila, rosa suave y bruma de la paleta; son provisionales. El texto de cada tramo largo y de cada miniatura lleva el número del fotograma, así que el color no es lo único que distingue.
+- **Un único motor.** Solo Chromium. La velocidad y el ciclo en tres motores van en T074.
+- **No hay medición a nivel de fotograma de la sincronía del cabezal** (se lee en `requestAnimationFrame`); la comprobación de fidelidad es por posición en la barra, no por vídeo.
+
+### 19.6 Criterios de T060
+
+| Criterio | Estado |
+|---|---|
+| Línea de tiempo por fotograma con `getKeyframes()` | Cumplido en los 11 recursos CSS y `sofi-blink` |
+| Sin duraciones copiadas ni fotogramas inventados | Cumplido: todo sale de la animación, y si no es representable no se dibuja |
+| Miniaturas | Cumplido (tira cruda del cuerpo) |
+| Desplazamiento manual | Cumplido: puntero, miniatura y teclado |
+| 4.4 conserva `BLINK_TIMELINE` y su test de contrato | Sin cambios |
+| Máquinas | Limitación documentada; no se introduce alternativa |
+| Accesibilidad en navegador | axe 0, teclado y 320 px |
+
+**Siguiente tarea:** T061. No se ha aprobado ningún `AV#`.

@@ -64,6 +64,7 @@ import {
   type StageBackground,
   type StageWidth,
 } from '../spriteInspector'
+import { FrameTimeline } from './FrameTimeline'
 import styles from './InspectorSpec.module.scss'
 
 // Inspector de los 14 recursos (catálogo §8, T058): cada uno se pinta con `SofiSprite` o, si es
@@ -165,6 +166,8 @@ function ResourceInspector({
   const frozen = entry.paused || run.held
   const info = RESOURCE_INFO[id]
   const box = containerBox(container, entry.size)
+  // El escenario del recurso, del que la línea de tiempo lee sus animaciones.
+  const [scope, setScope] = useState<HTMLElement | null>(null)
 
   // La velocidad llega a `SofiSprite` y al controlador por `visual/rates`, la misma vía que usará
   // producción. Solo se sobrescribe el recurso que se mira y se deja limpio al irse.
@@ -189,45 +192,55 @@ function ResourceInspector({
 
   return (
     <div className={styles.layout}>
-      <LabStage
-        {...stageBackground(entry.background)}
-        maxWidth={stageMaxWidth(width)}
-        className={styles.stage}
-        innerClassName={styles.stageInner}
-      >
-        <div
-          className={cx(
-            styles.sprite,
-            frozen && styles.frozen,
-            entry.pixelated && styles.pixelated,
-          )}
-          data-frozen={frozen}
-          style={box ? undefined : { width: entry.size }}
+      <div className={styles.visual}>
+        <LabStage
+          {...stageBackground(entry.background)}
+          maxWidth={stageMaxWidth(width)}
+          className={styles.stage}
+          innerClassName={styles.stageInner}
         >
-          {box ? (
-            <div
-              className={styles.crop}
-              style={{
-                width: box.width,
-                height: box.height,
-                background: box.background,
-              }}
-            >
+          <div
+            className={cx(
+              styles.sprite,
+              frozen && styles.frozen,
+              entry.pixelated && styles.pixelated,
+            )}
+            data-frozen={frozen}
+            ref={setScope}
+            style={box ? undefined : { width: entry.size }}
+          >
+            {box ? (
               <div
+                className={styles.crop}
                 style={{
-                  width: entry.size,
-                  marginLeft: -box.offsetX,
-                  marginTop: -box.offsetY,
+                  width: box.width,
+                  height: box.height,
+                  background: box.background,
                 }}
               >
-                {sprite}
+                <div
+                  style={{
+                    width: entry.size,
+                    marginLeft: -box.offsetX,
+                    marginTop: -box.offsetY,
+                  }}
+                >
+                  {sprite}
+                </div>
               </div>
-            </div>
-          ) : (
-            sprite
-          )}
-        </div>
-      </LabStage>
+            ) : (
+              sprite
+            )}
+          </div>
+        </LabStage>
+        <FrameTimeline
+          scope={scope}
+          paused={entry.paused}
+          onPause={() => dispatch({ type: 'paused', value: true })}
+          onRestart={() => runDispatch({ type: 'restart' })}
+          machine={isGag(id) && !run.cancelled}
+        />
+      </div>
 
       <div className={styles.panel}>
         <section className={styles.ficha} aria-label="Ficha del recurso">

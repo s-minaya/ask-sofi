@@ -16,6 +16,14 @@
   }
 }
 
+// El escenario y, debajo, la línea de tiempo de lo que se ve.
+.visual {
+  display: grid;
+  gap: 1.75rem;
+  align-content: start;
+  min-width: 0;
+}
+
 .stage {
   padding: 2rem clamp(1rem, 3vw, 2.5rem) 2.25rem;
 }
