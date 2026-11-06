@@ -33,6 +33,7 @@ const THEME_OPTIONS = [
 const MOTION_OPTIONS = [
   { value: 'system', label: 'Sistema' },
   { value: 'reduce', label: 'Reducido' },
+  { value: 'full', label: 'Completo' },
 ] as const satisfies ReadonlyArray<{ value: MotionPreference; label: string }>
 
 const SECTIONS: Record<

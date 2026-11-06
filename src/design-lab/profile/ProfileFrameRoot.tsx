@@ -1,10 +1,8 @@
 import { useEffect } from 'react'
-import {
-  MotionPreferenceProvider,
-  type MotionPreference,
-} from '../../app/providers/MotionPreference'
+import { MotionPreferenceProvider } from '../../app/providers/MotionPreference'
 import { SoundProvider } from '../../app/providers/SoundProvider'
 import { ThemeProvider } from '../../app/providers/ThemeProvider'
+import { motionFromParam } from '../motionParam'
 import { createAudioSimulation, createSimulatedAudio } from '../simulatedAudio'
 import { ProfilePrototype } from './ProfilePrototype'
 import { isPresetKey, PROFILE_PRESETS } from './profilePresets'
@@ -12,8 +10,7 @@ import { isPresetKey, PROFILE_PRESETS } from './profilePresets'
 const params = new URLSearchParams(window.location.search)
 const presetKey = params.get('preset')
 const preset = PROFILE_PRESETS[isPresetKey(presetKey) ? presetKey : 'empty']
-const motion: MotionPreference =
-  params.get('motion') === 'reduce' ? 'reduce' : 'system'
+const motion = motionFromParam(params.get('motion'))
 // Un único documento por iframe: la simulación de audio vive a nivel de módulo.
 const simulation = createAudioSimulation()
 const createAudio = () => createSimulatedAudio(simulation)

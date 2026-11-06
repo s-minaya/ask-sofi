@@ -24,6 +24,39 @@ function renderDeck() {
   return { iframe, postMessage, report }
 }
 
+describe('PreviewSection con el selector global', () => {
+  it.each(['system', 'reduce', 'full'] as const)(
+    'el marco arranca con «%s» y lo recibe por mensaje al cambiar',
+    (motion) => {
+      // Se parte de otro modo: repetir el mismo no envía nada.
+      const { rerender } = render(
+        <PreviewSection motion={motion === 'system' ? 'reduce' : 'system'} />,
+      )
+      const iframe = screen.getByTitle('Vista previa de Ask Sofi')
+      const frame = (iframe as HTMLIFrameElement).contentWindow as Window
+      const postMessage = vi.spyOn(frame, 'postMessage')
+
+      rerender(<PreviewSection motion={motion} />)
+
+      expect(postMessage).toHaveBeenCalledWith(
+        {
+          type: 'ask-sofi:preview-command',
+          command: { kind: 'motion', value: motion },
+        },
+        window.location.origin,
+      )
+    },
+  )
+
+  it('si la mesa ya está en «full», el marco arranca con ese valor en la URL', () => {
+    render(<PreviewSection motion="full" />)
+    expect(screen.getByTitle('Vista previa de Ask Sofi')).toHaveAttribute(
+      'src',
+      expect.stringContaining('motion=full'),
+    )
+  })
+})
+
 describe('PreviewSection', () => {
   it('identifies the preview as a demo with simulated data', () => {
     renderDeck()

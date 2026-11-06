@@ -5,6 +5,7 @@ import {
 } from '../../app/providers/MotionPreference'
 import { SoundProvider } from '../../app/providers/SoundProvider'
 import { ThemeProvider } from '../../app/providers/ThemeProvider'
+import { motionFromParam } from '../motionParam'
 import { createAudioSimulation, createSimulatedAudio } from '../simulatedAudio'
 import { PreviewFlow } from './PreviewFlow'
 import { readPreviewMessage, sendPreviewMessage } from './previewProtocol'
@@ -17,9 +18,7 @@ function readParams() {
     scenario: (SCENARIOS as ReadonlyArray<string>).includes(scenario ?? '')
       ? (scenario as Scenario)
       : 'success',
-    motion: (params.get('motion') === 'reduce'
-      ? 'reduce'
-      : 'system') as MotionPreference,
+    motion: motionFromParam(params.get('motion')),
     block: params.get('block') === '1',
   }
 }

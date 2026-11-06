@@ -7,7 +7,10 @@ import {
   within,
 } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { MotionPreferenceProvider } from '../../app/providers/MotionPreference'
+import {
+  MotionPreferenceProvider,
+  type MotionPreference,
+} from '../../app/providers/MotionPreference'
 import { resetSpriteLoader } from '../../components/sofi/SofiSprite/loadSprite'
 import sofiSpriteStyles from '../../components/sofi/SofiSprite/SofiSprite.module.scss'
 import { className as blinkClass } from '../../components/sofi/sprites/sofi-blink'
@@ -26,6 +29,7 @@ import {
   type SofiAnimationId,
 } from '../../components/sofi/visual/types'
 import { readPreferences } from '../../infrastructure/storage/preferencesStorage'
+import { setMediaQuery } from '../../test/matchMedia'
 import { RESOURCE_INFO, availability, stripsOf } from '../spriteInspector'
 import labStyles from '../parts/LabParts.module.scss'
 import { InspectorSpec } from './InspectorSpec'
@@ -79,9 +83,9 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-async function open(id?: SofiAnimationId) {
+async function open(id?: SofiAnimationId, motion: MotionPreference = 'full') {
   const view = render(
-    <MotionPreferenceProvider value="full">
+    <MotionPreferenceProvider value={motion}>
       <InspectorSpec />
     </MotionPreferenceProvider>,
   )
@@ -906,5 +910,41 @@ describe('InspectorSpec · máquinas de estados', () => {
     await press('Reproducir')
     fireEvent.click(host)
     expect(host.dataset.poking).toBe('curious')
+  })
+})
+
+describe('InspectorSpec · estado con movimiento reducido (T062)', () => {
+  const estado = () => ficha().getByText('Estado').nextElementSibling
+
+  it('con movimiento reducido dice que es una pose estática, no que reproduce', async () => {
+    await open('eureka', 'reduce')
+    expect(estado()).toHaveTextContent(/pose est[aá]tica/i)
+    expect(estado()).not.toHaveTextContent('Reproduciendo')
+  })
+
+  it.each(['full', 'system'] as const)(
+    'con «%s» (sistema sin reducir) sigue diciendo «Reproduciendo»',
+    async (motion) => {
+      await open('eureka', motion)
+      expect(estado()).toHaveTextContent('Reproduciendo')
+    },
+  )
+
+  it('con «full» y el sistema pidiendo reducir, reproduce', async () => {
+    setMediaQuery('(prefers-reduced-motion: reduce)', true)
+    await open('eureka', 'full')
+    expect(estado()).toHaveTextContent('Reproduciendo')
+  })
+
+  it('el sistema pidiendo reducir basta con «system»', async () => {
+    setMediaQuery('(prefers-reduced-motion: reduce)', true)
+    await open('eureka', 'system')
+    expect(estado()).toHaveTextContent(/pose est[aá]tica/i)
+  })
+
+  it('cancelar a mitad conserva su propio estado', async () => {
+    await open('poking', 'reduce')
+    await press('Cancelar a mitad')
+    expect(estado()).toHaveTextContent(/Cancelado a mitad/)
   })
 })

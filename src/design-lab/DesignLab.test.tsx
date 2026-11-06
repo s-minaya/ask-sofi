@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { ThemeProvider } from '../app/providers/ThemeProvider'
 import { DesignLab } from './DesignLab'
@@ -97,5 +103,60 @@ describe('DesignLab', () => {
     // Un único ámbito por documento: <html>, no un contenedor del Lab.
     expect(document.documentElement.dataset.motion).toBe('reduce')
     expect(document.querySelectorAll('[data-motion]')).toHaveLength(1)
+  })
+
+  describe('selector global de movimiento (T062)', () => {
+    const motion = () =>
+      within(screen.getByRole('group', { name: 'Movimiento' }))
+
+    it('ofrece los tres modos de la preferencia, en su orden', () => {
+      renderLab()
+      expect(
+        motion()
+          .getAllByRole('button')
+          .map((button) => button.textContent),
+      ).toEqual(['Sistema', 'Reducido', 'Completo'])
+      expect(motion().getByRole('button', { name: 'Sistema' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+    })
+
+    it('«Completo» fuerza el movimiento con un único data-motion en <html>', () => {
+      renderLab()
+      fireEvent.click(motion().getByRole('button', { name: 'Completo' }))
+      expect(document.documentElement.dataset.motion).toBe('full')
+      expect(document.querySelectorAll('[data-motion]')).toHaveLength(1)
+    })
+
+    it('pasar de un modo a otro deja siempre un único atributo, y «Sistema» lo quita', () => {
+      renderLab()
+      for (const [name, value] of [
+        ['Reducido', 'reduce'],
+        ['Completo', 'full'],
+        ['Reducido', 'reduce'],
+      ] as const) {
+        fireEvent.click(motion().getByRole('button', { name }))
+        expect(document.documentElement.dataset.motion).toBe(value)
+        expect(document.querySelectorAll('[data-motion]')).toHaveLength(1)
+      }
+      fireEvent.click(motion().getByRole('button', { name: 'Sistema' }))
+      expect(document.documentElement.dataset.motion).toBeUndefined()
+    })
+
+    it('al salir del Lab devuelve <html> a como estaba', () => {
+      document.documentElement.dataset.motion = 'full'
+      renderLab()
+      fireEvent.click(motion().getByRole('button', { name: 'Reducido' }))
+      cleanup()
+      expect(document.documentElement.dataset.motion).toBe('full')
+    })
+
+    it('sigue siendo un único selector: el inspector no trae otro', () => {
+      renderLab('?s=motion')
+      expect(screen.getAllByRole('group', { name: 'Movimiento' })).toHaveLength(
+        1,
+      )
+    })
   })
 })

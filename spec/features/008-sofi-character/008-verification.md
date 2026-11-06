@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). T062 (modos de movimiento en el Lab) completada el 2026-11-06 (§21). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -36,6 +36,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T059 — tamaño, fondos, pixelado y contenedores (B1) | Tamaño de 64 a 512 px en pasos de 8 px (192 px de partida), los tres fondos de `LabStage`, pixelado desactivado de partida y conservado por recurso; contenedores escenario entero, busto apoyado e insignia con los recortes aprobados escalados, y ancho completo o de 320 px. 593 pruebas en `design-lab` y `sofi`, axe 0 en 10 estados, e2e de accesibilidad 42 de 42. Hallazgo sin decidir: el recuadro del busto recorta elementos de varios recursos (§18.4) | §18 |
 | T060 — línea de tiempo por fotograma (B1) | Derivada de `getKeyframes()` de la animación real de la tira, sin duraciones ni fotogramas propios: tramos a escala con el lenguaje de 4.4, miniaturas y desplazamiento manual (puntero, miniatura y teclado), también sobre una pasada ya terminada. Fidelidad en Chromium: 660 de 660 frente al fotograma pintado, y los tramos suman el ciclo en los 11 recursos CSS. Las máquinas no admiten una línea fiel: nota, sin alternativa. 641 pruebas, axe 0. Una incidencia corregida (pasada terminada) | §19 |
 | T061 — peso y memoria decodificada (B1) | Por recurso y por tira: bytes del archivo (medidos con Resource Timing, idénticos al disco en los 14: 830,2 KB, la cifra de E3), memoria estimada (ancho × alto × 4, declarada como estimación) y transferencia de red, que **no se puede medir en el Lab** porque el service worker de MSW atiende las peticiones (no se presenta como caché ni como cero). Sin servidor, dependencias ni mediciones duplicadas; una duplicación de la máscara de `memory-wipe` hallada y corregida (16 peticiones, ninguna repetida). 712 pruebas, axe 0 | §20 |
+| T062 — modos de movimiento en el Lab (B1) | El selector global del Lab pasa a `system \| reduce \| full`, sin selector nuevo en el inspector. Los 14 recursos en los 6 modos en Chromium: reducidos, sin animaciones, sin capas y con la misma imagen en los tres; `full` anima aunque el sistema pida reducir; al pasar a «Reducido» no sobrevive ningún controlador (CDP y sonda). Dos hallazgos corregidos: los marcos de Preview y Perfil perdían `full`, y la ficha decía «Reproduciendo» con movimiento reducido | §21 |
 
 ---
 
@@ -1422,7 +1423,7 @@ Sin errores en la consola. La sincronía de los controladores con su temporizado
 - **Firefox y WebKit:** el inspector y la corrección solo se han medido en Chromium. La velocidad y el ciclo en los tres motores van en T074; la limpieza del adaptador, en T073–T076.
 - **Disparar las máquinas** (pinchazo, inactividad, mirada) en escena queda para T064 y T066; el inspector las prueba con el puntero y esperando.
 - **Datos de la ficha:** son un resumen del catálogo §3 que vive en el Lab (el tipo, la disponibilidad y los 150 s se leen del registro y del adaptador). Duplican texto, no reglas.
-- **Tamaño y fondo:** 240 px y puntos fijos, provisionales; sus controles son de T059. El inspector no hace nada especial con movimiento reducido (T062).
+- **Tamaño y fondo:** 240 px y puntos fijos, provisionales; sus controles son de T059. El inspector no hacía nada especial con movimiento reducido (resuelto en T062, §21).
 - **1× frente a la velocidad de producción:** el inspector parte de 1× y escribe una sobrescritura de 1×. Si con AV3 alguna velocidad de producción deja de ser 1×, hay que decidir si parte de 1× o de ella (T082).
 - **Primer instante de una capa nueva:** el `MutationObserver` corre antes de pintar, pero no se ha medido a nivel de fotograma si una capa llega a pintarse un fotograma a 1×. No se ha observado ningún salto.
 - **Siguiente tarea:** T059. No se ha aprobado ningún `AV#` ni se han tocado T087–T088.
@@ -1658,3 +1659,71 @@ Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shot
 | No alterar la estrategia de carga ni producción | Cumplido: 16 peticiones, ninguna repetida |
 
 **Siguiente tarea:** T062. No se ha aprobado ningún `AV#`.
+
+---
+
+## 21. B1 — Modos de movimiento en el Lab (T062)
+
+Fecha: 2026-11-06. Antes de empezar: `main` en `45944f1` (T061), con la CI nº 33 en éxito (`foundation` y `browser`); árbol de trabajo limpio salvo los 13 ZIP.
+
+### 21.1 Qué se entrega
+
+- **Un solo selector.** El selector global «Movimiento» del Lab (`DesignLab.tsx`) pasa de `system | reduce` a `system | reduce | full` («Sistema», «Reducido», «Completo»). El inspector **no tiene selector propio** y lo gobierna, como ya hacían los demás apartados, con el único `data-motion` de `<html>` (plan §4.1). No se duplica lógica: el estado efectivo sigue saliendo de `useReducedMotion` e `isReducedMotion`, que ya conocían `full`.
+- **Los marcos del Lab ya no pierden `full`.** La Preview y el Perfil son iframes que reciben el modo por la URL y lo leían como `reduce ? 'reduce' : 'system'`: con «Completo» habrían arrancado en `system` sin avisar. Ahora lo leen con `motionFromParam` (`motionParam.ts`), contra `MOTION_PREFERENCES`.
+- **La ficha dice la verdad con movimiento reducido.** Antes decía «Estado: Reproduciendo» con una pose estática. Ahora dice «Pose estática: movimiento reducido» (usa `useReducedMotion`; «Cancelado a mitad» conserva su texto). Producción, `src/styles/sprites/`, las poses, el registro y `memory-wipe` no se han tocado.
+
+### 21.2 Pruebas
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `DesignLab.test.tsx` (selector global: tres modos y su orden, `full` en `<html>`, un único atributo al alternar, devuelve `<html>` al salir, un solo selector) | Vista fallar (3) | 5 nuevas |
+| `PreviewSection.test.tsx` (el marco recibe los tres modos; arranca con `full` en la URL) | No fallan: por mensaje y por la URL de la sección `full` ya llegaba bien. Protegen contra regresiones. Lo que se perdía era la lectura **dentro** del marco (`PreviewFrameRoot`, `ProfileFrameRoot`), que no tiene prueba de componente: la cubren `motionParam.test.ts` y el navegador (§21.3) | 4 nuevas |
+| `motionParam.test.ts` | Falla antes del módulo | 9 |
+| `InspectorSpec.test.tsx`, estado con movimiento reducido | Vista fallar (2) | 6 nuevas |
+| `MotionModes.test.tsx`: el Lab completo con el selector real y los **controladores reales** de `poking`, `are-u-still-here` e `i-see-you` (limpieza total al pasar a «Reducido» según la sonda de VT3: escuchas, observadores, temporizadores y fotogramas; `full` con el sistema pidiendo reducir; «Sistema» en vivo; alternar sin acumular) | Pasaron a la primera: el comportamiento ya existía y lo que faltaba era el selector. Se comprobó con mutaciones | 12 |
+| `npx vitest run src/design-lab src/components/sofi src/app src/hooks` | — | **45 archivos, 839 pruebas** |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check src spec/features/008-sofi-character` | — | Sin errores |
+| `npx playwright test e2e/a11y.spec.ts e2e/motion --project=chromium` | — | 55 de 55 |
+
+**Sensibilidad** (3 mutaciones, todas detectadas; archivos restaurados): el adaptador ignora el movimiento reducido (9 fallos), `full` no anula al sistema (3) y el selector sin «Completo» (12).
+
+### 21.3 Navegador real (Chromium)
+
+Método: Playwright contra el servidor de desarrollo y el selector real del Lab (botones «Sistema», «Reducido» y «Completo»), con el sistema en `no-preference` o `reduce` (`emulateMedia`), es decir, los seis modos. Cada recurso se elige después del modo, para que arranque de cero; en los animados se espera a que acabe la carga en frío.
+
+| Comprobación | Resultado |
+|---|---|
+| Los 14 recursos × los 6 modos | **0 fallos.** En los tres modos reducidos (Sistema con el sistema reducido; «Reducido» con y sin el sistema reducido): ninguna animación en marcha, ninguna capa de controlador ni atributo de máquina, y **la misma imagen en los tres** (comparada con un hash de la captura). En los tres animados («Sistema» sin reducir; «Completo» con y sin el sistema reducido): animaciones en marcha (1 a 8 según el recurso) o, en los tres gags, el controlador montado con sus capas (8, 8 y 3) |
+| `full` aunque el sistema pida reducir | Anima los 14 recursos, con el controlador de los tres gags montado |
+| Poses reducidas | Las de los parciales, vistas en las 14 capturas, incluida `memory-wipe` (la pose aterrorizada con su cartel, D-16). Los tres gags quedan en la pose de `sofi-blink`, sin controlador ni capas |
+| Limpieza completa al pasar a «Reducido» (`poking`, `are-u-still-here`, `i-see-you`; CDP `DOMDebugger.getEventListeners` y envoltorio de `setTimeout`/`setInterval` inyectado) | Tras «Completo» → «Reducido»: capas 0, atributos de máquina 0 y las mismas escuchas (en `window`, `document` y los descendientes del escenario) y los mismos temporizadores que antes de montarlo. Con «Completo» había 1 a 7 escuchas más en `document` y 0 a 2 en descendientes. Tras dos vueltas más, igual: no se acumula nada |
+| Marcos de Perfil (4 iframes) y Preview | Con «Completo» → `data-motion="full"`, con «Reducido» → `reduce`, con «Sistema» → sin atributo (la URL del marco lleva el valor) |
+| Errores de consola | Ninguno |
+
+Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shots62\`: `poses-reducidas.png` (las 14 en una hoja), `pose-<recurso>.png`, y `inspector-eureka-Reducido.png`, `inspector-poking-Reducido.png` e `inspector-poking-Completo.png`.
+
+### 21.4 Hallazgos
+
+1. **`full` se perdía en los marcos** (Preview y Perfil): corregido (§21.1) con prueba.
+2. **«Estado: Reproduciendo» con una pose estática:** corregido (§21.1) con prueba.
+3. Una primera medida de `memory-wipe` en `0` animaciones era la carga en frío de sus 12 tiras (la comprobación esperaba solo 900 ms), no un fallo. Con la espera adecuada, 5 animaciones en los tres modos animados.
+
+### 21.5 Limitaciones reales
+
+- **Solo Chromium.** La equivalencia de los seis modos en tres motores con los 14 recursos va en T073.
+- **Los tres gags en reducido** muestran la pose de `sofi-blink`: es lo que hay hoy (sin controlador). La versión reducida propuesta de los gags es de T066 y su aprobación, de `AV#`; no se anticipa.
+- **Las poses reducidas no se han comparado contra un patrón externo:** se comparan entre los tres modos reducidos y con los parciales por VT2 (`reducedMotion.test.ts`), y se han visto a ojo. Su aprobación visual (AV4) no se ha tocado.
+- **El estado de pausa** que fija el inspector («Pausar») sigue disponible con movimiento reducido: solo guarda la preferencia del recurso.
+- **Los temporizadores** se cuentan con un envoltorio que solo ve los creados tras cargar la página, y las escuchas por CDP no incluyen las propiedades `onX`. Los observadores solo constan en la sonda de jsdom.
+- **Sin `AV#`:** no se ha aprobado ninguno; T063 y T073 no se han empezado.
+
+### 21.6 Criterios de T062
+
+| Criterio | Estado |
+|---|---|
+| Modos sistema, `reduce` y `full` en el Lab, con el selector global | Cumplido, sin selector nuevo |
+| Se ve la pose estática correcta (14 recursos) | Cumplido en Chromium; poses de los parciales y `memory-wipe` sin cambios |
+| `full` anima aunque el sistema pida reducir | Cumplido (14 recursos) |
+| No sobrevive ningún controlador al pasar a `reduce` | Cumplido (3 gags, con CDP y con la sonda) |
+
+**Siguiente tarea:** T063. No se ha aprobado ningún `AV#`.

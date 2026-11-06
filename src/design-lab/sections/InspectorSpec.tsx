@@ -13,6 +13,7 @@ import {
   type SofiAnimationId,
 } from '../../components/sofi/visual/types'
 import { Button } from '../../components/ui/Button/Button'
+import { useReducedMotion } from '../../hooks/useReducedMotion'
 import { cx } from '../../utils/cx'
 import {
   createInspectorRun,
@@ -166,6 +167,9 @@ function ResourceInspector({
     playback,
     createInspectorRun,
   )
+  // El estado efectivo del selector global del Lab (`system | reduce | full`): el inspector no
+  // tiene el suyo, solo cuenta lo que ve.
+  const reduced = useReducedMotion()
   const adjustable = hasSpeedControl(id)
   const rate = effectiveRate(entry.rate, run)
   const frozen = entry.paused || run.held
@@ -259,7 +263,7 @@ function ResourceInspector({
               ['Tipo', PLAYBACK_NAMES[playback]],
               ['Activación', info.activation],
               ['Disponibilidad', availability(id)],
-              ['Estado', statusOf(entry, run)],
+              ['Estado', statusOf(entry, run, reduced)],
             ]}
           />
           {playback === 'machine' && (
@@ -387,8 +391,11 @@ function ResourceInspector({
 function statusOf(
   entry: InspectorEntry<StageBackground>,
   run: InspectorRun,
+  reduced: boolean,
 ): string {
   if (run.cancelled) return 'Cancelado a mitad: cede a sofi-blink'
+  // Con movimiento reducido no hay animación ni controlador: decir «Reproduciendo» sería falso.
+  if (reduced) return 'Pose estática: movimiento reducido'
   if (run.held) return 'Primera pasada completada, quieto'
   return entry.paused ? 'En pausa' : 'Reproduciendo'
 }
