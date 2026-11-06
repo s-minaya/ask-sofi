@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). T062 (modos de movimiento en el Lab) completada el 2026-11-06 (§21). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). T062 (modos de movimiento en el Lab) completada el 2026-11-06 (§21). T063 (4.3 con `talking` y `onSpeakingChange`) completada el mismo día (§22). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -37,6 +37,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T060 — línea de tiempo por fotograma (B1) | Derivada de `getKeyframes()` de la animación real de la tira, sin duraciones ni fotogramas propios: tramos a escala con el lenguaje de 4.4, miniaturas y desplazamiento manual (puntero, miniatura y teclado), también sobre una pasada ya terminada. Fidelidad en Chromium: 660 de 660 frente al fotograma pintado, y los tramos suman el ciclo en los 11 recursos CSS. Las máquinas no admiten una línea fiel: nota, sin alternativa. 641 pruebas, axe 0. Una incidencia corregida (pasada terminada) | §19 |
 | T061 — peso y memoria decodificada (B1) | Por recurso y por tira: bytes del archivo (medidos con Resource Timing, idénticos al disco en los 14: 830,2 KB, la cifra de E3), memoria estimada (ancho × alto × 4, declarada como estimación) y transferencia de red, que **no se puede medir en el Lab** porque el service worker de MSW atiende las peticiones (no se presenta como caché ni como cero). Sin servidor, dependencias ni mediciones duplicadas; una duplicación de la máscara de `memory-wipe` hallada y corregida (16 peticiones, ninguna repetida). 712 pruebas, axe 0 | §20 |
 | T062 — modos de movimiento en el Lab (B1) | El selector global del Lab pasa a `system \| reduce \| full`, sin selector nuevo en el inspector. Los 14 recursos en los 6 modos en Chromium: reducidos, sin animaciones, sin capas y con la misma imagen en los tres; `full` anima aunque el sistema pida reducir; al pasar a «Reducido» no sobrevive ningún controlador (CDP y sonda). Dos hallazgos corregidos: los marcos de Preview y Perfil perdían `full`, y la ficha decía «Reproduciendo» con movimiento reducido | §21 |
+| T063 — 4.3 con `talking` y `onSpeakingChange` (B1) | El hueco provisional pasa a `SyncSlot`: `SofiSprite` con lo que decide `selectVisual({ speaking })`, alimentado por un único booleano de `SofiSpeech.onSpeakingChange`. Hablar, pausar, terminar, cambiar texto, «Ver todo», reducido y desmontar, en jsdom y en Chromium; sin repintados por carácter; las pausas son el reposo del contrato, rotulado como provisional hasta AV5. Límite: el primer `talking` llega con la carga diferida (EX3) | §22 |
 
 ---
 
@@ -1727,3 +1728,70 @@ Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shot
 | No sobrevive ningún controlador al pasar a `reduce` | Cumplido (3 gags, con CDP y con la sonda) |
 
 **Siguiente tarea:** T063. No se ha aprobado ningún `AV#`.
+
+---
+
+## 22. B1 — 4.3 con `talking` y `onSpeakingChange` (T063)
+
+Fecha: 2026-11-06. Antes de empezar: `main` en `f07ef26` (T062), con la CI nº 34 en éxito (`foundation` y `browser`); árbol de trabajo limpio salvo los 13 ZIP.
+
+### 22.1 Qué se entrega
+
+- **`SyncSlot.tsx`** (nuevo, en el Lab): el hueco de 4.3. Recibe solo el booleano de `SofiSpeech.onSpeakingChange` y pinta con `SofiSprite` lo que decide `selectVisual({ speaking })`: `talking` mientras habla y, si no, el reposo que ya da el contrato (`sofi-blink`). No elige recurso ni pose por su cuenta. Sustituye al marcador «Sprite hablando · pendiente 008».
+- **`MotionSection.tsx`:** `MotionSection` guarda un único `useState<boolean>` que alimenta `onSpeakingChange` de 4.1 y el hueco de 4.3 (y su fila `speaking`). El estado por carácter de 4.1 (`onStateChange`, su registro y sus lecturas) no cambia. El texto, las etiquetas y el marco de 4.3 se actualizan; el resto de 4.1, 4.2 y 4.4, no.
+- **Sin duplicar:** `SofiSpeech`, `useSpeechTimeline`, `selectVisual`, `SofiSprite`, el registro y la carga no se tocan. No se añade ningún `AV#`, pose ni temporizador.
+- **Pausas:** en las pausas y al terminar se ve `sofi-blink` **solo como lo que el contrato da hoy**; el hueco lo declara provisional («Pausas · pendiente AV5») y no fija la boca quieta ni el regreso a `blink`. Lo decide AV5 (T070) y entrará por el registro (T083).
+
+### 22.2 Pruebas
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `SyncSlot.test.tsx` (talking al hablar; reposo del contrato al callar; cambia en los dos sentidos; decorativo; marca de estado) | Falla antes del módulo | 5 |
+| `MotionSync.test.tsx`, con el Lab entero, `SofiSpeech` real y el audio simulado del Lab: reposo inicial sin marcador; habla y calla en cada pausa de acuerdo con la lectura de 4.1 en cada paso; **no se repinta por carácter** (el hueco se pinta solo al cambiar el booleano); cambiar el texto a mitad; reiniciar a mitad; «Ver todo» de la mesa y del diálogo a mitad; cambiar la simulación de audio a mitad (se estrena el proveedor); movimiento reducido (nunca habla), activarlo a mitad y `full` con el sistema pidiendo reducir; desmontar a mitad, con y sin StrictMode (sin avisos de React y los mismos temporizadores que al empezar) | La primera ejecución falló en el reposo inicial (el marcador seguía ahí). Las demás se escribieron junto con el hueco y se ejecutaron después: **sin RED propio**; se comprobó con mutaciones | 13 |
+| `npx vitest run src/design-lab src/components/sofi src/app src/hooks` | — | **47 archivos, 857 pruebas** (T062: 839) |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check src spec/features/008-sofi-character` | — | Sin errores |
+| `npx playwright test e2e/a11y.spec.ts e2e/motion --project=chromium` | — | 55 de 55 |
+
+**Sensibilidad** (4 mutaciones, todas detectadas; archivos restaurados): `onSpeakingChange` sin conectar (11 fallos), el hueco remontado por carácter (1: la de repintados), el hueco con otra pose en pausa (11) y `useSpeechTimeline` sin avisar de que calla al cancelar (6, sobre código ajeno; ya lo cubrían sus pruebas de `SofiSpeech`, y estas lo cubren a través del Lab).
+
+**Un fallo propio, corregido en la causa:** dos de las pruebas pasaban solas pero superaban los 5 s dentro de la suite completa, porque recorrían una respuesta larga en pasos de 10 ms con todo el Lab montado. Ahora usan un texto propio y corto (con pausas) y avanzan de temporizador en temporizador (un paso por letra); no se subió ningún tiempo límite.
+
+### 22.3 Navegador real (Chromium)
+
+Método: Playwright contra el servidor de desarrollo; un muestreo en la página cada 30 ms del recurso del hueco (por la clase del sprite), de la bandera `data-speaking` y de la lectura «Hablando» de 4.1.
+
+| Comprobación | Resultado |
+|---|---|
+| Frase completa de la respuesta (reposo → hablar → pausas → fin) | `blink › talking › blink › talking › …` (7 veces `talking`; en otra ejecución, 6 y de vuelta a `blink` al terminar). 316 muestras; **una** en que 4.1 y la bandera dicen «habla» y el sprite aún es el de reposo: el primer `talking` (ver límites) |
+| Peticiones de las tiras de `talking` | `talking.webp` y `talking-mouth.webp`, **una vez cada una**, sin duplicados |
+| Animaciones del hueco | Con `talking`, 2 en marcha; con el reposo, 1 (el parpadeo) |
+| Cambiar el texto a mitad | `blink › talking › blink`, en reposo al instante |
+| «Ver todo» a mitad (el de la mesa y el del diálogo) | `blink › talking › blink`; Estado «completo» |
+| Movimiento reducido antes de reproducir | Nunca `talking`, 0 animaciones, texto completo, «Hablando: no» |
+| Activar «Reducido» a mitad | `blink › talking › blink`, sin volver a hablar |
+| «Completo» con el sistema pidiendo reducir | Habla con `talking` |
+| Salir de la sección a mitad de la frase | Sin errores ni avisos de consola; al volver, el hueco en reposo |
+| axe (hueco, con la frase en marcha; 1280 claro y oscuro, 390 claro y 320 oscuro) | 0 violaciones; sin desbordamiento horizontal; marco de 150 × 150 px |
+
+Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shots63\`: `estados.png` (hablando, pausa y reducido), `hablando.png`, `pausa.png`, `reducido.png` y `sync-final.png`.
+
+### 22.4 Limitaciones reales
+
+- **El primer `talking` llega con retraso.** El módulo y las tiras de `talking` se cargan de forma diferida (plan §7, pendiente de EX3): hasta que están decodificadas, `SofiSprite` muestra su estático (el reposo). En el servidor de desarrollo local fueron entre 1 y 6 muestras de 30 ms. Con red lenta sería más; es justo lo que mide EX3. No se ha cambiado la estrategia de carga ni se ha precargado nada.
+- **Renders:** se comprueba con un contador de renderizados del hueco en la prueba. No se ha pasado el React Profiler de plan §7 («los renderizados de `talking`»), que sigue pendiente; el estado por carácter de 4.1 sigue repintando 4.1 a propósito (es lo que demuestra).
+- **Dependencia del compilador de React:** que el hueco no se repinte por carácter descansa en que `react({ compiler: true })` memoiza su elemento (no hay `memo` manual). La prueba falla si deja de ocurrir.
+- **Solo Chromium** para el navegador real; jsdom en el resto. Firefox y WebKit, en T073–T076.
+- **Las pausas son el reposo actual (`sofi-blink`), no una decisión:** AV5 no se ha aprobado, y T070 las propondrá (boca quieta o `blink`, y el paso `blink → talking`). El salto que se ve en cada pausa es justo lo que AV5 debe valorar.
+- **4.1 conserva sus expresiones provisionales** (`SofiPortrait expression="talking"`): no era alcance de T063.
+
+### 22.5 Criterios de T063
+
+| Criterio | Estado |
+|---|---|
+| 4.3 usa `talking` conectado a `SofiSpeech.onSpeakingChange` | Cumplido |
+| Desaparece el hueco «Sprite hablando · pendiente 008» | Cumplido |
+| Transiciones: hablar, pausar, terminar, cambiar texto, «Ver todo», reducido y desmontar | Cumplido en jsdom y en Chromium |
+| Sin renders por carácter ni sincronización duplicada | Cumplido (un único booleano; contador de repintados) |
+| Sin decidir la pose de pausa | Cumplido: el reposo del contrato, rotulado como provisional |
+
+**Siguiente tarea:** T064. No se ha aprobado ningún `AV#`.

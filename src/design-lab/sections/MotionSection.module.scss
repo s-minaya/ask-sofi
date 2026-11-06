@@ -193,24 +193,18 @@
   gap: 1.25rem;
 }
 
-// Hueco del futuro sprite «hablando»: se enciende con la escritura real de 4.1.
+// Marco del sprite «hablando» (4.3): se enciende con la escritura real de 4.1.
 .slot {
-  display: grid;
-  place-items: center;
   width: 9.375rem;
-  height: 9.375rem;
-  padding: 0.625rem;
-  border: var(--stroke-structure) dashed var(--color-text-subtle);
-  color: var(--color-text-muted);
-  font: 600 0.8125rem/1.35 var(--font-ui);
-  text-align: center;
-}
+  flex: none;
+  overflow: hidden;
+  border: var(--stroke-structure) solid var(--color-border);
+  background: var(--tone-pink-soft);
 
-.slotOn {
-  border-style: solid;
-  border-color: var(--tone-ink);
-  background: var(--tone-pink);
-  color: var(--tone-ink);
+  &[data-speaking='true'] {
+    border-color: var(--tone-ink);
+    background: var(--tone-pink);
+  }
 }
 
 .slotCopy {

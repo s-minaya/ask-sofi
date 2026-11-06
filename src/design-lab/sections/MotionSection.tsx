@@ -46,6 +46,7 @@ import {
 import { createSimulatedAudio } from '../simulatedAudio'
 import { InspectorSpec } from './InspectorSpec'
 import styles from './MotionSection.module.scss'
+import { SyncSlot } from './SyncSlot'
 
 type Dispatch = (action: MotionLabAction) => void
 
@@ -93,9 +94,16 @@ type SpeechSpecProps = {
   lab: MotionLabState
   dispatch: Dispatch
   onSimulationChange: (patch: Partial<AudioSimulationFlags>) => void
+  // Avisa solo cuando cambia si Sofi habla (D-12), no en cada letra.
+  onSpeakingChange: (speaking: boolean) => void
 }
 
-function SpeechSpec({ lab, dispatch, onSimulationChange }: SpeechSpecProps) {
+function SpeechSpec({
+  lab,
+  dispatch,
+  onSimulationChange,
+  onSpeakingChange,
+}: SpeechSpecProps) {
   const sound = useSound()
   const reducedMotion = useReducedMotion()
   const simulateId = useId()
@@ -164,6 +172,7 @@ function SpeechSpec({ lab, dispatch, onSimulationChange }: SpeechSpecProps) {
             onStateChange={(state) =>
               dispatch({ type: 'speech', state, at: performance.now() })
             }
+            onSpeakingChange={onSpeakingChange}
             doneAction={
               <TextLink href="#m-sync" continues>
                 Ver las versiones
@@ -436,37 +445,38 @@ function SoundSpec({ status }: { status: SpeechAudioStatus }) {
 
 // --- 4.3 · Sincronía con sprites ---
 
-function SyncSpec({ speech }: { speech: MotionLabState['speech'] }) {
-  const { status, index, speaking } = speech
+function SyncSpec({
+  speech,
+  speaking,
+}: {
+  speech: MotionLabState['speech']
+  // Lo que avisa `onSpeakingChange`: lo único que necesita el sprite.
+  speaking: boolean
+}) {
+  const { status, index } = speech
   return (
     <LabSpec
       id="m-sync"
       kicker="4.3 · Para 008"
       title="Sincronía con sprites"
-      desc="SofiSpeech expone su estado sin conocer los sprites. Cuando exista el spritesheet de hablar, solo tendrá que escuchar «hablando»; el hueco provisional se enciende ahora con la escritura de 4.1."
+      desc="SofiSpeech expone su estado sin conocer los sprites. El recurso real talking solo escucha «hablando»: onSpeakingChange avisa cuando cambia, no en cada letra, y selectVisual lo traduce al recurso que se pinta."
       codes={
         <>
           <LabCode>{'{ status, index, length, speaking }'}</LabCode>
-          <LabProv>Sprite «hablando» · pendiente 008</LabProv>
+          <LabCode>onSpeakingChange</LabCode>
+          <LabProv>Pausas · pendiente AV5</LabProv>
         </>
       }
     >
       <div className={styles.sync}>
         <div className={styles.slotCell}>
-          <div
-            className={cx(styles.slot, speaking && styles.slotOn)}
-            aria-hidden="true"
-          >
-            {speaking
-              ? 'hablando'
-              : status === 'pause'
-                ? 'pausa'
-                : 'sprite «hablando» · 008'}
-          </div>
+          <SyncSlot speaking={speaking} />
           <div className={styles.slotCopy}>
-            <p className={styles.slotTitle}>Hueco del sprite</p>
+            <p className={styles.slotTitle}>Sprite «hablando»</p>
             <LabNote style={{ maxWidth: '30ch' }}>
-              Rosa mientras hay letras; discontinuo en las pausas y al terminar.
+              talking mientras hay letras. En las pausas y al terminar se ve el
+              reposo actual (sofi-blink), solo provisional: si en una pausa se
+              queda la boca quieta o se vuelve a blink lo decide AV5.
             </LabNote>
           </div>
         </div>
@@ -642,6 +652,9 @@ export function MotionSection() {
   const [audio, setAudio] = useState(() =>
     createLabAudio(lab.simulation, lab.volume),
   )
+  // Lo que avisa `SofiSpeech.onSpeakingChange`: un booleano que solo cambia al empezar y al
+  // callar, sin pasar por el estado por carácter de 4.1.
+  const [speaking, setSpeaking] = useState(false)
 
   // El registro escucha al controlador de audio, que vive fuera de React.
   useEffect(
@@ -695,9 +708,10 @@ export function MotionSection() {
           lab={lab}
           dispatch={dispatch}
           onSimulationChange={changeSimulation}
+          onSpeakingChange={setSpeaking}
         />
         <SoundSpec status={lab.audio} />
-        <SyncSpec speech={lab.speech} />
+        <SyncSpec speech={lab.speech} speaking={speaking} />
       </SoundProvider>
       <BlinkSpec />
       <InspectorSpec />
