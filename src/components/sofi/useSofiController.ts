@@ -24,6 +24,9 @@ export type SofiControllerOptions = {
   // Escena tranquila: nada se escribe, lee ni procesa. Sin ella no se pide ni una tira, ni
   // se carga el controlador, ni hay escuchas globales (catálogo §6; plan §7).
   calm: boolean
+  // Inactividad de `are-u-still-here` en ms. Solo para demostrarla sin esperar (el Design Lab);
+  // sin ella manda `STILL_HERE_IDLE_MS`. El valor definitivo lo aprueba el Lab (AV6).
+  idleAfter?: number
 }
 
 // Lo común a los tres controladores que usa el adaptador.
@@ -37,6 +40,7 @@ type Controller = {
 type Attach = (
   host: HTMLElement,
   onRest: (resting: boolean) => void,
+  idleAfter: number,
 ) => Controller
 
 // El `import()` va dentro de cada cargador: un import estático metería los tres controladores
@@ -51,9 +55,9 @@ const CONTROLLERS: Record<GagId, () => Promise<Attach>> = {
   'are-u-still-here': async () => {
     const { attachStillHere } =
       await import('../../styles/sprites/are-u-still-here.js')
-    return (host, onRest) =>
+    return (host, onRest, idleAfter) =>
       attachStillHere(host, {
-        timing: { idleAfter: STILL_HERE_IDLE_MS },
+        timing: { idleAfter },
         onChange: (state) => onRest(state === 'idle'),
       })
   },
@@ -74,7 +78,7 @@ const CONTROLLERS: Record<GagId, () => Promise<Attach>> = {
 export function useSofiController(
   kind: GagId,
   host: HTMLElement | null,
-  { ambient, calm }: SofiControllerOptions,
+  { ambient, calm, idleAfter = STILL_HERE_IDLE_MS }: SofiControllerOptions,
 ): string | undefined {
   const reduced = useReducedMotion()
   const rate = useSyncExternalStore(subscribeToRates, () => rateFor(kind))
@@ -110,12 +114,16 @@ export function useSofiController(
     CONTROLLERS[kind]().then((attach) => {
       if (cancelled) return
       let resting = true
-      const attached = attach(host, (nowResting) => {
-        if (nowResting === resting) return
-        resting = nowResting
-        if (nowResting) ambient.deactivate(kind)
-        else ambient.activate(kind)
-      })
+      const attached = attach(
+        host,
+        (nowResting) => {
+          if (nowResting === resting) return
+          resting = nowResting
+          if (nowResting) ambient.deactivate(kind)
+          else ambient.activate(kind)
+        },
+        idleAfter,
+      )
       applyCurrentRate(attached)
       // `attachPoking` pierde el motivo al delegar: por eso `pause()` y `resume()` van sin
       // argumentos y es `ambient` quien agrega las causas (E6).
@@ -136,7 +144,7 @@ export function useSofiController(
       cancelled = true
       teardown?.()
     }
-  }, [enabled, kind, host, className, ambient])
+  }, [enabled, kind, host, className, ambient, idleAfter])
 
   useEffect(() => {
     controller.current?.setRate(rate)

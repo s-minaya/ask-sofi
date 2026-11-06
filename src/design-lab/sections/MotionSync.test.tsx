@@ -168,7 +168,10 @@ describe('4.3 · transiciones', () => {
     (which) => {
       open()
       speakNow()
-      const buttons = screen.getAllByText('Ver todo')
+      // Solo los de 4.1: 4.6 tiene su propio «Ver todo» simulado.
+      const buttons = within(
+        document.getElementById('m-speech') as HTMLElement,
+      ).getAllByText('Ver todo')
       act(() => {
         fireEvent.click(
           which === 'el de la mesa' ? buttons[0] : buttons.at(-1)!,

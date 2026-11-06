@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). T062 (modos de movimiento en el Lab) completada el 2026-11-06 (§21). T063 (4.3 con `talking` y `onSpeakingChange`) completada el mismo día (§22). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). T062 (modos de movimiento en el Lab) completada el 2026-11-06 (§21). T063 (4.3 con `talking` y `onSpeakingChange`) completada el mismo día (§22). T064 (escenarios y secuencias del contrato) completada el mismo día (§23). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -38,6 +38,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T061 — peso y memoria decodificada (B1) | Por recurso y por tira: bytes del archivo (medidos con Resource Timing, idénticos al disco en los 14: 830,2 KB, la cifra de E3), memoria estimada (ancho × alto × 4, declarada como estimación) y transferencia de red, que **no se puede medir en el Lab** porque el service worker de MSW atiende las peticiones (no se presenta como caché ni como cero). Sin servidor, dependencias ni mediciones duplicadas; una duplicación de la máscara de `memory-wipe` hallada y corregida (16 peticiones, ninguna repetida). 712 pruebas, axe 0 | §20 |
 | T062 — modos de movimiento en el Lab (B1) | El selector global del Lab pasa a `system \| reduce \| full`, sin selector nuevo en el inspector. Los 14 recursos en los 6 modos en Chromium: reducidos, sin animaciones, sin capas y con la misma imagen en los tres; `full` anima aunque el sistema pida reducir; al pasar a «Reducido» no sobrevive ningún controlador (CDP y sonda). Dos hallazgos corregidos: los marcos de Preview y Perfil perdían `full`, y la ficha decía «Reproduciendo» con movimiento reducido | §21 |
 | T063 — 4.3 con `talking` y `onSpeakingChange` (B1) | El hueco provisional pasa a `SyncSlot`: `SofiSprite` con lo que decide `selectVisual({ speaking })`, alimentado por un único booleano de `SofiSpeech.onSpeakingChange`. Hablar, pausar, terminar, cambiar texto, «Ver todo», reducido y desmontar, en jsdom y en Chromium; sin repintados por carácter; las pausas son el reposo del contrato, rotulado como provisional hasta AV5. Límite: el primer `talking` llega con la carga diferida (EX3) | §22 |
+| T064 — escenarios y secuencias del contrato (B1) | Sección 4.6 de Motion & Sound: señales simuladas en local que consume `selectVisual` (con `wipeAfter` y `ambient`), con los tres gags reales, pasadas únicas con su fin real y el orden de la salida rápida y del borrado en un registro, sin persistencia simulada. RED real: el borrado descartaba la seguridad. Observación abierta: con movimiento reducido una pasada única no termina (AV4/009) | §23 |
 
 ---
 
@@ -1795,3 +1796,87 @@ Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shot
 | Sin decidir la pose de pausa | Cumplido: el reposo del contrato, rotulado como provisional |
 
 **Siguiente tarea:** T064. No se ha aprobado ningún `AV#`.
+
+---
+
+## 23. B1 — Escenarios y secuencias del contrato (T064)
+
+Fecha: 2026-11-06. Antes de empezar: `main` en `9cc683e` (T063), con la CI nº 35 en éxito; árbol de trabajo limpio salvo los 13 ZIP.
+
+### 23.1 Qué se entrega
+
+- **Sección «4.6 · Escenarios y secuencias»** en Motion & Sound (`ScenariosSpec.tsx`). Cada botón emite una señal del contrato, como lo harán 007 y 009, y lo que se ve lo decide `selectVisual` (con la marca del Lab). Rotulada «Simulación local».
+- **`scenarioLab.ts`** (reductor puro): solo guarda las señales (`SofiState`), un historial de lo visto y un registro numerado. Las prioridades, el recurso y las interrupciones salen de `selectVisual`; el borrado, de `wipeAfter`. No hay `presentationGate` (es de T065).
+- **Eventos:** hablar, pausa y «Ver todo»; petición pendiente; falta de contexto, error, interpretada sin señales, y los dos tonos de `interpreted`; «No sé más»; favorito guardado; borrado efectivo y fin de su confirmación; salida rápida; `safety_concern` y seguridad no evaluada, con «Seguridad resuelta»; reiniciar. El fin de la pasada única de `SofiSprite` es el real (`onEnd`), y se consulta el estado actual, sin cola.
+- **Resultados elegidos a mano:** el tono `eureka`/`suspicious` lo elige quien prueba y la sección lo dice (la regla es de 006). No se infiere nada.
+- **Privacidad:** el registro cuenta el orden del contrato (1 borrado real, que lo hace 009 y aquí no borra nada; 2 señal `data-erased`; luego `confirmation-ended`), y el de la salida rápida (1 oculto, 2 controladores cancelados, 3 sin sprite). No hay almacenamiento, borrado ni consulta simulados.
+- **Gags:** los tres controladores reales (`GagHost`, extraído de `InspectorSpec` sin cambiar su comportamiento) comparten un `ambient` (`observeAmbient` solo reenvía y cuenta) con las cuatro causas de pausa y el registro de quién se activa, a quién se rechaza y qué pausas y reanudaciones llegan. Solo hay gags en una escena tranquila (representación de reserva); cualquier otra cosa los cancela. `poking` conserva su 1×: no se toca ninguna velocidad.
+- **Adaptador:** `useSofiController` admite `idleAfter` opcional (la demostración de «inactividad y despertar» usa 5 s). Su valor por defecto sigue siendo `STILL_HERE_IDLE_MS` (150 000 ms provisionales) y no es la inactividad ajustable de T066. Sin cambios de producción.
+
+### 23.2 Pruebas
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `useSofiController.test.tsx` (`idleAfter`) | Vista fallar | 1 nueva |
+| `scenarioLab.test.ts` | Vista fallar (3): el borrado descartaba también la seguridad y la salida rápida. Corregido | 26 |
+| `observeAmbient.test.ts` | **Sin RED visto** (prueba e implementación juntas); se comprobó con una mutación | 4 |
+| `ScenariosSpec.test.tsx` (Lab real, controladores reales, sprite del escenario simulado) | **Sin RED visto** (escrita con el componente, ejecutada después); se comprobó con mutaciones | 26 |
+| `npx vitest run src/design-lab src/components/sofi src/app src/hooks` | — | **50 archivos, 914 pruebas** (T063: 857) |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check src spec/features/008-sofi-character` | — | Sin errores |
+| `npx playwright test e2e/a11y.spec.ts e2e/motion --project=chromium` | — | 55 de 55 |
+
+**Sensibilidad** (7 mutaciones, todas detectadas; archivos restaurados y comprobados con `cmp`): el fin de la pasada sin despachar (2 fallos), los gags siempre «tranquilos» (2), un `ambient` propio por gag (3), el borrado que descarta seguridad (6), `observeAmbient` ignorando el rechazo (1), `idleAfter` ignorado (2) y la escena sobria contada como tranquila (1). Una primera «mutación» de la escena sobria era equivalente (no cambiaba el comportamiento) y se rehízo.
+
+Un ajuste ajeno: `MotionSync.test.tsx` buscaba el último «Ver todo» de toda la sección y 4.6 trae el suyo: ahora busca solo en 4.1.
+
+### 23.3 Navegador real (Chromium)
+
+Método: Playwright contra el servidor de desarrollo, con los recursos y controladores reales. En las pasadas únicas se espera su fin natural. Temporizadores con un envoltorio inyectado y escuchas por CDP.
+
+| Comprobación | Resultado |
+|---|---|
+| `blink → talking → blink` | `talking` al hablar y reposo al callar |
+| `processing → resultado`, `needs-context → uncertain` | `sofing › needs-context › sofi-blink › uncertain › sofi-blink`; ambas pasadas terminan solas |
+| `favoriting → blink` | Termina sola; un guardado nuevo la repite |
+| Resultados (`error`, `eureka`, `suspicious`, sin señales) | `error`, `eureka`, `suspicious` y reposo; los tres primeros terminan solos |
+| `memory-wipe → neutral` | La animación termina y **sigue `memory-wipe`** (9 s después, 0 animaciones vivas) hasta la señal `confirmation-ended`, que devuelve a neutral |
+| Seguridad | Con `safety_concern` («sin sprite») y con seguridad no evaluada («sobria»), nada de habla, petición, favorito o borrado cambia lo que se ve; los gags, 0 capas y 0 anfitriones. Al resolverla se representa el estado actual |
+| Salida rápida | Sin sprite, 0 animaciones, ningún `memory-wipe` aunque llegue un borrado. Los gags se cancelan: `window` 19 y `document` 1 escuchas y los mismos temporizadores que con la escena ocupada (con los gags montados había 21 y 15), 0 capas |
+| Gags | Toque secuencial: `poking` pasa a `skeptical` y es el gag activo; `i-see-you` y `are-u-still-here` quedan pausados por `ambient`, y el puntero sobre `i-see-you` no lo activa. `are-u-still-here` pasa a `drowsy` (8,5 s en esa prueba por haber estado pausado) y a `asleep`, y con actividad pasa a `startled` |
+| Causas de pausa | Dos causas a la vez: una sola pausa por gag; quitar una no reanuda; quitar la última reanuda a los tres |
+| Escena ocupada | Con habla, 0 gags; al volver al reposo, 3 anfitriones con 19 capas |
+| Movimiento reducido | Sin controladores; `favoriting` queda como pose estática con 0 animaciones |
+| Desmontar a mitad | Sin errores ni avisos de consola; mismos temporizadores que en las demás pruebas (2) |
+| axe (1280 claro y oscuro, 390 claro, 320 oscuro y 1280 con texto ×2) | 0 violaciones tras corregir una: la opacidad del estado «cancelados» bajaba el contraste del texto de los gags; ahora solo atenúa el marco. Sin desbordamiento horizontal |
+
+Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shots64\`: `seccion-1280-light-x1.png`, `seccion-320-dark-x1.png` y las de 390 y ×2; `memory-wipe-final.png`, `salida-rapida.png`, `seguridad-*.png`, `gags.png` y `reducido-favoriting.png`.
+
+### 23.4 Hallazgos y observaciones
+
+1. **El borrado descartaba las señales de seguridad** (RED de §23.2): corregido; un borrado de datos no quita esas prioridades.
+2. **Contraste:** corregido (§23.3).
+3. **Peticiones repetidas de tiras.** En una pasada de Playwright con el service worker de MSW salieron 5 tiras con dos respuestas (`talking*` y `memory-wipe-face-*`). El inspector que ya existía, con la misma técnica, muestra 12 tiras repetidas y 2 respuestas por cada una (todas `200` por el service worker), y en otra pasada solo de 4.6 no hubo ninguna. Es un efecto de contar respuestas con MSW en desarrollo, no de esta sección; no se midió con un build (T001/EX3).
+4. **Observación abierta, sin decidir (reducido):** sin animación no hay fin de pasada (`SofiSprite`, plan §5.4), así que una reacción de pasada única (p. ej. `favoriting` o `needs-context`) se queda como pose estática hasta el siguiente evento. El catálogo fija la pose reducida de cada recurso pero no cuánto dura en pantalla; es parte de AV4 (T069) y de quien posea el estado (007, 009).
+5. Al resolver la seguridad con otras señales pendientes se ve la que corresponda al estado actual (por ejemplo `memory-wipe` si llegó un borrado), sin cola de lo vencido: es el contrato, no un fallo.
+
+### 23.5 Limitaciones reales
+
+- **Es una simulación manual:** las secuencias se recorren con los botones (y el historial las demuestra), sin reproducción automática; los tiempos entre eventos los pone quien prueba.
+- **La escena tranquila de los gags** es una suposición del Lab (la representación de reserva); la regla real la pondrán 007 y 009.
+- **Inactividad:** 5 s de demostración frente a los 150 s provisionales del plan; la definitiva es de AV6/T066.
+- **Sin `presentationGate`** (T065), sin `holdMotion` (D-16 ya probado en T046; el Lab no escribe preferencias) y sin restablecer la preferencia de movimiento.
+- **Solo Chromium** en navegador real. Firefox y WebKit, en T073–T076.
+- **Seguridad sobria y sin sprite** se muestran como marcadores de texto: su diseño no existe (art-direction, README 10).
+- **Sin `AV#`:** no se ha aprobado ninguno.
+
+### 23.6 Criterios de T064
+
+| Criterio | Estado |
+|---|---|
+| Eventos del contrato (habla/pausa/«Ver todo», petición, falta de contexto, incierta, favorito, toque, puntero, inactividad, borrado, salida rápida) | Cumplido (simulación local) |
+| Secuencias `blink → talking → blink`, `processing → resultado`, `needs-context → uncertain`, `favoriting → blink`, `memory-wipe → neutral` | Cumplido, con pasadas reales |
+| Prioridades de seguridad y de gags, interrupciones y limpieza | Cumplido (jsdom, CDP y consola) |
+| Sin lógica funcional duplicada ni resultados inferidos | Cumplido |
+| Privacidad: orden fiel, sin persistencia simulada | Cumplido |
+
+**Siguiente tarea:** T065. No se ha aprobado ningún `AV#`.

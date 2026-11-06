@@ -1,8 +1,5 @@
 import { useEffect, useReducer, useState } from 'react'
 import { SofiSprite } from '../../components/sofi/SofiSprite/SofiSprite'
-import { className as blinkClass } from '../../components/sofi/sprites/sofi-blink'
-import { useSofiController } from '../../components/sofi/useSofiController'
-import { createAmbient, type GagId } from '../../components/sofi/visual/ambient'
 import {
   clearSessionRates,
   setSessionRate,
@@ -67,6 +64,7 @@ import {
 } from '../spriteInspector'
 import { keepResourceTimings } from '../spriteWeight'
 import { FrameTimeline } from './FrameTimeline'
+import { GagHost } from './GagHost'
 import { ResourceWeight } from './ResourceWeight'
 import styles from './InspectorSpec.module.scss'
 
@@ -398,27 +396,4 @@ function statusOf(
   if (reduced) return 'Pose estática: movimiento reducido'
   if (run.held) return 'Primera pasada completada, quieto'
   return entry.paused ? 'En pausa' : 'Reproduciendo'
-}
-
-// El anfitrión de un gag es el elemento de `sofi-blink`, sin hijos de React: el controlador le
-// añade las capas (plan 008 §6). Aquí ocupa el lugar que tendrá en la pantalla que lo use.
-function GagHost({ kind, frozen }: { kind: GagId; frozen: boolean }) {
-  const [host, setHost] = useState<HTMLElement | null>(null)
-  const [ambient] = useState(createAmbient)
-  const gagClass = useSofiController(kind, host, { ambient, calm: true })
-
-  // El Lab no tiene causa de pausa propia: «ocupada» detiene los tiempos del controlador igual
-  // que lo haría una consulta en marcha.
-  useEffect(() => {
-    ambient.setCause('busy', frozen)
-  }, [ambient, frozen])
-
-  return (
-    <span
-      ref={setHost}
-      aria-hidden="true"
-      className={cx(blinkClass, gagClass)}
-      style={{ display: 'block', width: '100%' }}
-    />
-  )
 }

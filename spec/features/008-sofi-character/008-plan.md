@@ -221,7 +221,7 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
   - lo monta solo si la escena está tranquila, el estado efectivo no es reducido, el anfitrión está montado y sus tiras están decodificadas (las capas las crea el controlador y piden sus tiras entonces: E12, E13);
   - lo destruye en la limpieza del efecto (E6, E7);
   - recibe `{ ambient, calm }` (las causas compartidas y si la escena está tranquila) y **devuelve la clase del gag**, que el consumidor aplica al anfitrión: es `undefined` hasta que las tiras están decodificadas y mientras no pueda montarse. El controlador no se monta hasta que esa clase está aplicada, y el estado efectivo de movimiento lo lee él mismo;
-  - la velocidad llega con `setRate`, al montar y en vivo, y a las capas CSS como en §5.5; el umbral de `are-u-still-here` es la constante `STILL_HERE_IDLE_MS`.
+  - la velocidad llega con `setRate`, al montar y en vivo, y a las capas CSS como en §5.5; el umbral de `are-u-still-here` es la constante `STILL_HERE_IDLE_MS`; una opción `idleAfter` permite acortarlo solo para demostrarlo en el Lab (T064), sin cambiar el valor por defecto.
 - **Anfitrión:** el elemento de `sofi-blink` con la clase del gag, sin hijos de React.
 - **Causas de pausa** (`visual/ambient`):
   - el adaptador agrega en un conjunto: Sofi ocupada, otro gag, escritura o interacción, estado sensible;

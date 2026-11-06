@@ -95,6 +95,7 @@ type SceneProps = {
   calm?: boolean
   motion?: MotionPreference
   strict?: boolean
+  idleAfter?: number
 }
 
 // El anfitrión es el elemento al que el consumidor aplica la clase del gag y que, como pide
@@ -103,9 +104,14 @@ function Gag({
   spec,
   ambient,
   calm,
-}: Pick<SceneProps, 'spec' | 'ambient'> & { calm: boolean }) {
+  idleAfter,
+}: Pick<SceneProps, 'spec' | 'ambient' | 'idleAfter'> & { calm: boolean }) {
   const [host, setHost] = useState<HTMLElement | null>(null)
-  const gagClass = useSofiController(spec.kind, host, { ambient, calm })
+  const gagClass = useSofiController(spec.kind, host, {
+    ambient,
+    calm,
+    idleAfter,
+  })
   return <span ref={setHost} data-testid="host" className={gagClass} />
 }
 
@@ -115,10 +121,11 @@ function Scene({
   calm = true,
   motion = 'system',
   strict = false,
+  idleAfter,
 }: SceneProps) {
   const tree = (
     <MotionPreferenceProvider value={motion}>
-      <Gag spec={spec} ambient={ambient} calm={calm} />
+      <Gag spec={spec} ambient={ambient} calm={calm} idleAfter={idleAfter} />
     </MotionPreferenceProvider>
   )
   return strict ? <StrictMode>{tree}</StrictMode> : tree
@@ -389,6 +396,18 @@ describe('useSofiController · inactividad y velocidad', () => {
     expect(stillHere()).toBe('idle')
     act(() => vi.advanceTimersByTime(1_500))
     expect(stillHere()).toBe('drowsy')
+  })
+
+  it('un consumidor puede acortar la inactividad (el Lab, para demostrarla) sin cambiar el umbral del plan', async () => {
+    render(<Scene spec={STILL_HERE} ambient={ambient} idleAfter={3_000} />)
+    await flush()
+
+    act(() => vi.advanceTimersByTime(2_500))
+    expect(stillHere()).toBe('idle')
+    act(() => vi.advanceTimersByTime(1_000))
+    expect(stillHere()).toBe('drowsy')
+    // El valor por defecto sigue siendo el del plan.
+    expect(STILL_HERE_IDLE_MS).toBe(150_000)
   })
 
   it('la velocidad de sesión llega al controlador con setRate: al montar y en vivo', async () => {
