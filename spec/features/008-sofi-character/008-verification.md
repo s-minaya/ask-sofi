@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). T062 (modos de movimiento en el Lab) completada el 2026-11-06 (§21). T063 (4.3 con `talking` y `onSpeakingChange`) completada el mismo día (§22). T064 (escenarios y secuencias del contrato) completada el mismo día (§23). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). T062 (modos de movimiento en el Lab) completada el 2026-11-06 (§21). T063 (4.3 con `talking` y `onSpeakingChange`) completada el mismo día (§22). T064 (escenarios y secuencias del contrato) completada el mismo día (§23). T065 (Preview con los recursos reales y `presentationGate`) completada el mismo día (§24). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -39,6 +39,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T062 — modos de movimiento en el Lab (B1) | El selector global del Lab pasa a `system \| reduce \| full`, sin selector nuevo en el inspector. Los 14 recursos en los 6 modos en Chromium: reducidos, sin animaciones, sin capas y con la misma imagen en los tres; `full` anima aunque el sistema pida reducir; al pasar a «Reducido» no sobrevive ningún controlador (CDP y sonda). Dos hallazgos corregidos: los marcos de Preview y Perfil perdían `full`, y la ficha decía «Reproduciendo» con movimiento reducido | §21 |
 | T063 — 4.3 con `talking` y `onSpeakingChange` (B1) | El hueco provisional pasa a `SyncSlot`: `SofiSprite` con lo que decide `selectVisual({ speaking })`, alimentado por un único booleano de `SofiSpeech.onSpeakingChange`. Hablar, pausar, terminar, cambiar texto, «Ver todo», reducido y desmontar, en jsdom y en Chromium; sin repintados por carácter; las pausas son el reposo del contrato, rotulado como provisional hasta AV5. Límite: el primer `talking` llega con la carga diferida (EX3) | §22 |
 | T064 — escenarios y secuencias del contrato (B1) | Sección 4.6 de Motion & Sound: señales simuladas en local que consume `selectVisual` (con `wipeAfter` y `ambient`), con los tres gags reales, pasadas únicas con su fin real y el orden de la salida rápida y del borrado en un registro, sin persistencia simulada. RED real: el borrado descartaba la seguridad. Observación abierta: con movimiento reducido una pasada única no termina (AV4/009) | §23 |
+| T065 — Preview con recursos reales y `presentationGate` (B1) | Las pantallas de la Preview reciben, con props opcionales, el recurso que decide `selectVisual` (producción no cambia); `presentationGate` retiene solo la presentación de un resultado no crítico hasta el fin del primer ciclo o el límite, con límite, velocidad de `sofing` y latencia ajustables en la mesa y una tabla viva de lo que espera y lo que no. En Chromium: 3,03 s al límite, 1,77 s al fin del ciclo a 2×, error en el acto, cancelar y reducido sin esperar. Abiertos: el recorte de `error` corta el brazo, la etiqueta de actividad durante la retención (T068) y AV2 sin aprobar | §24 |
 
 ---
 
@@ -1880,3 +1881,78 @@ Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shot
 | Privacidad: orden fiel, sin persistencia simulada | Cumplido |
 
 **Siguiente tarea:** T065. No se ha aprobado ningún `AV#`.
+
+---
+
+## 24. B1 — Preview con los recursos reales y `presentationGate` (T065)
+
+Fecha: 2026-11-06. Antes de empezar: `main` en `542e1a7` (T064), con la CI nº 36 en éxito; árbol de trabajo limpio salvo los 13 ZIP.
+
+### 24.1 Qué se entrega
+
+- **Recursos reales en las pantallas de siempre.** `SofiStage`, `SofiPortrait` y `ProcessingScreen`, `ReadingScreen`, `NeedsContextScreen` y `ErrorScreen` aceptan, **de forma opcional**, `visual` (recurso, primer ciclo y fin de la pasada) y, las dos que hablan, `onSpeakingChange`. Sin ellas se ven y se comportan exactamente como antes (producción no las pasa). Con `visual`, el reposo es el parpadeo real y la expresión provisional (F1, F2) deja de mandar. Layout, marcos y copy no cambian.
+- **Quién decide qué se pinta:** la Preview emite las señales a `selectVisual` (con la marca del Lab): `sofing` al procesar, `needs-context` y `error` de pasada única y luego reposo, `talking` solo mientras habla (`onSpeakingChange`, un booleano, sin repintar por letra) y reposo el resto. **No** pinta `eureka` ni `suspicious` (sin tono: lo decide 006).
+- **`presentationGate` demostrada:** el resultado *llega* tras la latencia simulada (la operación no se retrasa) y `useResultGate` pregunta a la función pura cuándo presentarlo: un resultado no crítico espera al fin del primer ciclo de `sofing` o al límite; el error, la cancelación y el movimiento reducido, en el acto. Un solo temporizador, limpio al cancelar, cambiar de escenario o desmontar; un aviso repetido (StrictMode) no presenta dos veces. «Cancelar» sigue disponible durante la espera.
+- **Mesa de control:** límite de retención (0–10 s), velocidad de `sofing` (0,25–4×, por la vía de producción `visual/rates`) y latencia simulada (0–10 s), con «Valores por defecto»; el marco los recupera si se recarga. Una frase dice qué pasó con el resultado (retenido, por el ciclo, por el límite, en el acto o por movimiento reducido) y una tabla viva con **la propia `presentationGate`** enseña qué espera y qué no, incluidas seguridad, privacidad, borrado y salida rápida, que **no tienen pantalla** en la Preview (sin diseño, README 10).
+- **Valores:** el límite parte del provisional de producción (3 s, `PROVISIONAL_RETENTION_LIMIT_MS`, sin cambiarlo) y la latencia, de la que ya había (1,6 s). Ninguno está aprobado: la mesa lo dice y **no se aprueba AV2**.
+
+### 24.2 Pruebas
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `ResultScreens.visual.test.tsx` (las props opcionales y el reposo sin expresión provisional) | Vista fallar (6 y luego 2) | 12 |
+| `useResultGate.test.ts` | Falla antes del módulo | 19 |
+| `previewFlowReducer.test.ts` (llegada y presentación) | Vista fallar (7) | 8 nuevas |
+| `PreviewSection.test.tsx` (ajustes, estado de la retención y tabla viva) | Vista fallar (16) | 16 nuevas |
+| `PreviewFlow.gate.test.tsx` (la Preview con el sprite simulado: recursos, retención, cancelación, reducido, ajustes, StrictMode, desmontar) | **Sin RED visto** (escritas con la implementación y ejecutadas después); se comprobó con mutaciones | 23 |
+| `PreviewFlow.test.tsx` y `PreviewSection.test.tsx` previas | Actualizadas a propósito: un resultado no crítico ya espera al límite y el estado de la Preview lleva `gate` | — |
+| `npx vitest run` (todo) | — | **116 archivos, 2 256 pruebas** |
+| `npx tsc -b`, `npx eslint .`, `npx prettier --check src spec/features/008-sofi-character` | — | Sin errores |
+| `npx playwright test --project=chromium` (todo) | — | 183 de 183 |
+
+**Sensibilidad** (11 mutaciones, todas detectadas; archivos restaurados y comprobados con `cmp`): el hook ignora el fin del ciclo (4 fallos), todo se trata como error (12), un aviso tardío presenta (2), el movimiento reducido se ignora (1), la velocidad no llega a `sofing` (1), el fin de la pasada no se anota (2), el hook no limpia su temporizador (4), la tabla ignora el movimiento reducido (1), la latencia (1) y el límite (2) de la mesa no llegan. Una (ajuste no finito aceptado) **sobrevivía** con `NaN` porque `NaN` ya se rechazaba por otra vía; añadí `Infinity` y ahora se detecta (1).
+
+Un fallo mío, corregido: mi `.srOnly` usaba `1px` y la prueba de unidades del proyecto lo rechazó; ahora usa el mixin `visually-hidden`.
+
+### 24.3 Navegador real (Chromium)
+
+Método: Playwright contra el servidor de desarrollo, con la Preview en su iframe, un muestreo de la mesa cada 30 ms y los controles reales. Tiempos desde que se pulsa «Leer entre líneas» (incluye 0,45 s del envío simulado).
+
+| Comprobación | Resultado |
+|---|---|
+| Éxito con los valores de partida | La operación termina a 2,1 s (retenido) y se presenta a 5,2 s **al límite**: retenido 3,03 s |
+| `sofing` a 2× | El primer ciclo dura 3,2 s: se presenta **al fin del ciclo**, retenido 1,77 s. Con 4× y 3 s de latencia, el ciclo ya había terminado: presentado en 29 ms |
+| Velocidad acelerada | `playbackRate` de la animación de `sofing` en el marco: 1, 2 y 4 según el ajuste (duración 6 440 ms), por la vía de producción |
+| Límite ajustable | 1 s → a 3,2 s; 0 → a 2,2 s; 6 s → al fin del ciclo (≈ 6,4 s tras empezar). La operación llega siempre a 2,1 s |
+| Falta de contexto | Igual que el éxito: retenida y presentada al límite |
+| Error | Presentado en el acto (30 ms tras llegar) |
+| Cancelar durante la retención | La consulta vuelve al instante y a los 9 s no hay lectura |
+| Movimiento reducido | Con «Reducido» del Lab y con el sistema en reducir: presentado en el acto. «Completo» con el sistema en reducir **sí retiene** (al límite) |
+| axe de la mesa (1280 claro y oscuro, 390, 320 oscuro y 1280 con texto ×2) | 0 violaciones propias; sin desbordamiento horizontal. Queda la regla `region` de la barra superior del Lab (`_bar`), anterior a este cambio |
+| Errores de consola | Ninguno |
+
+Capturas locales (no versionadas), en la carpeta de trabajo de la sesión, `shots65\`: `procesando-sofing.png`, `lectura-talking.png`, `needs-context.png`, `error.png`, `error-secuencia.png`, `mesa-1280.png`, `mesa-320-dark.png` y `tabla-1280.png`.
+
+### 24.4 Limitaciones y decisiones abiertas
+
+1. **El recorte de `error` corta el brazo.** Su marco (155 × 190 px, pegatina) se diseñó para la pose fija «ups»; con el recurso `error` el fotograma final apoya la mano en la cabeza y el brazo izquierdo queda cortado por el recorte (`error-secuencia.png`). El catálogo deja la escala y el recorte de `error` al Lab: **no se cambia el recorte sin aprobación**.
+2. **`sofing` ocupa su caja con el portátil cortado por la izquierda** (`procesando-sofing.png`), igual que en el escenario del inspector; es la misma decisión pendiente de escala y recorte.
+3. **Durante la retención el texto sigue diciendo «Sofi está leyendo tu mensaje.»** aunque la operación ya terminó. El catálogo (§6.4) pide que la etiqueta de actividad no finja que sigue procesando; esa etiqueta y su copy son de T068/AV1 y no se inventan aquí.
+4. **Seguridad, privacidad, borrado y salida rápida** no tienen pantalla en la Preview (sin diseño): solo se ven en la tabla, con la decisión real de la función. `eureka` y `suspicious`, tampoco (006).
+5. **Se amplían las pantallas de producción con props opcionales** (`visual`, `onSpeakingChange`, y en `SofiPortrait` `onFirstCycle` y `onEnd`). Producción no las pasa y se ve igual; cuando `007` integre los recursos, decidirá cómo las usa. No se tocan valores de producción.
+6. **Retención en jsdom:** sin Web Animations no hay fin de ciclo; en esas pruebas manda el límite. El fin del ciclo real solo consta en Chromium.
+7. **Solo Chromium** para la medición en navegador; Firefox y WebKit, en T073–T076.
+8. **Peticiones de tiras en la Preview:** no se ha vuelto a contar con la técnica de MSW (§23.4, 3); no se ha medido el efecto de la Preview en la carga (EX3).
+9. **Sin `AV#`:** AV2 no se aprueba; el límite y la latencia son de prototipo.
+
+### 24.5 Criterios de T065
+
+| Criterio | Estado |
+|---|---|
+| La Preview usa los recursos reales conservando su layout y reutilizando los componentes | Cumplido, con las salvedades 1 y 2 de §24.4 |
+| `presentationGate` con el primer ciclo, el límite ajustable y la velocidad acelerada | Cumplido, en navegador |
+| Resultados no críticos, errores, seguridad, cancelación y movimiento reducido | Cumplido; la seguridad, en la tabla (sin pantalla) |
+| Sin retrasar acciones funcionales | Cumplido: la operación llega siempre a su hora y «Cancelar» responde al instante |
+| Prototipo: sin decisiones de 007 ni AV2, sin valores de producción cambiados | Cumplido |
+
+**Siguiente tarea:** T066. No se ha aprobado ningún `AV#`.

@@ -39,6 +39,9 @@ type SofiPortraitProps = {
   // Recurso animado en lugar del parpadeo (plan 008 §5.4). Con uno distinto de `sofi-blink`,
   // `expression` y `frame` no se usan: el recurso lleva su propia pose. Es decorativo.
   animation?: SofiAnimationId
+  // Avisos del recurso animado (primer ciclo y fin de la pasada). Sin recurso, no se emiten.
+  onFirstCycle?: () => void
+  onEnd?: () => void
   crop?: SofiCrop
   // Describe la expresión cuando aporta; vacío cuando acompaña a un texto que ya lo dice.
   alt?: string
@@ -62,6 +65,8 @@ export function SofiPortrait({
   expression = 'attentive',
   frame,
   animation = 'sofi-blink',
+  onFirstCycle,
+  onEnd,
   crop,
   alt = '',
   outline = false,
@@ -90,6 +95,8 @@ export function SofiPortrait({
       animation={animation}
       className={cx(outline && styles.outline)}
       style={box}
+      onFirstCycle={onFirstCycle}
+      onEnd={onEnd}
     />
   ) : (
     <span

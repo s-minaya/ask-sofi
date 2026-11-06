@@ -1,5 +1,5 @@
 import type { MotionPreference } from '../../app/providers/MotionPreference'
-import type { Scenario, Step, UiState } from './scenarios'
+import type { GateStatus, Scenario, Step, Tuning, UiState } from './scenarios'
 
 // Mensajes entre la mesa de control (documento del Lab) y la app simulada (iframe).
 export type PreviewCommand =
@@ -7,11 +7,13 @@ export type PreviewCommand =
   | { kind: 'step'; step: Step }
   | { kind: 'simulate-block'; value: boolean }
   | { kind: 'motion'; value: MotionPreference }
+  | { kind: 'tuning'; tuning: Partial<Tuning> }
 
 export type PreviewState = {
   scenario: Scenario
   step: Step
   ui: UiState
+  gate: GateStatus
 }
 
 type CommandMessage = {

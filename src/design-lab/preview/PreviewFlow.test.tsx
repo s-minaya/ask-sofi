@@ -8,6 +8,7 @@ import { FIXTURE_MESSAGE, LEAD } from '../fixtures'
 import { PreviewFlow } from './PreviewFlow'
 import type { PreviewCommand } from './previewProtocol'
 import {
+  DEFAULT_TUNING,
   SIMULATED_LATENCY_MS,
   SIMULATED_SUBMIT_MS,
   type Scenario,
@@ -44,10 +45,13 @@ function enterAndSubmit() {
   fireEvent.click(screen.getByRole('button', { name: /Leer entre líneas/ }))
 }
 
-// Cada espera la programa un efecto de la pantalla anterior: se avanzan por separado.
+// Cada espera la programa un efecto de la pantalla anterior: se avanzan por separado. Un
+// resultado no crítico espera además al límite de la retención del primer ciclo (T065); jsdom no
+// tiene animaciones, así que el ciclo nunca termina y manda el límite.
 function waitForResult() {
   advance(SIMULATED_SUBMIT_MS)
   advance(SIMULATED_LATENCY_MS)
+  advance(DEFAULT_TUNING.limitMs)
 }
 
 describe('PreviewFlow', () => {
@@ -96,6 +100,11 @@ describe('PreviewFlow', () => {
     ).toBeInTheDocument()
 
     advance(SIMULATED_LATENCY_MS)
+    // La operación ya terminó, pero el primer ciclo de Sofi retiene la presentación hasta el límite.
+    expect(
+      screen.getByText('Sofi está leyendo tu mensaje.'),
+    ).toBeInTheDocument()
+    advance(DEFAULT_TUNING.limitMs)
     expect(
       screen.getByRole('heading', { name: LEAD.title }),
     ).toBeInTheDocument()
@@ -167,6 +176,7 @@ describe('PreviewFlow', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: /Volver a leer/ }))
     advance(SIMULATED_LATENCY_MS)
+    advance(DEFAULT_TUNING.limitMs)
 
     expect(screen.getByText('Escenario: éxito')).toBeInTheDocument()
     expect(
@@ -199,7 +209,12 @@ describe('PreviewFlow', () => {
     expect(postMessage).toHaveBeenLastCalledWith(
       {
         type: 'ask-sofi:preview-state',
-        state: { scenario: 'success', step: 'consultation', ui: 'idle' },
+        state: {
+          scenario: 'success',
+          step: 'consultation',
+          ui: 'idle',
+          gate: 'none',
+        },
       },
       window.location.origin,
     )

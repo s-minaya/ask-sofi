@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { cx } from '../../../utils/cx'
 import { SofiPortrait, type SofiExpression } from '../SofiPortrait/SofiPortrait'
+import type { SofiVisualProps } from '../types'
 import styles from './SofiStage.module.scss'
 
 type SofiStageProps = {
@@ -9,6 +10,8 @@ type SofiStageProps = {
   alt: string
   label?: string
   labelledBy?: string
+  // Recurso real en lugar de la expresión provisional (opcional).
+  visual?: SofiVisualProps
   className?: string
   children: ReactNode
 }
@@ -19,6 +22,7 @@ export function SofiStage({
   alt,
   label,
   labelledBy,
+  visual,
   className,
   children,
 }: SofiStageProps) {
@@ -29,7 +33,14 @@ export function SofiStage({
       aria-labelledby={labelledBy}
     >
       <div className={styles.sofi}>
-        <SofiPortrait size={384} expression={expression} alt={alt} outline />
+        <SofiPortrait
+          size={384}
+          // Con un recurso real, la expresión provisional (F1, F2) no manda: en reposo, el parpadeo.
+          expression={visual ? 'attentive' : expression}
+          alt={alt}
+          outline
+          {...visual}
+        />
       </div>
       <div className={styles.dialog}>{children}</div>
     </section>

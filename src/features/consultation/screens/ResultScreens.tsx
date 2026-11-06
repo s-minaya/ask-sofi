@@ -34,6 +34,7 @@ import type {
   ContextLevel,
   InterpretationView,
   LeadTone,
+  SofiVisualProps,
 } from '../../../components/sofi/types'
 import { Button } from '../../../components/ui/Button/Button'
 import { KickerRow } from '../../../components/ui/Tag/Tag'
@@ -46,6 +47,7 @@ type ProcessingScreenProps = {
   slow: boolean
   onCancel: () => void
   headingRef?: Ref<HTMLHeadingElement>
+  visual?: SofiVisualProps
 }
 
 export function ProcessingScreen({
@@ -54,6 +56,7 @@ export function ProcessingScreen({
   slow,
   onCancel,
   headingRef,
+  visual,
 }: ProcessingScreenProps) {
   return (
     <>
@@ -61,6 +64,7 @@ export function ProcessingScreen({
         expression="thinking"
         alt="Sofi entrecierra los ojos, concentrada"
         label="Sofi está leyendo"
+        visual={visual}
       >
         <SofiDialog>
           <SofiDialogText>
@@ -97,6 +101,9 @@ type ReadingScreenProps = {
   onNewQuery: () => void
   onEdit: () => void
   headingRef?: Ref<HTMLHeadingElement>
+  visual?: SofiVisualProps
+  // Solo cambia al empezar o dejar de hablar, no por letra (D-12).
+  onSpeakingChange?: (speaking: boolean) => void
 }
 
 const VERSIONS_ID = 'versiones'
@@ -115,6 +122,8 @@ export function ReadingScreen({
   onNewQuery,
   onEdit,
   headingRef,
+  visual,
+  onSpeakingChange,
 }: ReadingScreenProps) {
   const total = 1 + reading.others.length
   return (
@@ -123,9 +132,11 @@ export function ReadingScreen({
         expression="talking"
         alt="Sofi, con el veredicto preparado"
         label="Lo que dice Sofi"
+        visual={visual}
       >
         <SofiSpeech
           text={reading.speech}
+          onSpeakingChange={onSpeakingChange}
           doneAction={
             <TextLink href={`#${VERSIONS_ID}`} continues>
               Ver las versiones
@@ -184,6 +195,8 @@ type NeedsContextScreenProps = {
   onReread: () => void
   contextError: boolean
   headingRef?: Ref<HTMLHeadingElement>
+  visual?: SofiVisualProps
+  onSpeakingChange?: (speaking: boolean) => void
 }
 
 const NEEDS_ID = 'que-falta'
@@ -198,6 +211,8 @@ export function NeedsContextScreen({
   onReread,
   contextError,
   headingRef,
+  visual,
+  onSpeakingChange,
 }: NeedsContextScreenProps) {
   return (
     <>
@@ -205,9 +220,11 @@ export function NeedsContextScreen({
         expression="unconvinced"
         alt="Sofi entrecierra los ojos, poco convencida"
         label="Lo que dice Sofi"
+        visual={visual}
       >
         <SofiSpeech
           text={speech}
+          onSpeakingChange={onSpeakingChange}
           doneAction={
             <TextLink href={`#${NEEDS_ID}`} continues>
               Qué me falta
@@ -280,6 +297,7 @@ type ErrorScreenProps = {
   onRetry: () => void
   onEdit: () => void
   headingRef?: Ref<HTMLHeadingElement>
+  visual?: SofiVisualProps
 }
 
 export function ErrorScreen({
@@ -289,14 +307,16 @@ export function ErrorScreen({
   onRetry,
   onEdit,
   headingRef,
+  visual,
 }: ErrorScreenProps) {
   return (
     <div className={styles.err}>
       <SofiPortrait
         size={192}
-        expression="oops"
+        expression={visual ? 'attentive' : 'oops'}
         alt="Sofi cierra los ojos: algo ha fallado"
         className={styles.errPortrait}
+        {...visual}
         // Sofi entera, con el busto apoyado en el borde (decisión 6 de la
         // dirección artística): a la mitad del sprite, su silueta cabe sin recortes.
         crop={{

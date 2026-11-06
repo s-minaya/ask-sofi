@@ -152,3 +152,99 @@ describe('scenarios', () => {
     expect(uiStateFor('result', 'success', false)).toBe('success')
   })
 })
+
+// T065: el resultado llega y se presenta en dos momentos distintos. La operación termina cuando
+// llega; lo que se retiene es solo su presentación (catálogo §6.4).
+describe('previewReducer · llegada y presentación del resultado', () => {
+  const processing = (scenario: Scenario = 'success') =>
+    run(
+      [
+        { type: 'go', step: 'consultation' },
+        { type: 'submit' },
+        { type: 'submitted' },
+      ],
+      scenario,
+    )
+
+  const after = (state: FlowState, ...actions: FlowAction[]) =>
+    actions.reduce(previewReducer, state)
+
+  it('al llegar el resultado sigue en «Procesando» y recuerda cuándo llegó', () => {
+    const state = previewReducer(processing(), { type: 'arrived', at: 1234 })
+    expect(state.step).toBe('processing')
+    expect(state.arrivedAt).toBe(1234)
+  })
+
+  it('presentarlo enseña el resultado y guarda por qué se presentó', () => {
+    const state = after(
+      processing(),
+      { type: 'arrived', at: 10 },
+      { type: 'present', reason: 'ciclo' },
+    )
+    expect(state).toMatchObject({
+      step: 'result',
+      arrivedAt: null,
+      gate: 'ciclo',
+    })
+  })
+
+  it('presentar dos veces (StrictMode) no hace nada la segunda', () => {
+    const once = after(
+      processing(),
+      { type: 'arrived', at: 10 },
+      { type: 'present', reason: 'límite' },
+    )
+    expect(previewReducer(once, { type: 'present', reason: 'inmediato' })).toBe(
+      once,
+    )
+  })
+
+  it('cancelar o cambiar de pantalla descarta la llegada y su motivo', () => {
+    const arrived = previewReducer(processing(), { type: 'arrived', at: 10 })
+    const cancelled = previewReducer(arrived, {
+      type: 'go',
+      step: 'consultation',
+      focus: 'submit',
+    })
+    expect(cancelled).toMatchObject({
+      step: 'consultation',
+      arrivedAt: null,
+      gate: null,
+    })
+    // Un aviso que llegue tarde no presenta nada: ya no se está procesando.
+    expect(
+      previewReducer(cancelled, { type: 'present', reason: 'límite' }),
+    ).toBe(cancelled)
+  })
+
+  it('cambiar de escenario mientras se espera descarta la llegada', () => {
+    const arrived = previewReducer(processing(), { type: 'arrived', at: 10 })
+    const other = previewReducer(arrived, {
+      type: 'scenario',
+      scenario: 'error',
+    })
+    expect(other.arrivedAt).toBeNull()
+    expect(other.gate).toBeNull()
+  })
+
+  it('«Carga» nunca presenta resultado', () => {
+    const state = after(
+      processing('loading'),
+      { type: 'arrived', at: 10 },
+      { type: 'present', reason: 'inmediato' },
+    )
+    expect(state.step).toBe('processing')
+  })
+
+  it('una llegada fuera de «Procesando» se ignora', () => {
+    const consultation = run([{ type: 'go', step: 'consultation' }])
+    expect(previewReducer(consultation, { type: 'arrived', at: 1 })).toBe(
+      consultation,
+    )
+  })
+
+  it('saltar a «Resultado» desde la mesa no pasa por la retención y no inventa un motivo', () => {
+    const state = run([{ type: 'go', step: 'result' }])
+    expect(state).toMatchObject({ step: 'result', gate: null, arrivedAt: null })
+  })
+})

@@ -217,3 +217,59 @@
   line-height: 1.5;
   color: var(--color-text-muted);
 }
+
+// Ajustes de la retención del primer ciclo (T065).
+.tuning {
+  display: grid;
+  flex: 1 1 28rem;
+  gap: 0.75rem 1.5rem;
+  min-width: 0;
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.tuningSide {
+  display: grid;
+  gap: 0.625rem;
+  justify-items: start;
+}
+
+.gate {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 1.375rem;
+  padding-bottom: 1.5rem;
+  border-bottom: var(--stroke-structure) solid var(--color-border);
+}
+
+.table {
+  width: 100%;
+  max-width: 40rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    padding: 0.5rem 0.75rem 0.5rem 0;
+    border-top: var(--stroke-detail) solid var(--color-rule-soft);
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+  }
+
+  thead th {
+    font: 700 0.6875rem/1.3 var(--font-ui);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+}
+
+.srOnly {
+  @include u.visually-hidden;
+}
