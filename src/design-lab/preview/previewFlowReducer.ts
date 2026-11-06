@@ -16,6 +16,10 @@ export type FlowState = {
   // El resultado ya llegó (la operación terminó) pero aún no se presenta: lo retiene el primer
   // ciclo (catálogo §6.4). `Date.now()` de su llegada.
   arrivedAt: number | null
+  // La presentación quedó retenida al llegar. Se decide una vez, al llegar: así «lista» no se
+  // apaga antes de presentar cuando el ciclo termina, el límite baja o se activa el movimiento
+  // reducido (la presentación la hace después el efecto de `useResultGate`).
+  holding: boolean
   // Por qué se presentó el último resultado; `null` si no pasó por la retención.
   gate: GateReason | null
   // Cada paso nuevo reinicia la espera, aunque se repita el mismo (al reintentar).
@@ -31,7 +35,7 @@ export type FlowAction =
   | { type: 'submit' }
   | { type: 'submitted' }
   | { type: 'slow' }
-  | { type: 'arrived'; at: number }
+  | { type: 'arrived'; at: number; holding: boolean }
   | { type: 'present'; reason: GateReason }
   | { type: 'clear' }
   | { type: 'new-query' }
@@ -49,6 +53,7 @@ export function initialFlowState(scenario: Scenario): FlowState {
     submitting: false,
     slow: false,
     arrivedAt: null,
+    holding: false,
     gate: null,
     run: 0,
     focus: { request: 0, target: 'heading' },
@@ -69,6 +74,7 @@ function go(
     submitting: false,
     slow: false,
     arrivedAt: null,
+    holding: false,
     gate: null,
     messageError: false,
     contextError: false,
@@ -102,6 +108,7 @@ export function previewReducer(
         submitting: false,
         slow: false,
         arrivedAt: null,
+        holding: false,
         gate: null,
         run: state.run + 1,
       }
@@ -125,7 +132,7 @@ export function previewReducer(
     case 'arrived':
       // Solo mientras se procesa, y una sola vez por lectura.
       if (state.step !== 'processing' || state.arrivedAt !== null) return state
-      return { ...state, arrivedAt: action.at }
+      return { ...state, arrivedAt: action.at, holding: action.holding }
     case 'present':
       // Un aviso tardío (cancelación, otro escenario, StrictMode) no presenta nada. «Carga» no
       // tiene resultado.

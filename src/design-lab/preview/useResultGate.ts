@@ -7,6 +7,45 @@ import {
 // Por qué se presentó el resultado: lo que la Preview enseña en su mesa.
 export type GateReason = 'inmediato' | 'ciclo' | 'límite' | 'reducido'
 
+export type GateDecision =
+  | { present: true; reason: GateReason }
+  // `waitMs` es lo que falta hasta el límite.
+  | { present: false; waitMs: number }
+
+type GateInput = {
+  kind: PresentationKind
+  firstCycleEnded: boolean
+  elapsedMs: number
+  limitMs: number
+  reducedMotion: boolean
+}
+
+// `presentationGate` más el porqué de presentar. Es lo único que decide: ni el hook ni la Preview
+// repiten qué tipos esperan ni cuándo. El motivo se averigua preguntándole a la propia función si
+// habría esperado sin el ciclo, el movimiento ni el límite.
+export function decideGate(input: GateInput): GateDecision {
+  const decision = presentationGate(input)
+  if (!decision.present) return decision
+
+  const wouldWait = !presentationGate({
+    kind: input.kind,
+    firstCycleEnded: false,
+    elapsedMs: 0,
+    limitMs: Infinity,
+    reducedMotion: false,
+  }).present
+  return {
+    present: true,
+    reason: !wouldWait
+      ? 'inmediato'
+      : input.reducedMotion
+        ? 'reducido'
+        : input.firstCycleEnded
+          ? 'ciclo'
+          : 'límite',
+  }
+}
+
 type ResultGateOptions = {
   // Tipo del resultado que ha llegado; `null` mientras no hay resultado que presentar.
   kind: PresentationKind | null
@@ -36,35 +75,18 @@ export function useResultGate({
   useEffect(() => {
     if (kind === null || arrivedAt === null) return
 
-    const decision = presentationGate({
+    const decision = decideGate({
       kind,
       firstCycleEnded,
       elapsedMs: Date.now() - arrivedAt,
       limitMs,
       reducedMotion,
     })
-    if (!decision.present) {
-      const timer = window.setTimeout(() => present('límite'), decision.waitMs)
-      return () => window.clearTimeout(timer)
+    if (decision.present) {
+      present(decision.reason)
+      return
     }
-
-    // ¿Habría esperado sin el ciclo, el movimiento ni el límite? Se le pregunta a la propia
-    // función, sin repetir qué tipos pueden esperar.
-    const wouldWait = !presentationGate({
-      kind,
-      firstCycleEnded: false,
-      elapsedMs: 0,
-      limitMs: Infinity,
-      reducedMotion: false,
-    }).present
-    present(
-      !wouldWait
-        ? 'inmediato'
-        : reducedMotion
-          ? 'reducido'
-          : firstCycleEnded
-            ? 'ciclo'
-            : 'límite',
-    )
+    const timer = window.setTimeout(() => present('límite'), decision.waitMs)
+    return () => window.clearTimeout(timer)
   }, [kind, arrivedAt, firstCycleEnded, limitMs, reducedMotion])
 }

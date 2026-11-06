@@ -170,7 +170,11 @@ describe('previewReducer · llegada y presentación del resultado', () => {
     actions.reduce(previewReducer, state)
 
   it('al llegar el resultado sigue en «Procesando» y recuerda cuándo llegó', () => {
-    const state = previewReducer(processing(), { type: 'arrived', at: 1234 })
+    const state = previewReducer(processing(), {
+      type: 'arrived',
+      at: 1234,
+      holding: true,
+    })
     expect(state.step).toBe('processing')
     expect(state.arrivedAt).toBe(1234)
   })
@@ -178,7 +182,7 @@ describe('previewReducer · llegada y presentación del resultado', () => {
   it('presentarlo enseña el resultado y guarda por qué se presentó', () => {
     const state = after(
       processing(),
-      { type: 'arrived', at: 10 },
+      { type: 'arrived', at: 10, holding: true },
       { type: 'present', reason: 'ciclo' },
     )
     expect(state).toMatchObject({
@@ -191,7 +195,7 @@ describe('previewReducer · llegada y presentación del resultado', () => {
   it('presentar dos veces (StrictMode) no hace nada la segunda', () => {
     const once = after(
       processing(),
-      { type: 'arrived', at: 10 },
+      { type: 'arrived', at: 10, holding: true },
       { type: 'present', reason: 'límite' },
     )
     expect(previewReducer(once, { type: 'present', reason: 'inmediato' })).toBe(
@@ -200,7 +204,11 @@ describe('previewReducer · llegada y presentación del resultado', () => {
   })
 
   it('cancelar o cambiar de pantalla descarta la llegada y su motivo', () => {
-    const arrived = previewReducer(processing(), { type: 'arrived', at: 10 })
+    const arrived = previewReducer(processing(), {
+      type: 'arrived',
+      at: 10,
+      holding: true,
+    })
     const cancelled = previewReducer(arrived, {
       type: 'go',
       step: 'consultation',
@@ -218,7 +226,11 @@ describe('previewReducer · llegada y presentación del resultado', () => {
   })
 
   it('cambiar de escenario mientras se espera descarta la llegada', () => {
-    const arrived = previewReducer(processing(), { type: 'arrived', at: 10 })
+    const arrived = previewReducer(processing(), {
+      type: 'arrived',
+      at: 10,
+      holding: true,
+    })
     const other = previewReducer(arrived, {
       type: 'scenario',
       scenario: 'error',
@@ -227,10 +239,35 @@ describe('previewReducer · llegada y presentación del resultado', () => {
     expect(other.gate).toBeNull()
   })
 
+  it('la llegada recuerda si la presentación quedó retenida, y se olvida al presentar o salir', () => {
+    const held = previewReducer(processing(), {
+      type: 'arrived',
+      at: 10,
+      holding: true,
+    })
+    expect(held.holding).toBe(true)
+    const notHeld = previewReducer(processing(), {
+      type: 'arrived',
+      at: 10,
+      holding: false,
+    })
+    expect(notHeld.holding).toBe(false)
+
+    expect(
+      previewReducer(held, { type: 'present', reason: 'ciclo' }).holding,
+    ).toBe(false)
+    expect(
+      previewReducer(held, { type: 'go', step: 'consultation' }).holding,
+    ).toBe(false)
+    expect(
+      previewReducer(held, { type: 'scenario', scenario: 'error' }).holding,
+    ).toBe(false)
+  })
+
   it('«Carga» nunca presenta resultado', () => {
     const state = after(
       processing('loading'),
-      { type: 'arrived', at: 10 },
+      { type: 'arrived', at: 10, holding: true },
       { type: 'present', reason: 'inmediato' },
     )
     expect(state.step).toBe('processing')
@@ -238,9 +275,9 @@ describe('previewReducer · llegada y presentación del resultado', () => {
 
   it('una llegada fuera de «Procesando» se ignora', () => {
     const consultation = run([{ type: 'go', step: 'consultation' }])
-    expect(previewReducer(consultation, { type: 'arrived', at: 1 })).toBe(
-      consultation,
-    )
+    expect(
+      previewReducer(consultation, { type: 'arrived', at: 1, holding: true }),
+    ).toBe(consultation)
   })
 
   it('saltar a «Resultado» desde la mesa no pasa por la retención y no inventa un motivo', () => {

@@ -14,6 +14,7 @@ import {
   contextSummary,
   PROCESSING_LINES,
   ProcessingState,
+  READY_COPY,
 } from '../../../components/sofi/ProcessingState/ProcessingState'
 import {
   ContextQuestions,
@@ -45,6 +46,8 @@ type ProcessingScreenProps = {
   message: string
   context: string
   slow: boolean
+  // El resultado ya llegó y solo falta presentarlo (T065): se deja de decir que Sofi lee.
+  resultReady?: boolean
   onCancel: () => void
   headingRef?: Ref<HTMLHeadingElement>
   visual?: SofiVisualProps
@@ -54,6 +57,7 @@ export function ProcessingScreen({
   message,
   context,
   slow,
+  resultReady = false,
   onCancel,
   headingRef,
   visual,
@@ -63,12 +67,16 @@ export function ProcessingScreen({
       <SofiStage
         expression="thinking"
         alt="Sofi entrecierra los ojos, concentrada"
-        label="Sofi está leyendo"
+        label={resultReady ? READY_COPY.stageLabel : 'Sofi está leyendo'}
         visual={visual}
       >
         <SofiDialog>
           <SofiDialogText>
-            {slow ? PROCESSING_LINES.slow : PROCESSING_LINES.normal}
+            {resultReady
+              ? READY_COPY.line
+              : slow
+                ? PROCESSING_LINES.slow
+                : PROCESSING_LINES.normal}
           </SofiDialogText>
         </SofiDialog>
       </SofiStage>
@@ -76,6 +84,7 @@ export function ProcessingScreen({
         message={message}
         context={context}
         slow={slow}
+        resultReady={resultReady}
         onCancel={onCancel}
         titleRef={headingRef}
       />

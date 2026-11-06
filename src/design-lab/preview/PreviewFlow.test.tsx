@@ -2,7 +2,10 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SoundProvider } from '../../app/providers/SoundProvider'
 import { ThemeProvider } from '../../app/providers/ThemeProvider'
-import { PROVISIONAL_SLOW_THRESHOLD_MS } from '../../components/sofi/ProcessingState/ProcessingState'
+import {
+  PROVISIONAL_SLOW_THRESHOLD_MS,
+  READY_COPY,
+} from '../../components/sofi/ProcessingState/ProcessingState'
 import { fakeAudio } from '../../test/fakeAudio'
 import { FIXTURE_MESSAGE, LEAD } from '../fixtures'
 import { PreviewFlow } from './PreviewFlow'
@@ -100,10 +103,12 @@ describe('PreviewFlow', () => {
     ).toBeInTheDocument()
 
     advance(SIMULATED_LATENCY_MS)
-    // La operación ya terminó, pero el primer ciclo de Sofi retiene la presentación hasta el límite.
+    // La operación ya terminó, pero el primer ciclo de Sofi retiene la presentación hasta el límite:
+    // no se dice que siga leyendo.
+    expect(screen.getByText(READY_COPY.status)).toBeInTheDocument()
     expect(
-      screen.getByText('Sofi está leyendo tu mensaje.'),
-    ).toBeInTheDocument()
+      screen.queryByText('Sofi está leyendo tu mensaje.'),
+    ).not.toBeInTheDocument()
     advance(DEFAULT_TUNING.limitMs)
     expect(
       screen.getByRole('heading', { name: LEAD.title }),

@@ -8,6 +8,7 @@ import {
 import { SoundProvider } from '../../app/providers/SoundProvider'
 import { ThemeProvider } from '../../app/providers/ThemeProvider'
 import { clearSessionRates, rateFor } from '../../components/sofi/visual/rates'
+import { READY_COPY } from '../../components/sofi/ProcessingState/ProcessingState'
 import { fakeAudio } from '../../test/fakeAudio'
 import { setMediaQuery } from '../../test/matchMedia'
 import { LEAD } from '../fixtures'
@@ -46,6 +47,30 @@ vi.mock('../../components/sofi/SofiSprite/SofiSprite', () => ({
   },
 }))
 
+// Cada vez que React pinta «Procesando», qué dice de su resultado: `true` es «ya la tengo» y `false`,
+// que la operación sigue pendiente. Un MutationObserver no vale para esto: dos commits seguidos
+// dentro de un mismo `act` se ven como uno solo, y es justo el fotograma intermedio lo que se busca.
+const processing = vi.hoisted(() => ({ renders: [] as boolean[] }))
+
+vi.mock(
+  '../../components/sofi/ProcessingState/ProcessingState',
+  async (importOriginal) => {
+    const original =
+      await importOriginal<
+        typeof import('../../components/sofi/ProcessingState/ProcessingState')
+      >()
+    return {
+      ...original,
+      ProcessingState: (
+        props: Parameters<typeof original.ProcessingState>[0],
+      ) => {
+        processing.renders.push(props.resultReady === true)
+        return <original.ProcessingState {...props} />
+      },
+    }
+  },
+)
+
 function renderFlow(
   scenario: Scenario,
   {
@@ -53,16 +78,21 @@ function renderFlow(
     strict = false,
   }: { motion?: MotionPreference; strict?: boolean } = {},
 ) {
-  const tree = (
+  const tree = (value: MotionPreference) => (
     <ThemeProvider>
       <SoundProvider createAudio={() => fakeAudio()}>
-        <MotionPreferenceProvider value={motion}>
+        <MotionPreferenceProvider value={value}>
           <PreviewFlow initialScenario={scenario} />
         </MotionPreferenceProvider>
       </SoundProvider>
     </ThemeProvider>
   )
-  return render(strict ? <StrictMode>{tree}</StrictMode> : tree)
+  const wrap = (value: MotionPreference) =>
+    strict ? <StrictMode>{tree(value)}</StrictMode> : tree(value)
+  const view = render(wrap(motion))
+  // Activar o quitar el movimiento reducido con la lectura en marcha, como el selector del Lab.
+  const setMotion = (value: MotionPreference) => view.rerender(wrap(value))
+  return Object.assign(view, { setMotion })
 }
 
 const advance = (ms: number) => act(() => void vi.advanceTimersByTime(ms))
@@ -85,6 +115,7 @@ let states: PreviewState[]
 beforeEach(() => {
   vi.useFakeTimers()
   sprites.rendered = []
+  processing.renders = []
   states = []
   vi.spyOn(window, 'postMessage').mockImplementation((message: unknown) => {
     const data = message as { type?: string; state?: PreviewState }
@@ -107,8 +138,10 @@ function submit() {
   advance(SIMULATED_SUBMIT_MS)
 }
 const reading = () => screen.queryByRole('heading', { name: LEAD.title })
+// Todavía sin presentar el resultado: la operación pendiente o el resultado ya recibido que espera.
 const stillReading = () =>
-  screen.queryByText('Sofi está leyendo tu mensaje.') !== null
+  screen.queryByText('Sofi está leyendo tu mensaje.') !== null ||
+  screen.queryByText(READY_COPY.status) !== null
 
 describe('Preview · recursos reales', () => {
   it('«Procesando» pinta sofing', () => {
@@ -343,5 +376,274 @@ describe('Preview · ajustes de la mesa', () => {
     advance(SIMULATED_LATENCY_MS + DEFAULT_TUNING.limitMs + 100)
     expect(reading()).toBeInTheDocument()
     expect(rateFor('sofing')).toBe(1)
+  })
+})
+
+// Corrección de T065: operación pendiente y presentación pendiente son cosas distintas. Mientras el
+// resultado ya recibido espera, la Preview no dice que Sofi sigue leyendo; y no lo dice nunca para
+// lo que se presenta en el acto (un error no parpadea con «ya la tengo»).
+describe('Preview · operación pendiente frente a presentación pendiente', () => {
+  const pendingText = () => screen.queryByText('Sofi está leyendo tu mensaje.')
+  const readyText = () => screen.queryByText(READY_COPY.status)
+  // Todo lo que el lector o la vista dicen de «leer»: textos y nombres accesibles.
+  const claimsProcessing = () =>
+    [...document.querySelectorAll<HTMLElement>('body *')].filter(
+      (element) =>
+        /leyendo/i.test(element.getAttribute('aria-label') ?? '') ||
+        (element.children.length === 0 &&
+          /leyendo|tardando/i.test(element.textContent ?? '')),
+    )
+
+  // Todo texto que haya llegado a pintarse, aunque sea un solo fotograma.
+  function recordTexts() {
+    const seen = new Set<string>()
+    const record = () => {
+      if (document.body.textContent?.includes(READY_COPY.status))
+        seen.add('ready')
+    }
+    const observer = new MutationObserver(record)
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    })
+    return { seen, stop: () => observer.disconnect() }
+  }
+
+  it('antes de llegar el resultado, la operación sigue pendiente y lo dice', () => {
+    renderFlow('success')
+    submit()
+    advance(SIMULATED_LATENCY_MS / 2)
+    expect(pendingText()).toBeInTheDocument()
+    expect(readyText()).toBeNull()
+  })
+
+  it('con el resultado recibido y por presentar, no afirma que Sofi sigue procesando', () => {
+    renderFlow('success')
+    submit()
+    advance(SIMULATED_LATENCY_MS + 500)
+    expect(lastState().gate).toBe('held')
+
+    expect(readyText()).toBeInTheDocument()
+    expect(pendingText()).toBeNull()
+    expect(claimsProcessing()).toEqual([])
+    // Sin la barra de actividad: nada se está procesando.
+    expect(document.querySelector('[class*="loader"]')).toBeNull()
+    // Un solo estado anunciado (el del sonido, si lo hubiera, no cuenta aquí).
+    expect(
+      screen
+        .getAllByRole('status')
+        .filter((node) => node.textContent === READY_COPY.status),
+    ).toHaveLength(1)
+  })
+
+  it('el titular y el rótulo de la cabecera tampoco lo dicen', () => {
+    renderFlow('needs')
+    submit()
+    advance(SIMULATED_LATENCY_MS + 500)
+    expect(
+      screen.getByRole('heading', { level: 1, name: READY_COPY.title }),
+    ).toBeInTheDocument()
+    expect(screen.getAllByText(READY_COPY.kicker).length).toBeGreaterThan(0)
+    expect(screen.queryByText('Sofi está leyendo')).toBeNull()
+  })
+
+  it('al presentarse el resultado desaparece el aviso, y la lectura no lo arrastra', () => {
+    renderFlow('success')
+    submit()
+    advance(SIMULATED_LATENCY_MS + DEFAULT_TUNING.limitMs + 100)
+    expect(reading()).toBeInTheDocument()
+    expect(readyText()).toBeNull()
+  })
+
+  it('«Cancelar» sigue funcionando durante la presentación pendiente', () => {
+    renderFlow('success')
+    submit()
+    advance(SIMULATED_LATENCY_MS + 500)
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
+    expect(
+      screen.getByRole('button', { name: /Leer entre líneas/ }),
+    ).toBeInTheDocument()
+    expect(readyText()).toBeNull()
+  })
+
+  it.each([
+    ['un error', 'error', {}],
+    ['el movimiento reducido', 'success', { motion: 'reduce' as const }],
+  ] as const)(
+    '%s se presenta en el acto y nunca enseña «ya la tengo»',
+    (_name, scenario, options) => {
+      const recorder = recordTexts()
+      renderFlow(scenario, options)
+      submit()
+      advance(SIMULATED_LATENCY_MS + 100)
+      recorder.stop()
+      expect(recorder.seen.size).toBe(0)
+      expect(readyText()).toBeNull()
+      expect(states.map((state) => state.gate)).not.toContain('held')
+    },
+  )
+
+  it('con el límite a cero tampoco hay un fotograma de «ya la tengo»', () => {
+    renderFlow('success')
+    command({
+      kind: 'tuning',
+      tuning: { ...DEFAULT_TUNING, limitMs: 0 },
+    })
+    const recorder = recordTexts()
+    submit()
+    advance(SIMULATED_LATENCY_MS + 100)
+    recorder.stop()
+    expect(recorder.seen.size).toBe(0)
+    expect(reading()).toBeInTheDocument()
+  })
+
+  it('«Carga» no tiene resultado: sigue leyendo, y su aviso de espera larga se mantiene', () => {
+    renderFlow('loading')
+    submit()
+    advance(120_000)
+    expect(readyText()).toBeNull()
+    expect(
+      screen.getByText(
+        'Está tardando más de lo normal. Tu mensaje no se pierde.',
+      ),
+    ).toBeInTheDocument()
+  })
+
+  it('si la retención se descarta (otro escenario) no queda el copy de «ya la tengo»', () => {
+    renderFlow('success')
+    submit()
+    advance(SIMULATED_LATENCY_MS + 500)
+    command({ kind: 'scenario', scenario: 'loading' })
+    expect(readyText()).toBeNull()
+  })
+})
+
+// Caso límite de la corrección anterior: un resultado retenido que deja de esperar (fin del primer
+// ciclo, límite a cero, movimiento reducido) no debe pasar por «Sofi sigue leyendo» ni un
+// fotograma entre «ya la tengo» y la lectura. Y lo que ya se presenta en el acto no pasa por
+// «ya la tengo». Se mira cada render de «Procesando» y cada estado que la Preview comunica.
+describe('Preview · transiciones de la retención, sin estados intermedios', () => {
+  // La secuencia de lo que dijo «Procesando», sin repetidos seguidos: false = pendiente, true = lista.
+  const said = () =>
+    processing.renders.filter(
+      (value, index, all) => index === 0 || value !== all[index - 1],
+    )
+  const gates = () =>
+    states
+      .map((state) => state.gate)
+      .filter((value, index, all) => index === 0 || value !== all[index - 1])
+
+  function holdResult(scenario: Scenario = 'success', options = {}) {
+    const view = renderFlow(scenario, options)
+    submit()
+    advance(SIMULATED_LATENCY_MS + 500)
+    expect(lastState().gate).toBe('held')
+    return view
+  }
+
+  it('al terminar el primer ciclo pasa de «lista» a la lectura sin volver a «leyendo»', () => {
+    holdResult()
+    click('[data-cycle]')
+    expect(reading()).toBeInTheDocument()
+
+    // Pendiente → lista, y nunca de vuelta a pendiente.
+    expect(said()).toEqual([false, true])
+    expect(gates()).toEqual(['none', 'held', 'ciclo'])
+  })
+
+  it('al bajar el límite a cero a mitad de la espera, igual', () => {
+    holdResult()
+    command({ kind: 'tuning', tuning: { ...DEFAULT_TUNING, limitMs: 0 } })
+    expect(reading()).toBeInTheDocument()
+
+    expect(said()).toEqual([false, true])
+    expect(gates()).toEqual(['none', 'held', 'límite'])
+  })
+
+  it('al activar el movimiento reducido a mitad de la espera, igual', () => {
+    const view = holdResult()
+    act(() => view.setMotion('reduce'))
+    expect(reading()).toBeInTheDocument()
+
+    expect(said()).toEqual([false, true])
+    expect(gates()).toEqual(['none', 'held', 'reducido'])
+  })
+
+  it('con falta de contexto ocurre lo mismo al terminar el ciclo', () => {
+    holdResult('needs')
+    click('[data-cycle]')
+    expect(said()).toEqual([false, true])
+    expect(gates()).toEqual(['none', 'held', 'ciclo'])
+  })
+
+  it('cuando se agota el límite tampoco vuelve a «leyendo»', () => {
+    holdResult()
+    advance(DEFAULT_TUNING.limitMs)
+    expect(reading()).toBeInTheDocument()
+    expect(said()).toEqual([false, true])
+    expect(gates()).toEqual(['none', 'held', 'límite'])
+  })
+
+  it.each([
+    ['un error', 'error', {}, 'inmediato'],
+    [
+      'el movimiento reducido desde el principio',
+      'success',
+      { motion: 'reduce' as const },
+      'reducido',
+    ],
+  ] as const)(
+    '%s se presenta en el acto: ni un render de «ya la tengo» ni de «leyendo» tras llegar',
+    (_name, scenario, options, reason) => {
+      renderFlow(scenario, options)
+      submit()
+      advance(SIMULATED_LATENCY_MS - 1)
+      const before = processing.renders.length
+      advance(1)
+      // Al llegar, «Procesando» no vuelve a pintarse con otro mensaje (ni «ya la tengo» ni «leyendo»).
+      expect(processing.renders).toHaveLength(before)
+      expect(reading() ?? screen.queryByRole('alert')).not.toBeNull()
+      advance(100)
+      // Solo el «leyendo» de mientras la operación estaba pendiente.
+      expect(said()).toEqual([false])
+      expect(processing.renders).not.toContain(true)
+      expect(gates()).toEqual(['none', reason])
+    },
+  )
+
+  it('con el límite a cero desde el principio, igual: se presenta al llegar', () => {
+    renderFlow('success')
+    command({ kind: 'tuning', tuning: { ...DEFAULT_TUNING, limitMs: 0 } })
+    submit()
+    advance(SIMULATED_LATENCY_MS - 1)
+    const before = processing.renders.length
+    advance(1)
+    expect(processing.renders).toHaveLength(before)
+    expect(reading()).toBeInTheDocument()
+    expect(said()).toEqual([false])
+    expect(gates()).toEqual(['none', 'límite'])
+  })
+
+  it('si el ciclo ya había terminado cuando llega el resultado, se presenta al llegar', () => {
+    renderFlow('success')
+    submit()
+    advance(SIMULATED_LATENCY_MS - 500)
+    click('[data-cycle]')
+    advance(499)
+    const before = processing.renders.length
+    advance(1)
+    expect(processing.renders).toHaveLength(before)
+    expect(reading()).toBeInTheDocument()
+    expect(said()).toEqual([false])
+    expect(gates()).toEqual(['none', 'ciclo'])
+  })
+
+  it('con StrictMode las transiciones siguen sin estados intermedios', () => {
+    holdResult('success', { strict: true })
+    click('[data-cycle]')
+    expect(reading()).toBeInTheDocument()
+    expect(said()).toEqual([false, true])
+    expect(gates()).toEqual(['none', 'held', 'ciclo'])
   })
 })

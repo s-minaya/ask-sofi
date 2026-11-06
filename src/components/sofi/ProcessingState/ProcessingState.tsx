@@ -16,6 +16,20 @@ export const PROCESSING_LINES = {
   slow: 'Está tardando más de lo normal. Puedes esperar o cancelar: tu mensaje no se pierde.',
 } as const
 
+// Cuando el resultado ya llegó pero aún no se presenta (retención del primer ciclo, catálogo
+// §6.4), la operación ha terminado: lo pendiente es solo enseñarlo. Ninguna parte de la pantalla
+// puede decir que Sofi sigue procesando. Copy provisional: la etiqueta de actividad definitiva y su
+// texto son de T068/AV1.
+export const READY_COPY = {
+  title: 'Ya tengo tu lectura',
+  status: 'Ya la he leído: ahora te la enseño.',
+  // Rótulo sobre el mensaje, donde antes decía «Sofi está leyendo».
+  kicker: 'Lectura lista',
+  // Nombre accesible del escenario de Sofi y lo que dice en el diálogo.
+  stageLabel: 'Sofi tiene tu lectura',
+  line: 'Ya está. Dame un segundo y te lo cuento.',
+} as const
+
 export function contextSummary(context: string): string {
   return context.trim()
     ? `Con contexto · ${formatCharacterCount(context.length)}`
@@ -26,6 +40,8 @@ type ProcessingStateProps = {
   message: string
   context: string
   slow?: boolean
+  // El resultado ya llegó y solo falta presentarlo: no se afirma que se siga procesando.
+  resultReady?: boolean
   onCancel: () => void
   titleAs?: 'h1' | 'h2'
   titleRef?: Ref<HTMLHeadingElement>
@@ -37,6 +53,7 @@ export function ProcessingState({
   message,
   context,
   slow = false,
+  resultReady = false,
   onCancel,
   titleAs: Title = 'h1',
   titleRef,
@@ -50,18 +67,24 @@ export function ProcessingState({
           tabIndex={titleRef ? -1 : undefined}
           className={styles.title}
         >
-          Leyendo entre líneas…
+          {resultReady ? READY_COPY.title : 'Leyendo entre líneas…'}
         </Title>
-        {/* Un único estado anunciado; si tarda, se anuncia una vez el aviso de carga lenta. */}
+        {/* Un único estado anunciado; si tarda, se anuncia una vez el aviso de carga lenta. Con el
+            resultado ya recibido manda este: lo que llegó no tarda. */}
         <p role="status" className={styles.status}>
-          {slow
-            ? 'Está tardando más de lo normal. Tu mensaje no se pierde.'
-            : 'Sofi está leyendo tu mensaje.'}
+          {resultReady
+            ? READY_COPY.status
+            : slow
+              ? 'Está tardando más de lo normal. Tu mensaje no se pierde.'
+              : 'Sofi está leyendo tu mensaje.'}
         </p>
-        <Loader className={styles.loader} />
+        {/* La barra de actividad dejaría de ser verdad: no hay nada procesándose. */}
+        {!resultReady && <Loader className={styles.loader} />}
       </div>
       <div className={styles.reading}>
-        <p className={styles.kicker}>Sofi está leyendo</p>
+        <p className={styles.kicker}>
+          {resultReady ? READY_COPY.kicker : 'Sofi está leyendo'}
+        </p>
         <MessageBubble message={message} />
         <p className={styles.summary}>{contextSummary(context)}</p>
         <p className={styles.cancel}>

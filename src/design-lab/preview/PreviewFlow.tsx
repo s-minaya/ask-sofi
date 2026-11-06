@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useReducer, useRef, useState } from 'react'
 import { SiteHeader } from '../../components/layout/SiteHeader/SiteHeader'
 import { PROVISIONAL_SLOW_THRESHOLD_MS } from '../../components/sofi/ProcessingState/ProcessingState'
 import type { SofiVisualProps } from '../../components/sofi/types'
+import { READY_COPY } from '../../components/sofi/ProcessingState/ProcessingState'
 import type { PresentationKind } from '../../components/sofi/visual/presentationGate'
 import {
   clearSessionRates,
@@ -40,7 +41,7 @@ import {
   type Scenario,
   type ScreenKey,
 } from './scenarios'
-import { useResultGate } from './useResultGate'
+import { decideGate, useResultGate } from './useResultGate'
 
 const HEADER_COPY = {
   consultation: { tag: 'En directo', kicker: 'El consultorio de Sofi' },
@@ -114,10 +115,12 @@ export function PreviewFlow({
 
   const screen = screenFor(step, scenario)
   const ui = uiStateFor(step, scenario, submitting)
-  const gate: GateStatus =
-    state.arrivedAt !== null && screen === 'processing'
-      ? 'held'
-      : (state.gate ?? 'none')
+  // Resultado recibido y con la presentación pendiente: la operación terminó, solo falta enseñarlo.
+  // Lo fija la llegada (`holding`) y no se recalcula con cada cambio: así, cuando el ciclo termina, el
+  // límite baja o se activa el movimiento reducido, sigue siendo «lista» hasta presentar, sin volver
+  // a decir que Sofi lee. Lo que se presenta en el acto no pasa por aquí ni un fotograma.
+  const resultReady = screen === 'processing' && state.holding
+  const gate: GateStatus = resultReady ? 'held' : (state.gate ?? 'none')
 
   // Lo que se pinta lo decide `selectVisual`; las pantallas solo reciben el recurso.
   const intent = selectVisual(
@@ -149,6 +152,27 @@ export function PreviewFlow({
   // La latencia de la mesa solo cuenta al empezar la espera: cambiarla a mitad no la reinicia.
   const startLatency = useEffectEvent(() => tuning.latencyMs)
 
+  // Al llegar el resultado se le pregunta a `presentationGate` (por `decideGate`) si esperaría, y la
+  // respuesta se recuerda (`holding`): lo que no espera no pasa por «ya la tengo», y lo que espera
+  // sigue siendo «lista» hasta presentarse. La presentación la hace `useResultGate`.
+  const arrive = useEffectEvent(() => {
+    const kind = RESULT_KIND[scenario]
+    const decision = kind
+      ? decideGate({
+          kind,
+          firstCycleEnded: cycleRun === run,
+          elapsedMs: 0,
+          limitMs: tuning.limitMs,
+          reducedMotion,
+        })
+      : undefined
+    dispatch({
+      type: 'arrived',
+      at: Date.now(),
+      holding: decision !== undefined && !decision.present,
+    })
+  })
+
   // Latencia simulada: «Carga» no termina y avisa de la espera larga. Al terminar, el resultado
   // *llega*: lo presenta `presentationGate`, que solo decide cuándo se enseña y nunca retrasa la
   // operación.
@@ -160,10 +184,7 @@ export function PreviewFlow({
             () => dispatch({ type: 'slow' }),
             PROVISIONAL_SLOW_THRESHOLD_MS,
           )
-        : window.setTimeout(
-            () => dispatch({ type: 'arrived', at: Date.now() }),
-            startLatency(),
-          )
+        : window.setTimeout(() => arrive(), startLatency())
     return () => window.clearTimeout(timer)
   }, [screen, scenario, run])
 
@@ -223,7 +244,10 @@ export function PreviewFlow({
     dispatch({ type: 'go', step: 'consultation' })
   }
 
-  const header = step === 'landing' ? null : HEADER_COPY[step]
+  const base = step === 'landing' ? null : HEADER_COPY[step]
+  // Con el resultado ya recibido, la cabecera tampoco dice que Sofi lee.
+  const header =
+    base && resultReady ? { ...base, kicker: READY_COPY.kicker } : base
 
   return (
     <div className={styles.app}>
@@ -271,6 +295,7 @@ export function PreviewFlow({
                 message={message}
                 context={context}
                 slow={slow}
+                resultReady={resultReady}
                 onCancel={() =>
                   dispatch({
                     type: 'go',
