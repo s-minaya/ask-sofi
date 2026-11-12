@@ -66,6 +66,16 @@ export const PROFILE_PRESETS = {
     area: 'directness',
     events: [],
   },
+  // Sofi ya ha formulado la pregunta y espera: el único estado en que pueden vivir los gags.
+  waiting: {
+    label: 'Sofi espera la respuesta',
+    view: 'sheet',
+    invitation: 'presented',
+    saved: null,
+    draft: EMPTY_PARTNER_PROFILE,
+    area: 'directness',
+    events: [{ type: 'speechEnded' }],
+  },
   speaking: {
     label: 'Sofi hablando',
     view: 'sheet',

@@ -59,13 +59,50 @@ describe('observeAmbient', () => {
     expect(poking.pause).not.toHaveBeenCalled()
   })
 
-  it('dar de baja un controlador sigue funcionando y no deja objetivos colgados', () => {
+  it('reenvía el reset que ambient pide a los demás gags, sin anotarlo como pausa', () => {
+    const { ambient, events } = setup()
+    const reset = vi.fn()
+    ambient.register('poking', { pause: vi.fn(), resume: vi.fn() })
+    ambient.register('i-see-you', { pause: vi.fn(), resume: vi.fn(), reset })
+
+    ambient.activate('poking')
+
+    expect(reset).toHaveBeenCalledTimes(1)
+    expect(events).toEqual([
+      { kind: 'pause', gag: 'i-see-you' },
+      { kind: 'activate', gag: 'poking', accepted: true },
+    ])
+  })
+
+  it('un controlador sin reset no recibe uno inventado', () => {
+    const { ambient, target } = setup()
+    const seeYou = target()
+    ambient.register('i-see-you', seeYou)
+    expect(() => ambient.activate('poking')).not.toThrow()
+    expect(Object.keys(seeYou)).toEqual(['pause', 'resume'])
+  })
+
+  it('dar de baja un controlador sigue funcionando, lo anota y no deja objetivos colgados', () => {
     const { ambient, events, target } = setup()
     const poking = target()
     const unregister = ambient.register('poking', poking)
     unregister()
     ambient.setCause('busy', true)
-    expect(events).toEqual([])
+    expect(events).toEqual([{ kind: 'unregister', gag: 'poking' }])
     expect(poking.pause).not.toHaveBeenCalled()
+  })
+
+  // Al pasar a movimiento reducido (o desmarcar el gag) el adaptador da de baja el controlador, y
+  // `ambient` libera al gag activo sin pasar por `deactivate`: sin este aviso, el Lab seguiría
+  // diciendo que hay uno activo.
+  it('dar de baja el gag activo libera a los demás, y el Lab lo sabe', () => {
+    const { ambient, events, target } = setup()
+    const seeYou = target()
+    const unregister = ambient.register('poking', target())
+    ambient.register('i-see-you', seeYou)
+    ambient.activate('poking')
+    unregister()
+    expect(seeYou.resume).toHaveBeenCalledTimes(1)
+    expect(events.at(-1)).toEqual({ kind: 'unregister', gag: 'poking' })
   })
 })

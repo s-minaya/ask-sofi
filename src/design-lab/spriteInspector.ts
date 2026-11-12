@@ -56,8 +56,8 @@ export const RESOURCE_INFO: Record<SofiAnimationId, ResourceInfo> = {
   'are-u-still-here': {
     number: '008',
     intent: 'Somnolencia, sueño y despertar por inactividad',
-    // El umbral es el del adaptador (provisional hasta AV6), no un valor copiado.
-    activation: `Tras ${STILL_HERE_IDLE_MS / 1000} s de inactividad real (provisional)`,
+    // El umbral es el del adaptador (el aprobado del plan §6), no un valor copiado.
+    activation: `Tras ${STILL_HERE_IDLE_MS / 1000} s de inactividad real`,
   },
   'i-see-you': {
     number: '009',

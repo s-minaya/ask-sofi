@@ -346,7 +346,7 @@ describe('los gags y sus prioridades (controladores reales)', () => {
       document.dispatchEvent(new Event('keydown'))
     })
     expect(host.dataset.stillHere).toBe('idle')
-    // La demostración no sustituye al valor provisional del plan: consta a la vista.
+    // La demostración no sustituye al valor aprobado del plan: consta a la vista.
     expect(section()).toHaveTextContent(/150 s/)
   })
 

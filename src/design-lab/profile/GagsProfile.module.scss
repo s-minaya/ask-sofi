@@ -1,0 +1,35 @@
+@use 'utilities' as u;
+@use '../sections/gagHit';
+
+// T066 · candidata A del expediente: los gags sobre el retrato del cuestionario, que ya existe.
+// El Lab no modifica `ProfileSheet`: `SheetGags` añade estas clases al elemento de `sofi-blink`
+// de su retrato y a su escenario (`section`).
+
+// El retrato mide 192 px en una columna y 384 desde 1080 px (`--sofi-size` de `ProfileSheet`):
+// la zona sensible es la de la insignia de 128 px, ampliada ×1,5 o ×3. El umbral es el mismo.
+//
+// El retrato apoya su pie en el borde superior del bocadillo, sin solape (hueco 0): ese borde es
+// el «borde real» de `poking`, el 100 % del retrato, que es el valor por defecto del parcial. Se
+// escribe aquí para que la decisión conste donde se toma.
+.host {
+  --poking-edge: 100%;
+  --hit-scale: 1.5;
+
+  @include u.bp-from(u.$bp-columns) {
+    --hit-scale: 3;
+  }
+
+  @include gagHit.hit-area(var(--hit-scale));
+}
+
+// Decisión visual aprobada (2026-11-09, consulta ancha): la etiqueta «Sofi» queda por encima del
+// retrato cuando se solapan. Durante la broma el anfitrión sube a `--poking-z` (1); la etiqueta
+// del diálogo (posición absoluta) sube por encima.
+.stage figcaption {
+  z-index: 2;
+}
+
+// Solo para revisarla.
+.showHit .host {
+  @include gagHit.hit-tint;
+}

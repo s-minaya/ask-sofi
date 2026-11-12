@@ -222,13 +222,26 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
   - lo destruye en la limpieza del efecto (E6, E7);
   - recibe `{ ambient, calm }` (las causas compartidas y si la escena está tranquila) y **devuelve la clase del gag**, que el consumidor aplica al anfitrión: es `undefined` hasta que las tiras están decodificadas y mientras no pueda montarse. El controlador no se monta hasta que esa clase está aplicada, y el estado efectivo de movimiento lo lee él mismo;
   - la velocidad llega con `setRate`, al montar y en vivo, y a las capas CSS como en §5.5; el umbral de `are-u-still-here` es la constante `STILL_HERE_IDLE_MS`; una opción `idleAfter` permite acortarlo solo para demostrarlo en el Lab (T064), sin cambiar el valor por defecto.
+- **Movimiento reducido: reacción estática** (versiones aprobadas el 2026-11-12; catálogo §7.2 y fichas 006, 008 y 009):
+  - El controlador completo (`attach*`) sigue sin montarse con movimiento reducido, como dice el punto anterior. En su lugar, el gag monta la máquina de estados que exporta su propio ZIP (`createPokingMachine`, `createISeeYouMachine`, `createStillHereMachine`), sin modificarla. Las capas son las del controlador y el estado se pinta en el anfitrión. Las poses son las fijas que el parcial define para reducido y que deja la transformación de D-1. **D-1 no cambia.**
+  - Mismas condiciones que el controlador completo: escena tranquila, anfitrión montado, tiras decodificadas antes de la clase, causas de `ambient` y un solo gag activo, pausa con la página oculta o con Sofi fuera de la pantalla, y limpieza completa, también con StrictMode. Los tiempos van a 1×: no hay animaciones que acompasar.
+  - Entradas y estados pintados:
+
+    | Gag | Entradas | Estados que se pintan |
+    |---|---|---|
+    | `poking` | Clic sobre la zona sensible, como en completo. Solo cuenta en reposo, curiosa, escéptica y «¡quieto!» | Los cuatro escalones hasta ofendida; nunca esconderse, asomarse, «NOPE» ni regresar. Espera sin toques hasta el reposo: **5000 ms** (opción `timing.reset` de la máquina), frente a los 10 000 del controlador, que sigue mandando con movimiento completo |
+    | `i-see-you` | Solo la permanencia del puntero o el dedo sobre el anfitrión (`hover`). Sin escuchas en la página ni `look()` | Pillada; `smirk`, `tease` y `giggle`, como sonrisa; `watching`, como reposo. Tiempos y reposo del controlador |
+    | `are-u-still-here` | La actividad del controlador (`ACTIVITY`) en el documento, y la página oculta como ausencia (`away`) | `nodding`, como somnolienta; `startled`, como cara de pillada (`guilty`), que el parcial pinta sobre la pose del despertar. Tiempos del controlador y el umbral de inactividad de abajo |
+
+  - **Mecanismo en producción: pendiente de autorizar por la autora** (T088). Hoy solo existe en el Lab (`src/design-lab/useReducedGag.ts` y `reducedGags.ts`; evidencia: `008-verification.md` §31–§33).
 - **Anfitrión:** el elemento de `sofi-blink` con la clase del gag, sin hijos de React.
 - **Causas de pausa** (`visual/ambient`):
   - el adaptador agrega en un conjunto: Sofi ocupada, otro gag, escritura o interacción, estado sensible;
   - llama a `pause()`/`resume()` solo al pasar de vacío a no vacío y al revés;
   - un solo gag activo, con el patrón `quiet` que documentan los propios controladores: sale del reposo (`i-see-you`: reaccionar, no mirar) y se declara activo en `ambient`.
-- **Inactividad de `are-u-still-here`:** 150 000 ms como valor provisional, dentro de los 2–3 minutos de la spec; el definitivo en el Lab.
-- **Superficies:** consulta en reposo y expediente, en la ubicación aprobada en el Lab.
+- **Inactividad de `are-u-still-here`:** 150 000 ms, aprobados por la autora el 2026-11-10 y confirmados como definitivos con AV6 el 2026-11-11, dentro de los 2–3 minutos de la spec.
+- **Zona sensible (spec §5, 2026-11-09):** prototipada en el Lab (4.7, `008-verification.md` §26): el anfitrión no responde por sí mismo y un `::after` suyo, recortado con la silueta de cada pose (`clip-path: path()` generado de las tiras reales con `npm run assets:gag-hit`), es la zona sensible; cabeza y manos escondida/asomada, con el `::after` de su capa. Sin modificar parciales ni controladores. Producción (T088) por decidir, con sus costes (§26.6).
+- **Superficies:** consulta en reposo y expediente, en la ubicación aprobada (spec §5).
 
 ## 7. Rendimiento y carga (D-5, D-6)
 
@@ -332,9 +345,9 @@ Cada punto se aprueba expresamente y se registra en su fuente de verdad (§8).
 1. Indicador de actividad: formas de píxel, ritmo de ida y vuelta (120 ms como referencia de partida, no definitiva) y copy de las etiquetas.
 2. Duración y límite del primer ciclo (§5.3).
 3. Velocidad de producción de cada recurso.
-4. Poses reducidas, salvo `memory-wipe`, y versión reducida de los gags.
+4. Poses reducidas, salvo `memory-wipe`, y versión reducida de los gags. La versión reducida de los gags se aprobó el 2026-11-12: catálogo §7.2 y fichas 006, 008 y 009, y §6 de este plan. Quedan las poses reducidas.
 5. Pausas de `talking` y paso `blink` → `talking`.
-6. Ubicación de los gags.
+6. Ubicación de los gags. Aprobada el 2026-11-11 (AV6), junto con la inactividad: spec §5 y §6 de este plan.
 7. Ubicación y diseño del control de preferencia de movimiento. Cabecera y portada, junto a `ThemeSwitch`, son solo la propuesta de partida.
 8. Composición, solo para las observaciones que se reproduzcan (spec §11). El contorno de `memory-wipe` no se toca por defecto.
 9. Selección de efectos sonoros, tras verificar sus licencias.
@@ -469,7 +482,7 @@ El plan §11.1 fija las restricciones; estas son las decisiones de implementaci�
 
 - **En el commit `19a6da9`:** `animation-catalog.md`, `asset-provenance.md`, `AGENTS.md`, `roadmap.md` §11, `tech-stack.md` §45 y `008-spec.md`.
 - **Sin commit todavía:**
-  - catálogo: ficha 015, §7.2, área de uso de 015 y reparto de `009` (§10);
+  - catálogo: ficha 015, §7.2, área de uso de 015 y reparto de `009` (§10); versiones reducidas de los gags (fichas 006, 008 y 009, §6.3 y §7.2, 2026-11-12);
   - `tech-stack.md` §44 (tres modos, ámbito en `<html>`, mixin y PostCSS limitado) y §46.1 (módulos dueños, tiras fuera de la incrustación y verificación con conexión lenta);
   - `roadmap.md` §12 (borrado total en `009`);
   - `008-spec.md` (§7, §11, criterios y riesgos, dependencias, fuera de alcance y mediciones);

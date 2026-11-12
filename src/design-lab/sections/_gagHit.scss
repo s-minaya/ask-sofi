@@ -1,0 +1,128 @@
+@use 'sass:map';
+// Generado: las partes visibles de Sofi, de las tiras reales (`npm run assets:gag-hit`).
+@use 'gagHitShapes' as hit;
+
+// Zona sensible de los gags (T066, decisión de la autora del 2026-11-09): solo responden a toques
+// sobre las partes visibles de Sofi. La comparten la insignia móvil (4.7) y el retrato grande de
+// la consulta ancha (4.8); cambia solo la escala.
+
+@function shape($name) {
+  @return path(map.get(hit.$hit-shapes, $name));
+}
+
+// El `::after` mide lo que el anfitrión (`$scale: 1`) o su tercio ampliado ×3 (`$scale: 3`): los trazados están
+// en px de una insignia de 128 px y el retrato grande mide 384, que es el fotograma real (un
+// bloque de 3 px de sprite pasa a ser 3 px de pantalla). `$limit` recorta la caja en el borde
+// de `poking` (`--poking-edge`): lo que queda por debajo está oculto tras el diálogo y no debe
+// responder, porque durante la broma el anfitrión sube por encima del diálogo (`--poking-z`).
+@mixin -box($scale, $limit: false) {
+  @if $scale == 1 {
+    inset: 0;
+  } @else {
+    top: 0;
+    left: 0;
+    width: calc(100% / #{$scale});
+    @if $limit {
+      height: calc(var(--poking-edge, 100%) / #{$scale});
+    } @else {
+      height: calc(100% / #{$scale});
+    }
+    transform: scale($scale);
+    transform-origin: 0 0;
+  }
+}
+
+// El anfitrión es el elemento de `sofi-blink` con las clases de los gags. Por sí mismo no responde
+// a nada: solo lo hace su `::after`, recortado con la silueta de lo que Sofi muestra en cada
+// estado, de modo que ni la caja transparente ni lo que haya debajo reciben el toque.
+@mixin hit-area($scale: 1) {
+  pointer-events: none;
+
+  // Un toque o un puntero sobre el `::after` llega al propio anfitrión (los pseudoelementos no son
+  // un destino aparte), que es donde escuchan los controladores, sin modificarlos. Ningún parcial
+  // usa `::after` en el anfitrión. El recorte no afecta a lo pintado: no tiene contenido.
+  &::after {
+    content: '';
+    position: absolute;
+    pointer-events: auto;
+    @include -box($scale, true);
+    clip-path: #{shape(idle)};
+  }
+
+  // Cada pose tiene su silueta. «¡Quieto!» suma la palma; ofendida, la pose entera; y las poses de
+  // are-u-still-here, las suyas (el susto y la pillada comparten pose).
+  &[data-poking='stop']::after {
+    clip-path: #{shape(stop)};
+  }
+
+  &:is([data-poking='offended'], [data-poking='return'])::after {
+    clip-path: #{shape(offended)};
+  }
+
+  &[data-still-here='nodding']::after {
+    clip-path: #{shape(nodding)};
+  }
+
+  &[data-still-here='asleep']::after {
+    clip-path: #{shape(asleep)};
+  }
+
+  &:is([data-still-here='startled'], [data-still-here='guilty'])::after {
+    clip-path: #{shape(startled)};
+  }
+
+  // Escondida o asomada, el cuerpo no está: solo responden la cabeza y las manos, que son capas
+  // del controlador. Recortar la capa misma cambiaría cómo se pinta el arte (Chromium la
+  // rasteriza con otro filtrado: se midió), así que la capa deja de ser sensible y su propio
+  // `::after`, transparente, lo es con la silueta de su celda de `poking-hide.webp` (cualquier
+  // píxel no transparente). Sigue a la capa en sus animaciones. «¡NOPE!» empieza asomada y acaba
+  // escondida: usa la escondida. `!important`: el parcial de poking las hace sensibles con su
+  // propio selector.
+  [data-poking-layer] {
+    pointer-events: none !important;
+  }
+
+  :is([data-poking-layer='head'], [data-poking-layer='hands'])::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    @include -box($scale);
+  }
+
+  &:is([data-poking='hide'], [data-poking='peek'], [data-poking='nope']) {
+    // El cuerpo no responde: ni su zona sensible ni lo que haya debajo. Sin caja, para que el
+    // tinte de revisión no dibuje una zona que no lo es.
+    &::after {
+      pointer-events: none;
+      display: none;
+    }
+
+    [data-poking-layer='head']::after {
+      pointer-events: auto;
+      clip-path: #{shape(head-hide)};
+    }
+
+    [data-poking-layer='hands']::after {
+      pointer-events: auto;
+      clip-path: #{shape(hands-hide)};
+    }
+  }
+
+  &[data-poking='peek'] {
+    [data-poking-layer='head']::after {
+      clip-path: #{shape(head-peek)};
+    }
+
+    [data-poking-layer='hands']::after {
+      clip-path: #{shape(hands-peek)};
+    }
+  }
+}
+
+// Solo para revisarla: tiñe la zona sensible, que es justo la silueta de sus `::after`.
+@mixin hit-tint {
+  &::after,
+  [data-poking-layer]::after {
+    background: rgb(0 120 255 / 0.4);
+  }
+}

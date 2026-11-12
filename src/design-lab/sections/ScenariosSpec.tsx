@@ -9,7 +9,8 @@ import {
 import { Button } from '../../components/ui/Button/Button'
 import { cx } from '../../utils/cx'
 import { formatDuration } from '../foundationsData'
-import { observeAmbient, type AmbientEvent } from '../observeAmbient'
+import { createGagLog, gagReducer } from '../gagLog'
+import { observeAmbient } from '../observeAmbient'
 import {
   LabCap,
   LabCheck,
@@ -35,7 +36,7 @@ import { GagHost } from './GagHost'
 import styles from './ScenariosSpec.module.scss'
 
 // Inactividad de la demostración: lo bastante corta para verla sin esperar. No es el valor del
-// plan (150 000 ms provisionales, que aprueba AV6): solo hace visible el paso a «dormida».
+// plan (150 000 ms aprobados, §6): solo hace visible el paso a «dormida».
 export const GAG_IDLE_DEMO_MS = 5_000
 
 type Event = { label: string; action: ScenarioAction }
@@ -261,55 +262,10 @@ export function ScenariosSpec() {
   )
 }
 
-type GagLog = {
-  active: GagId | null
-  entries: Array<{ id: number; text: string }>
-  nextId: number
-}
-
-const GAG_LOG_LIMIT = 30
-
-function gagReducer(state: GagLog, event: AmbientEvent): GagLog {
-  const text = (() => {
-    switch (event.kind) {
-      case 'activate':
-        return event.accepted
-          ? `${event.gag} se activa`
-          : `${event.gag} no puede activarse: ya hay otro gag activo`
-      case 'deactivate':
-        return state.active === event.gag
-          ? `${event.gag} vuelve al reposo`
-          : undefined
-      case 'pause':
-        return `${event.gag} en pausa`
-      case 'resume':
-        return `${event.gag} reanuda`
-    }
-  })()
-  const active =
-    event.kind === 'activate' && event.accepted
-      ? event.gag
-      : event.kind === 'deactivate' && state.active === event.gag
-        ? null
-        : state.active
-  if (text === undefined) return { ...state, active }
-  return {
-    active,
-    nextId: state.nextId + 1,
-    entries: [...state.entries, { id: state.nextId, text }].slice(
-      -GAG_LOG_LIMIT,
-    ),
-  }
-}
-
 // Los tres controladores reales comparten un `ambient`: un solo gag activo y las causas de pausa
 // agregadas son las de producción. Solo hay gags en una escena tranquila (catálogo §6.1).
 function GagBoard({ calm }: { calm: boolean }) {
-  const [gags, report] = useReducer(gagReducer, {
-    active: null,
-    entries: [],
-    nextId: 1,
-  })
+  const [gags, report] = useReducer(gagReducer, undefined, createGagLog)
   const [ambient] = useState(() => observeAmbient(createAmbient(), report))
   const [causes, setCauses] = useState<ReadonlySet<SceneCause>>(new Set())
 
@@ -330,8 +286,7 @@ function GagBoard({ calm }: { calm: boolean }) {
         Solo en una escena tranquila: cualquier otra representación o prioridad
         los cancela. Con movimiento reducido no hay controladores. La
         inactividad de la demostración es de {formatDuration(GAG_IDLE_DEMO_MS)};
-        la provisional del plan es de {formatDuration(STILL_HERE_IDLE_MS)}{' '}
-        (AV6).
+        la aprobada del plan es de {formatDuration(STILL_HERE_IDLE_MS)} (§6).
       </LabNote>
       <ul className={styles.gags}>
         {GAGS.map(({ kind, hint }) => (

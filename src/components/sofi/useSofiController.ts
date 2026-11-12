@@ -33,6 +33,7 @@ export type SofiControllerOptions = {
 type Controller = {
   pause(): void
   resume(): void
+  reset(): void
   setRate(rate: number): void
   destroy(): void
 }
@@ -126,10 +127,12 @@ export function useSofiController(
       )
       applyCurrentRate(attached)
       // `attachPoking` pierde el motivo al delegar: por eso `pause()` y `resume()` van sin
-      // argumentos y es `ambient` quien agrega las causas (E6).
+      // argumentos y es `ambient` quien agrega las causas (E6). `reset()` solo lo pide
+      // `ambient` cuando otro gag sale del reposo (patrón `quiet` de los controladores).
       const unregister = ambient.register(kind, {
         pause: () => attached.pause(),
         resume: () => attached.resume(),
+        reset: () => attached.reset(),
       })
       controller.current = attached
       teardown = () => {

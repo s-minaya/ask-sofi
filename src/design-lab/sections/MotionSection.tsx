@@ -45,6 +45,9 @@ import {
 } from '../parts/LabParts'
 import { createSimulatedAudio } from '../simulatedAudio'
 import { InspectorSpec } from './InspectorSpec'
+import { GagsSpec } from './GagsSpec'
+import { GagsProfileSpec } from './GagsProfileSpec'
+import { GagsWideSpec } from './GagsWideSpec'
 import { ScenariosSpec } from './ScenariosSpec'
 import styles from './MotionSection.module.scss'
 import { SyncSlot } from './SyncSlot'
@@ -690,6 +693,17 @@ export function MotionSection() {
           { href: '#m-blink', num: '4.4', label: 'Parpadeo' },
           { href: '#m-inspector', num: '4.5', label: 'Recursos' },
           { href: '#m-scenarios', num: '4.6', label: 'Escenarios' },
+          { href: '#m-gags', num: '4.7', label: 'Gags en la insignia' },
+          {
+            href: '#m-gags-wide',
+            num: '4.8',
+            label: 'Gags en el retrato grande',
+          },
+          {
+            href: '#m-gags-profile',
+            num: '4.9',
+            label: 'Gags en el expediente',
+          },
         ]}
         aside={
           <Burst
@@ -718,6 +732,9 @@ export function MotionSection() {
       <BlinkSpec />
       <InspectorSpec />
       <ScenariosSpec />
+      <GagsSpec />
+      <GagsWideSpec />
+      <GagsProfileSpec />
     </>
   )
 }

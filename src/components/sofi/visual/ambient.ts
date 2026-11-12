@@ -13,6 +13,9 @@ export type SceneCause = 'busy' | 'interaction' | 'sensitive' | 'hidden'
 export type PauseTarget = {
   pause(): void
   resume(): void
+  // Vuelve al reposo y quita lo que el controlador tuviera pintado. Solo lo pide `activate`
+  // a los demás gags, nunca una causa de la escena. Opcional: sin él, el gag solo se pausa.
+  reset?(): void
 }
 
 export type Ambient = {
@@ -20,8 +23,8 @@ export type Ambient = {
   setCause(cause: SceneCause, active: boolean): void
   // Conecta un controlador. Si ya hay motivos, nace pausado. Devuelve cómo darlo de baja.
   register(gag: GagId, target: PauseTarget): () => void
-  // Un solo gag activo: mientras uno lo está, los demás quedan pausados. Devuelve
-  // `false` (sin cambiar nada) si otro gag ya está activo.
+  // Un solo gag activo: al activarse uno, los demás vuelven a su reposo (`reset()`) y quedan
+  // pausados mientras dure. Devuelve `false` (sin cambiar nada) si otro gag ya está activo.
   activate(gag: GagId): boolean
   deactivate(gag: GagId): void
 }
@@ -70,7 +73,16 @@ export function createAmbient(): Ambient {
     },
     activate(gag) {
       if (active !== undefined && active !== gag) return false
+      // Repetir la activación del activo no resetea a nadie.
+      const entering = active === undefined
       active = gag
+      // Patrón `quiet` de los controladores: primero `reset()` y después `pause()`. Sin el
+      // reset, un `i-see-you` que mira se queda con su cara pintada mientras actúa otro. Va
+      // después de fijar `active`: el reset hace que el controlador avise de su reposo y eso
+      // llama a `deactivate`, que no debe liberar al gag recién activado.
+      if (entering)
+        for (const [other, entry] of [...entries])
+          if (other !== gag) entry.target.reset?.()
       syncAll()
       return true
     },

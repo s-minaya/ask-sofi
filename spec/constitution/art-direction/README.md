@@ -32,3 +32,10 @@ Registradas el 2026-10-11. Cuando el Design Lab y las pantallas difieren, manda 
 
 9. **Adaptación editorial y semántica de resultados.** Las estimaciones del análisis son independientes y no suman 100 %. Los textos, leyendas y tarjetas de resultados del Design Lab que impliquen reparto exclusivo («versiones», «empate técnico», porcentajes que suman 100 %) requerirán revisión editorial en 007 para reflejar la semántica aprobada sin destruir el aspecto visual. El aspecto visual aprobado se conserva como referencia; el ajuste es de copy y semántica, no de layout.
 10. **Pantalla de seguridad y salida rápida.** No existe actualmente una pantalla aprobada para el estado `safety_concern`. Su diseño visual se define en 007.
+
+### Decisiones posteriores (2026-11-09)
+
+11. **Retrato de la consulta ancha y etiqueta «Sofi» sobre el retrato** (2026-11-09, T066 de 008; el expediente, el 2026-11-10; la composición de la consulta ancha, el 2026-11-11, con AV6).
+    - **Consulta ancha, desde 1080 px:** el retrato de 384 px se ve entero, con el pie apoyado en el borde superior del diálogo y sin solaparse con él, como el retrato del cuestionario del expediente (decisión 7). El diálogo no corta a Sofi y Sofi no tapa el texto del diálogo, ni en reposo ni durante los gags: `poking` se esconde tras ese borde. Sustituye al solape de 96 px que había (Design Lab 4.8).
+    - **Etiqueta «Sofi»:** la del diálogo sobresale por encima de su borde. Cuando coincide con el retrato (con el pie, o con el pelo de Sofi escondida o asomada durante `poking`), queda por encima de él. Depende de la anchura de la columna y del tamaño del texto; en el expediente, con el retrato del cuestionario, se da también en una columna.
+    - El mecanismo en producción se decide en T088 (`008-tasks.md`).

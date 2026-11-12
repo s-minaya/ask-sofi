@@ -117,6 +117,16 @@ const EXCEPTIONS: Record<string, { reason: string; declarations: string[] }> = {
       'Ancho de dispositivo emulado: la pantalla más pequeña que se soporta',
     declarations: ['min-width: 320px'],
   },
+  '/src/design-lab/sections/GagsSpec.module.scss': {
+    reason:
+      'Ancho de dispositivo emulado: la pantalla más pequeña que se soporta, en px de la pantalla y no del texto (con el texto al 200 % sigue siendo una pantalla de 320 px)',
+    declarations: ['width: 320px'],
+  },
+  '/src/design-lab/sections/GagsWideSpec.module.scss': {
+    reason:
+      'Copia de las alturas de la consulta a dos columnas, medidas contra el retrato de 384 px (la excepción de ConsultationScreen); el Lab quita el solape del diálogo',
+    declarations: ['min-height: 600px', 'inset: 20px 6% 120px 0'],
+  },
   '/src/features/landing/Landing.module.scss': {
     reason:
       'Solape sobre la tira del fotomatón, cuyos recortes son del spritesheet',

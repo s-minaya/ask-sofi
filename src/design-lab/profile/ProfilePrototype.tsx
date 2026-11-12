@@ -19,13 +19,16 @@ import {
 } from '../../features/partner-profile/ProfileSheet'
 import {
   guideReducer,
+  moodOf,
   openGuide,
   type GuideState,
 } from '../../features/partner-profile/sofiGuide'
 import { useDeleteConfirmationFocus } from '../../features/partner-profile/useDeleteConfirmationFocus'
 import { useSofiGuide } from '../../features/partner-profile/useSofiGuide'
 import { useSound } from '../../hooks/useSound'
+import type { GagsFrameConfig, GagsFrameStatus } from '../gagProfile'
 import type { ProfilePreset } from './profilePresets'
+import { SheetGags } from './SheetGags'
 import styles from './ProfileDrafts.module.scss'
 
 const sameProfile = (a: PartnerProfile, b: PartnerProfile) =>
@@ -33,7 +36,20 @@ const sameProfile = (a: PartnerProfile, b: PartnerProfile) =>
 
 // Mini consultorio del Design Lab: consulta e expediente con estado local.
 // Nunca toca el almacenamiento real.
-export function ProfilePrototype({ preset }: { preset: ProfilePreset }) {
+// `gags`: los tres gags sobre el retrato del cuestionario (T066, ubicación A aprobada). Sin él, es el
+// prototipo de siempre.
+export type SheetGagsProps = {
+  config: GagsFrameConfig
+  onStatus?: (status: Omit<GagsFrameStatus, 'frame'>) => void
+}
+
+export function ProfilePrototype({
+  preset,
+  gags,
+}: {
+  preset: ProfilePreset
+  gags?: SheetGagsProps
+}) {
   const sound = useSound()
   const [view, setView] = useState(preset.view)
   const [invitation, setInvitation] = useState(preset.invitation)
@@ -111,6 +127,7 @@ export function ProfilePrototype({ preset }: { preset: ProfilePreset }) {
             onSavedChange={setSaved}
             headingRef={headingRef}
             onBack={() => go('consultation')}
+            gags={gags}
           />
         )}
       </main>
@@ -124,6 +141,7 @@ type SheetControllerProps = {
   onSavedChange: (profile: PartnerProfile | null) => void
   headingRef: RefObject<HTMLHeadingElement | null>
   onBack: () => void
+  gags?: SheetGagsProps
 }
 
 function initialGuide(preset: ProfilePreset): GuideState {
@@ -136,6 +154,7 @@ function SheetController({
   onSavedChange,
   headingRef,
   onBack,
+  gags,
 }: SheetControllerProps) {
   const [draft, setDraft] = useState(
     () =>
@@ -160,7 +179,7 @@ function SheetController({
     setError(null)
   }
 
-  return (
+  const sheet = (
     <ProfileSheet
       draft={draft}
       guide={guide}
@@ -218,5 +237,13 @@ function SheetController({
         },
       }}
     />
+  )
+
+  if (!gags) return sheet
+  return (
+    <>
+      {sheet}
+      <SheetGags mood={moodOf(guide)} {...gags} />
+    </>
   )
 }

@@ -555,6 +555,120 @@ describe('useSofiController · un solo gag activo', () => {
   })
 })
 
+// Los tres gags sobre el MISMO anfitrión, como van en producción (plan §6). Los controladores
+// documentan el patrón `quiet`: cuando uno sale del reposo, los demás hacen `reset()` y
+// `pause()`. Con solo `pause()`, un `i-see-you` que mira dejaba su cara pintada mientras
+// actuaba `poking` (en `hide`, dos ojos flotando en el hueco). Con los controladores reales.
+function Trio({
+  ambient,
+  idleAfter,
+}: {
+  ambient: Ambient
+  idleAfter?: number
+}) {
+  const [host, setHost] = useState<HTMLElement | null>(null)
+  const classes = SPECS.map((spec) =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- SPECS es una constante: siempre 3
+    useSofiController(spec.kind, host, { ambient, calm: true, idleAfter }),
+  )
+  return <span ref={setHost} data-testid="host" className={classes.join(' ')} />
+}
+
+describe('useSofiController · tres gags sobre el mismo anfitrión', () => {
+  async function trio(idleAfter?: number) {
+    render(<Trio ambient={ambient} idleAfter={idleAfter} />)
+    await flush()
+    const host = hostOf()
+    // jsdom no tiene geometría: `i-see-you` solo mira si el sprite tiene caja.
+    host.getBoundingClientRect = () =>
+      ({ left: 0, top: 0, width: 128, height: 128 }) as DOMRect
+    return host
+  }
+  const look = () => {
+    fireEvent.pointerMove(document, { clientX: 400, clientY: 50 })
+    act(() => vi.advanceTimersByTime(200))
+  }
+  const eyes = (host: HTMLElement) =>
+    host.querySelector<HTMLElement>('[data-i-see-you-layer=face]')!
+
+  it('el montaje deja los tres controladores en reposo sobre un solo elemento', async () => {
+    const host = await trio()
+    expect(host.dataset.poking).toBe('idle')
+    expect(host.dataset.stillHere).toBe('idle')
+    expect(host.dataset.iSeeYou).toBe('idle')
+  })
+
+  it('poking sale del reposo mientras i-see-you mira: i-see-you vuelve a idle', async () => {
+    const host = await trio()
+    look()
+    expect(host.dataset.iSeeYou).toBe('watching')
+
+    fireEvent.click(host)
+
+    expect(host.dataset.poking).toBe('curious')
+    expect(host.dataset.iSeeYou).toBe('idle')
+  })
+
+  it('y sigue pausado: ni mira ni reacciona mientras poking actúa, y lo hace al terminar', async () => {
+    const host = await trio()
+    look()
+    fireEvent.click(host)
+    expect(host.dataset.iSeeYou).toBe('idle')
+
+    look()
+    fireEvent.pointerEnter(host)
+    act(() => vi.advanceTimersByTime(1_500))
+    expect(host.dataset.iSeeYou).toBe('idle')
+    expect(host.dataset.poking).toBe('curious')
+
+    // poking vuelve a su reposo a los 10 s: i-see-you se reanuda y vuelve a mirar.
+    act(() => vi.advanceTimersByTime(11_000))
+    expect(host.dataset.poking).toBe('idle')
+    fireEvent.pointerLeave(host)
+    look()
+    expect(host.dataset.iSeeYou).toBe('watching')
+    expect(eyes(host)).toBeInTheDocument()
+  })
+
+  it('las causas de la escena no resetean: i-see-you sigue mirando, solo se pausa', async () => {
+    const host = await trio()
+    look()
+    expect(host.dataset.iSeeYou).toBe('watching')
+
+    act(() => {
+      ambient.setCause('busy', true)
+      ambient.setCause('hidden', true)
+    })
+    act(() => {
+      ambient.setCause('busy', false)
+      ambient.setCause('hidden', false)
+    })
+
+    expect(host.dataset.iSeeYou).toBe('watching')
+  })
+
+  it('mientras poking actúa, la cuenta de are-u-still-here está parada', async () => {
+    const host = await trio()
+    fireEvent.click(host)
+    act(() => vi.advanceTimersByTime(STILL_HERE_IDLE_MS))
+    // poking dura 10 s y la cuenta no corre a escondidas: a los 150 s sigue sin dormirse.
+    expect(host.dataset.stillHere).toBe('idle')
+  })
+
+  it('are-u-still-here se activa mientras i-see-you mira: i-see-you vuelve a idle y poking sigue quieta', async () => {
+    // Inactividad corta para que le entre sueño antes de que i-see-you deje de mirar (2,5 s).
+    const host = await trio(2_000)
+    look()
+    expect(host.dataset.iSeeYou).toBe('watching')
+
+    act(() => vi.advanceTimersByTime(2_000))
+
+    expect(host.dataset.stillHere).toBe('drowsy')
+    expect(host.dataset.iSeeYou).toBe('idle')
+    expect(host.dataset.poking).toBe('idle')
+  })
+})
+
 // Velocidad de las capas CSS: `setRate` del controlador solo mueve sus temporizadores. Las
 // animaciones CSS que crea el controlador (otra capa, otro estado) nacen a 1× y deben seguir
 // la velocidad del recurso, como pide la spec §8 («todas sus capas y los tiempos de su

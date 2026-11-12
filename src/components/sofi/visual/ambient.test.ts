@@ -149,6 +149,130 @@ describe('createAmbient: un solo gag activo', () => {
     expect(gags.poking.pause).toHaveBeenCalledTimes(1)
   })
 
+  // Patrón `quiet` que documentan los propios controladores: cuando uno sale del reposo, los
+  // demás hacen `reset()` (vuelven a su reposo y quitan lo que tuvieran pintado) y `pause()`.
+  // Sin el `reset()`, un `i-see-you` que mira se queda con su cara pintada mientras actúa otro.
+  describe('al activarse un gag, los demás vuelven a su reposo', () => {
+    function resettable() {
+      const calls: string[] = []
+      const gag = {
+        pause: vi.fn(() => calls.push('pause')),
+        resume: vi.fn(() => calls.push('resume')),
+        reset: vi.fn(() => calls.push('reset')),
+      }
+      return { gag, calls }
+    }
+    function resettableScene() {
+      const ambient = createAmbient()
+      const gags = {
+        poking: resettable(),
+        'i-see-you': resettable(),
+        'are-u-still-here': resettable(),
+      }
+      for (const [id, { gag }] of Object.entries(gags))
+        ambient.register(id as keyof typeof gags, gag)
+      return { ambient, gags }
+    }
+
+    it('los demás reciben reset() y después pause(); el activo, ninguno de los dos', () => {
+      const { ambient, gags } = resettableScene()
+
+      ambient.activate('poking')
+
+      expect(gags.poking.calls).toEqual([])
+      expect(gags['i-see-you'].calls).toEqual(['reset', 'pause'])
+      expect(gags['are-u-still-here'].calls).toEqual(['reset', 'pause'])
+      expect(gags['i-see-you'].gag.reset).toHaveBeenCalledWith()
+    })
+
+    it('al volver el gag activo al reposo, los demás se reanudan sin un reset más', () => {
+      const { ambient, gags } = resettableScene()
+      ambient.activate('poking')
+
+      ambient.deactivate('poking')
+
+      expect(gags['i-see-you'].calls).toEqual(['reset', 'pause', 'resume'])
+      expect(gags['i-see-you'].gag.reset).toHaveBeenCalledTimes(1)
+    })
+
+    it('repetir la activación del mismo gag, o un intento rechazado, no resetea a nadie', () => {
+      const { ambient, gags } = resettableScene()
+      ambient.activate('poking')
+
+      expect(ambient.activate('poking')).toBe(true)
+      expect(ambient.activate('i-see-you')).toBe(false)
+
+      expect(gags['i-see-you'].gag.reset).toHaveBeenCalledTimes(1)
+      expect(gags['are-u-still-here'].gag.reset).toHaveBeenCalledTimes(1)
+      expect(gags.poking.gag.reset).not.toHaveBeenCalled()
+    })
+
+    it('las causas de la escena pausan y reanudan, pero nunca resetean', () => {
+      const { ambient, gags } = resettableScene()
+
+      ambient.setCause('busy', true)
+      ambient.setCause('interaction', true)
+      ambient.setCause('busy', false)
+      ambient.setCause('interaction', false)
+      ambient.activate('poking')
+      ambient.setCause('sensitive', true)
+      ambient.setCause('sensitive', false)
+
+      // Solo el reset de la activación de `poking`, una vez por cada uno de los otros dos.
+      expect(gags['i-see-you'].gag.reset).toHaveBeenCalledTimes(1)
+      expect(gags['are-u-still-here'].gag.reset).toHaveBeenCalledTimes(1)
+      expect(gags.poking.gag.reset).not.toHaveBeenCalled()
+    })
+
+    it('un gag que se registra cuando ya hay otro activo nace pausado, sin reset', () => {
+      const ambient = createAmbient()
+      ambient.register('poking', resettable().gag)
+      ambient.activate('poking')
+      const late = resettable()
+
+      ambient.register('i-see-you', late.gag)
+
+      expect(late.calls).toEqual(['pause'])
+    })
+
+    it('cada activación posterior resetea de nuevo a los demás', () => {
+      const { ambient, gags } = resettableScene()
+      ambient.activate('poking')
+      ambient.deactivate('poking')
+
+      ambient.activate('i-see-you')
+
+      expect(gags.poking.gag.reset).toHaveBeenCalledTimes(1)
+      expect(gags['are-u-still-here'].gag.reset).toHaveBeenCalledTimes(2)
+    })
+
+    it('un controlador sin reset sigue funcionando: solo se pausa', () => {
+      const { ambient, gags } = resettableScene()
+      const bare = target()
+      ambient.register('i-see-you', bare)
+
+      expect(() => ambient.activate('poking')).not.toThrow()
+
+      expect(bare.pause).toHaveBeenCalledTimes(1)
+      expect(gags['are-u-still-here'].gag.reset).toHaveBeenCalledTimes(1)
+    })
+
+    it('un reset que reentra (el controlador avisa de su reposo) no rompe la activación', () => {
+      const ambient = createAmbient()
+      const watcher = { pause: vi.fn(), resume: vi.fn(), reset: vi.fn() }
+      // El hook, al hacer reset, recibe `onChange('idle')` y llama a `deactivate` de ese gag.
+      watcher.reset.mockImplementation(() => ambient.deactivate('i-see-you'))
+      ambient.register('poking', target())
+      ambient.register('i-see-you', watcher)
+
+      expect(ambient.activate('poking')).toBe(true)
+
+      // `poking` sigue siendo el activo y el otro queda pausado.
+      expect(ambient.activate('i-see-you')).toBe(false)
+      expect(watcher.pause).toHaveBeenCalledTimes(1)
+    })
+  })
+
   it('dar de baja el gag activo libera a los demás', () => {
     const ambient = createAmbient()
     const active = target()

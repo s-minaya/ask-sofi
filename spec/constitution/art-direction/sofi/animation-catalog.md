@@ -121,9 +121,9 @@ En estas fichas, **«al terminar»** designa la transición funcional esperada. 
 - **Qué expresa:** Sofi reacciona a que la persona pinche **su cuerpo** o el área del personaje; rompe la cuarta pared e interactúa con el borde **real** de la interfaz.
 - **Se activa:** solamente mediante **ratón o toque** sobre el personaje en una región donde la interacción ambiental esté permitida. **No hay activación por teclado**: este gag opcional no es una acción necesaria para acceder a información ni funciones.
 - **Reproducción:** máquina de estados escalonada, no un único bucle. La secuencia acordada avanza por aproximadamente cinco toques acumulados en una ventana breve: (1) curiosidad «Hm?»; (2) mirada lateral «Can I help you?»; (3) gesto de límite «PERSONAL SPACE!»; (4) enfado cómico «I'm literally pixels.»; (5) Sofi se esconde. Después puede asomarse y un toque adicional provocar «NOPE». Estas frases describen la intención original, **no son copy obligatorio que deba mostrarse**.
-- **Termina / transición:** vuelve al reposo tras el descanso/reinicio previsto por su controlador; un nuevo disparador válido puede iniciar otra serie. No debe quedarse oculta de manera que desaparezca una UI importante.
+- **Termina / transición:** vuelve al reposo tras el descanso/reinicio previsto por su controlador (con movimiento reducido, tras la espera de su versión reducida); un nuevo disparador válido puede iniciar otra serie. No debe quedarse oculta de manera que desaparezca una UI importante.
 - **Interrupciones:** cualquier tarea real, diálogo, procesamiento, foco funcional, navegación, seguridad, salida rápida y otros easter eggs de mayor pertinencia.
-- **Reducido:** sin empujones/desplazamientos, caídas ni sacudidas; como máximo reacciones estáticas no invasivas, o desactivación completa del gag si el Design Lab demuestra que es la alternativa adecuada.
+- **Reducido (aprobado por la autora el 2026-11-12):** reacción estática (§7.2). Cada toque que cuenta pasa a la pose fija siguiente: curiosidad, mirada lateral, gesto de límite y enfado. Sin empujones, desplazamientos, caídas ni sacudidas, y no se esconde ni se asoma: tras el enfado, los toques no cuentan. Vuelve al reposo tras una espera sin toques más corta que la del controlador, fijada en el plan de 008 (§6). Misma activación, solo ratón o toque, y mismas interrupciones.
 - **Particularidades:** no incluir manos/bordes ficticios dentro de los fotogramas donde la intención era interactuar con un elemento real. Revisar el controlador exportado: la auditoría detectó que `attachPoking` pierde los **motivos** de pausa al delegar `pause()` sin su causa; no permitir que el primer `resume()` reactive Sofi si sigue ocupada o suspendida por otra razón.
 
 ### 008 — `are-u-still-here` · ¿Sigues ahí?
@@ -133,7 +133,7 @@ En estas fichas, **«al terminar»** designa la transición funcional esperada. 
 - **Reproducción:** máquina de estados: reposo → somnolencia → sueño → despertar → reposo. Mientras duerme puede mantenerse una pose fija con `Zzz` separados; no necesita repetir la transición de quedarse dormida.
 - **Termina / transición:** la actividad de regreso puede disparar el despertar; cuando concluye, vuelve a `blink` o al estado superior que proceda.
 - **Interrupciones:** consulta activa, escritura, lectura de diálogo, procesamiento, otras reacciones, navegación, estados sensibles o cierre/ocultación de página según la lógica de inactividad. No interpretar «página abierta» como usuario ausente si sigue leyendo.
-- **Reducido:** pose de sueño y `Zzz` fijos o supresión de la secuencia; despertar sin sobresalto animado. Nada debe depender de ver la animación.
+- **Reducido (aprobado por la autora el 2026-11-12):** reacción estática (§7.2). Tras la misma inactividad, somnolienta y después dormida con los `Zzz` fijos, sin cabezadas. Al volver la actividad, la cara de pillada fija, sin sobresalto ni estallido, durante el tiempo que su controlador da al despertar; después, reposo. Nada debe depender de ver la animación.
 - **Particularidades:** el origen del ZIP utiliza 90 s: **discrepancia histórica conocida**, no adoptar esa cifra como nueva regla funcional. `sleep-zzz` y líneas de despertar son efectos independientes. Mantener frecuencia baja para no molestar.
 
 ### 009 — `i-see-you` · Te he pillado
@@ -143,7 +143,7 @@ En estas fichas, **«al terminar»** designa la transición funcional esperada. 
 - **Reproducción:** interacción breve con estados de mirada (arriba/abajo/izquierda/derecha/contacto) y reacción, después regreso a reposo.
 - **Termina / transición:** al abandonar la región relevante, superar su ventana de interacción, producirse otra intención o concluir la reacción.
 - **Interrupciones:** cualquier acción principal, escritura, reproducción de diálogo, procesamiento, interacción sensible, navegación y los demás easter eggs.
-- **Reducido:** ojos/caras estáticos sin seguimiento continuo, o gag desactivado; no forzar animación con `no-preference` si el modo reducido está simulado desde la aplicación.
+- **Reducido (aprobado por la autora el 2026-11-12):** reacción estática (§7.2), sin seguimiento ni miradas. Con el puntero o el dedo quieto sobre Sofi el tiempo que pide su controlador, la pillan (cara y alerta fijas) y se queda con la sonrisa pícara hasta volver al reposo: dos cambios de pose. Sin escuchas fuera de Sofi. No forzar animación con `no-preference` si el modo reducido está simulado desde la aplicación.
 - **Particularidades:** **descartadas** las miradas aleatorias añadidas: el movimiento debe responder a la interacción real, ser ocasional y no parecer vigilancia. Evitar listeners globales y trabajo por cada movimiento de puntero cuando el personaje no está activo.
 
 ### 010 — `needs-context` · Me falta una pista
@@ -290,7 +290,7 @@ reposo ─ escena tranquila ─┬─ interacción puntero/tacto ─→ i-see-yo
 | Se activa movimiento reducido | Salir de movimiento continuo inmediatamente y mostrar estado estático coherente |
 | Animación de un único ciclo termina | Retomar la intención vigente, sin recrear análisis ni ejecutar acciones automáticas |
 
-**Coordinación de easter eggs:** los controladores de `poking`, `i-see-you` y `are-u-still-here` pueden tener motivos simultáneos de pausa (`busy`, otro easter egg, pantalla no visible, motion reduce). **Un `resume` de una causa no debe anular las restantes**. El agente deberá resolverlo como coordinación de estados, sin duplicar máquinas en React y scripts heredados.
+**Coordinación de easter eggs:** los controladores de `poking`, `i-see-you` y `are-u-still-here` pueden tener motivos simultáneos de pausa (`busy`, otro easter egg, pantalla no visible). Con movimiento reducido no se montan: los gags siguen solo con su reacción estática (§7.2), sujeta a las mismas causas. **Un `resume` de una causa no debe anular las restantes**. El agente deberá resolverlo como coordinación de estados, sin duplicar máquinas en React y scripts heredados.
 
 ### 6.4. Primer ciclo narrativo del análisis
 
@@ -336,6 +336,13 @@ Excepción acotada al principio §2.3, solo para `sofing` durante un análisis:
 
 **La representación funcional y textual es obligatoria aunque no haya animación.** `prefers-reduced-motion: reduce` y el modo forzado `[data-motion='reduce']` deben producir resultados funcionalmente equivalentes: detener o evitar el movimiento de CSS **y** de controladores JS, limpiar eventos/temporizadores de animación y presentar una pose estática adecuada. No limitarse a congelar el fotograma en que se encuentre. La preferencia propia `full` (`tech-stack.md` §44) es una elección expresa de la persona: con ella Sofi se comporta como sin reducción aunque el sistema la pida.
 
+**Reacciones estáticas y animaciones completas (aprobado por la autora el 2026-11-12).** Con movimiento reducido, los gags distinguen dos cosas:
+
+- **La animación completa** es el controlador de su ZIP (`attach*`), con sus animaciones, saltos, cabezadas, sobresaltos, escondites y seguimiento del puntero. Nunca se monta con movimiento reducido, y al pasar a reducido se destruye.
+- **La reacción estática** es la máquina de estados del mismo ZIP, que pasa de una pose fija a otra con las poses que su parcial ya define para reducido. Sin movimiento continuo, seguimiento ni fotogramas nuevos. Sus temporizadores deciden cuándo cambia la pose, pero no animan nada.
+
+Cuando este apartado pide detener el JS y limpiar los temporizadores de animación, habla de la animación completa. La reacción estática se limpia igual al desmontar. La versión de cada gag está en su ficha (006, 008 y 009).
+
 | Categoría | Con movimiento reducido |
 |---|---|
 | Reposo `blink` | F0 fijo |
@@ -344,8 +351,8 @@ Excepción acotada al principio §2.3, solo para `sofing` durante un análisis:
 | Resultado `eureka`/`suspicious`/`needs-context`/`uncertain` | Pose final o representativa fija; contenido completo disponible |
 | `error` | Pose sin glitch ni destellos; explicación y acciones legibles |
 | `favoriting` | Confirmación estática de favorito guardado, con feedback textual |
-| `poking`/`i-see-you` | Reacción estática muy breve o desactivación del gag; no rastreo animado |
-| `are-u-still-here` | Estado estático o reacción ambiental desactivada; no sobresalto |
+| `poking`/`i-see-you` | Reacción estática (fichas 006 y 009); no rastreo animado |
+| `are-u-still-here` | Reacción estática (ficha 008); sin cabezadas ni sobresalto |
 | `memory-wipe` | Borrado inmediato y pose estática del propio recurso (Sofi aterrorizada con su cartel) hasta que termina la confirmación del borrado; después, neutral. Sin temblor, disolución, animación ni temporizador propio |
 | Seguridad y salida rápida | Sin animación en cualquier modo |
 
@@ -370,7 +377,7 @@ El inspector de cada entrada debe permitir:
 - Probar bucle frente a pasada única, reinicio por nuevo evento y cancelación durante una transición.
 - Simular eventos reales: `speaking`/pausa/«Ver todo», petición pendiente/completada, falta de contexto, respuesta incierta, favorito guardado, toque secuencial, puntero, inactividad/despertar, confirmación de borrado y salida rápida.
 - Comprobar secuencias entre assets: `blink → talking → blink`, `processing → resultado`, `needs-context → uncertain`, `favoriting → blink`, `memory-wipe → neutral`, y prioridades de easter eggs.
-- Activar movimiento reducido del sistema y modo forzado; visualizar **el fotograma estático correcto**, sin controles JS supervivientes.
+- Activar movimiento reducido del sistema y modo forzado; visualizar **el fotograma estático correcto**, sin controles JS supervivientes (los gags, solo con su reacción estática: §7.2).
 - Revisar escalas y contenedores representativos: escenario entero, insignia, busto apoyado en borde, layouts anchos y estrechos, ambos temas; verificar que brazos, estrellas, sellos o saltos no se corten.
 - Hacer constar **aprobación visual** de la velocidad productiva y de transiciones cuando corresponda. No sustituir la línea temporal del ZIP ni crear dos constantes autoritativas de duración solo por usar un slider.
 
@@ -387,7 +394,7 @@ Esta sección enumera **problemas a resolver**, no prescribe nueva arquitectura 
 3. **Una pasada vs loop de exportación:** `favoriting`, `needs-context`, `error` y otros traen en sus parciales comportamientos que no necesariamente coinciden con su duración funcional. Respetar los fotogramas aprobados y obtener una sola ejecución sin romper el asset.
 4. **Timers y eventos:** el inspector y la integración deben probar la sincronización de secuencias de múltiples capas, cancelaciones, desmontajes, pausas y cambios de velocidad. Evitar copiar una duración del SCSS a JS de manera silenciosa.
 5. **Controladores de cuarta pared:** auditar sus `attach*`, `destroy()`, concurrencia, listener global y compatibilidad con React StrictMode. Corregir el bug de motivos de pausa señalado en `attachPoking`.
-6. **Movimiento reducido forzado:** en la auditoría, `poking`, `are-u-still-here` e `i-see-you` seguían con movimiento bajo `data-motion='reduce'`; otros parciales mostraban un fotograma diferente al fallback diseñado. Corregir ambas divergencias, no deshabilitar solo CSS y dejar JS activo.
+6. **Movimiento reducido forzado:** en la auditoría, `poking`, `are-u-still-here` e `i-see-you` seguían con movimiento bajo `data-motion='reduce'`; otros parciales mostraban un fotograma diferente al fallback diseñado. Corregir ambas divergencias, no deshabilitar solo CSS y dejar JS activo. La reacción estática de los gags no es JS de animación (§7.2).
 7. **Visibilidad y carga:** `background-image` puede quedar en blanco antes de decodificar el WebP. Mantener un fotograma estático de respaldo y cargar de forma prudente; no precargar todas las tiras y controladores por si acaso.
 8. **Recortes:** `rolling` y `favoriting` sobresalen; `error` y `eureka` incluyen salto del cuerpo. Inspeccionar en componentes reales del Design Lab, no asumir que una tarjeta con `overflow: hidden` sirve para todo.
 9. **Renderizados de texto:** la animación de boca consume `speaking`; no disparar renderizados del escenario entero por cada carácter de `SofiSpeech`.
@@ -455,7 +462,7 @@ Estas dudas **no** justifican crear nuevos spritesheets ni cambiar el significad
 - [ ] No se reprocesaron ni alteraron los fotogramas artísticamente definitivos.
 - [ ] El Design Lab muestra cada sprite real, controla individualmente su velocidad y prueba sus capas y transiciones.
 - [ ] Se revisaron en navegador bucles, una pasada, interrupciones, limpieza y concurrencia de easter eggs.
-- [ ] `prefers-reduced-motion` y `data-motion='reduce'` detienen correctamente **CSS y JS** con fallback visible.
+- [ ] `prefers-reduced-motion` y `data-motion='reduce'` detienen correctamente **CSS y JS** con fallback visible; los gags conservan solo su reacción estática (§7.2).
 - [ ] Los sprites decorativos están excluidos del árbol de accesibilidad sin ocultar texto ni controles; los cambios funcionales se anuncian una sola vez desde sus componentes, sin narración de fotogramas ni anuncios duplicados.
 - [ ] `poking` permanece como gag opcional solo para ratón/toque, sin falso botón ni foco de teclado; todas las acciones reales siguen siendo accesibles.
 - [ ] Los bucles automáticos que lo requieran tienen mecanismo de pausa/parada/ocultación, y el glitch ha superado una verificación de destellos.

@@ -52,9 +52,20 @@ Fuentes que no se repiten aquí: significado, disparadores, interrupciones, rete
 
 ### 5. Easter eggs
 
-- `poking`, `are-u-still-here` e `i-see-you` se integran solo en la consulta en reposo y en el expediente, en la ubicación aprobada en el Lab, según el catálogo §4 y §6.3. No se activan mientras se escribe, se interactúa con controles, Sofi habla, se procesa o hay un estado sensible.
-- `are-u-still-here` se activa tras una inactividad real de 2–3 minutos. El valor exacto se fija en el plan o el Lab; no se usa el que trae por defecto el controlador.
+- `poking`, `are-u-still-here` e `i-see-you` se integran solo en la consulta en reposo y en el expediente, en la ubicación aprobada (abajo), según el catálogo §4 y §6.3. No se activan mientras se escribe, se interactúa con controles, Sofi habla, se procesa o hay un estado sensible.
+- **Ubicación en la consulta en reposo (aprobada por la autora el 2026-11-11, AV6):** sobre la Sofi que ya tiene la consulta, sin añadir otra. En una columna, la insignia, con su propio borde inferior como escondite (Lab 4.7). Desde 1080 px, el retrato de 384 px, con el borde superior del diálogo como escondite (Lab 4.8); la composición de esa columna es la de `art-direction/README.md`, decisión 11. El mecanismo de producción se decide en T088.
+- **Ubicación en el expediente (aprobada por la autora el 2026-11-10):** sobre el retrato que ya tiene el cuestionario, en móvil y en escritorio (una y dos columnas), con el borde superior del bocadillo como escondite. No se añade otra Sofi. Prototipo en el Lab (4.9); el mecanismo de producción se decide en T088.
+- **Foco en los controles del expediente (aprobado por la autora el 2026-11-09; cancelación, foco nativo y alcance, el 2026-11-10):** en el expediente, cuando el foco entra en cualquier control del expediente, se cancelan los gags activos y Sofi vuelve al reposo. Cuentan todos los controles del expediente; los de la cabecera general de la aplicación no. El foco es el nativo de cada navegador, también en WebKit: no se fuerza al tocar o pulsar una respuesta, y donde el navegador no lo da, esa pulsación no suspende los gags. Las acciones del formulario siempre prevalecen sobre los gags. Los gags permanecen suspendidos mientras el foco siga en un control (pasar de uno a otro no los reanuda) y se reanudan al perderlo, sin continuar reacciones ni miradas pendientes. Es propio de esta causa: las demás causas de pausa no cambian. Prototipo en el Lab (4.9); el mecanismo de producción se decide en T088.
+- **Movimiento reducido (aprobado por la autora el 2026-11-12):** los tres gags se conservan también con movimiento reducido, en su reacción estática, sin movimiento continuo ni seguimiento animado, y solo con recursos y fotogramas existentes. La versión de cada uno está en el catálogo (§7.2 y fichas 006, 008 y 009), y su mecanismo, en `008-plan.md` §6. Prototipo en el Lab (4.7–4.9; evidencia: `008-verification.md` §31–§32).
+- `are-u-still-here` se activa tras una inactividad real de 2–3 minutos. El valor aprobado es el de `008-plan.md` §6; no se usa el que trae por defecto el controlador.
 - Sin escuchas globales ni trabajo por movimiento de puntero mientras el gag no pueda activarse.
+- **Zona sensible (aprobado por la autora el 2026-11-09):** en la insignia móvil, los gags solo responden a toques (y puntero) sobre las partes visibles de Sofi, incluidas la cabeza y las manos cuando sobresalen. Las zonas transparentes no son interactivas. Excepción aprobada el mismo día: la mirada de `i-see-you` puede seguir los toques y el puntero en toda la página (así lo hace el controlador, que no se modifica); la zona sensible limita solo las reacciones por contacto. Prototipo en el Lab (4.7); el mecanismo de producción se decide en T088.
+- **Precisión de la zona sensible (aprobada por la autora el 2026-11-10):** un píxel visible de Sofi puede quedarse sin respuesta solo si está a 1 px o menos de la zona sensible, y la zona sensible puede no tener nada pintado debajo solo a 2 px o menos del contorno de Sofi. No hay ninguna zona táctil transparente alejada de Sofi. Solo hay estas excepciones, aprobadas por la autora. Cada una afecta únicamente al límite, la escala y los motores que nombra; en todo lo demás rigen los dos límites anteriores:
+  - **Contorno estático del retrato de 384 px** (2026-11-10): zona sensible sin nada pintado hasta 3 px.
+  - **Mientras dura `peek`** (2026-11-11):
+    - a ×3 (retrato de 384 px): zona sensible sin nada pintado hasta 5 px en Firefox y hasta 3 px en Chromium y WebKit;
+    - a ×1,5 (retrato de 192 px): un píxel visible sin respuesta hasta a 2 px en Chromium, y zona sensible sin nada pintado hasta 3 px en WebKit;
+    - a ×1 (insignia de 128 px): un píxel visible sin respuesta hasta a 2 px en Chromium.
 
 ### 6. Controladores
 
@@ -63,19 +74,19 @@ Fuentes que no se repiten aquí: significado, disparadores, interrupciones, rete
   - conectar y desconectar cada controlador según la escena;
   - limpiarlos al desmontar, también con StrictMode;
   - pasarles el umbral de inactividad y la velocidad;
-  - aplicar el movimiento reducido también a su JS.
+  - aplicar el movimiento reducido también a su JS: con movimiento reducido no monta el controlador completo, solo la reacción estática del gag (catálogo §7.2).
 - Que el adaptador cumpla esto, junto con el movimiento reducido de §7, es un riesgo técnico que el plan debe demostrar antes de implementar (véase «Provisional and pending»).
 
 ### 7. Movimiento reducido
 
-- Se cumple el catálogo §7.2: `prefers-reduced-motion`, el modo forzado y la preferencia `reduce` producen el mismo resultado en CSS y JS, con la pose estática aprobada para cada recurso.
+- Se cumple el catálogo §7.2: `prefers-reduced-motion`, el modo forzado y la preferencia `reduce` producen el mismo resultado en CSS y JS, con la pose estática aprobada para cada recurso y, en los gags, su reacción estática.
 - Preferencia propia de movimiento `system | reduce | full` (`tech-stack.md` §44), junto a tema y sonido, guardada con `003` y reversible. `system` es la predeterminada; `full` activa expresamente las animaciones completas aunque el sistema pida reducirlas. Su diseño se aprueba en el Lab.
 - Se evalúa si algún bucle automático necesita además un control de pausa (WCAG 2.2.2; catálogo §7.2).
 
 ### 8. Velocidad
 
 - La velocidad de producción de cada animación se define en un único lugar de Ask Sofi, como factor sobre la línea de tiempo de su parcial (1× por defecto). Se aplica a la vez a todas sus capas, pseudoelementos y efectos incluidos, y a los tiempos de su controlador. El parcial sigue siendo la única fuente de duraciones: no se copian a JS. No es una preferencia pública (catálogo §8, §12).
-- **Excepción aprobada (2026-11-05): `poking` conserva su velocidad original (1×).** No se experimenta con ella: el inspector no le ofrece control de velocidad ni «comparar con 1×», y AV3 no la fija. Los otros 13 recursos sí. Esta es la única fuente de la excepción; el catálogo §8 solo la remite aquí.
+- **Excepción aprobada (2026-11-05): `poking` conserva su velocidad original (1×).** No se experimenta con ella: el inspector no le ofrece control de velocidad ni «comparar con 1×», y AV3 no la fija. Los otros 13 recursos sí. Esta es la única fuente de la excepción; el catálogo §8 solo la remite aquí. La excepción es de velocidad: no impide que, con movimiento reducido, `poking` vuelva al reposo tras la espera de su versión reducida (catálogo, ficha 006; plan §6).
 
 ### 9. Sonido
 
@@ -128,13 +139,17 @@ Las observaciones de composición de la auditoría solo requieren cambios si el 
 
 - [ ] Solo hay un easter egg activo, y la reanudación de una causa no anula las demás, incluido `attachPoking`.
 - [ ] Ningún gag se activa durante escritura, interacción con controles, habla, procesamiento ni estados sensibles; `poking` no responde al teclado ni recibe foco.
+- [ ] En el expediente, al entrar el foco en un control del expediente (no de la cabecera general), el gag en marcha se cancela y Sofi vuelve al reposo; mientras el foco sigue en un control, ningún gag se activa ni reacciona (pasar de uno a otro no los reanuda); al perderlo, se reanudan sin continuar ninguna reacción ni mirada pendiente. El foco es el nativo de cada navegador: tocar o pulsar una respuesta no lo fuerza.
+- [ ] En el expediente, con cualquier gag en cualquier pose, cada control del formulario recibe el toque y su acción se cumple: ni Sofi ni su zona sensible se lo quitan.
 - [ ] Al desmontar, también con StrictMode, no quedan listeners, observadores, timers, capas ni atributos.
 - [ ] `are-u-still-here` no se activa antes del umbral aprobado.
+- [ ] Con movimiento reducido, cada gag muestra su versión reducida aprobada (catálogo, fichas 006, 008 y 009): sin animaciones vivas, sin el controlador completo ni seguimiento del puntero, y con las mismas causas de pausa, el mismo gag único activo y la misma limpieza.
+- [ ] Los gags solo responden sobre las partes visibles de Sofi, con la precisión de §5; una zona transparente, o un efecto (el «?», los Zzz, la alerta), no responde a ningún toque. La mirada de `i-see-you` queda fuera de este criterio (§5).
 
 ### Accesibilidad y movimiento
 
 - [ ] Sprites, capas e indicador quedan fuera del árbol de accesibilidad, y los hechos se anuncian una vez desde sus componentes.
-- [ ] Sistema, modo forzado y preferencia `reduce` producen la misma pose estática aprobada y detienen CSS y JS; con `full`, las animaciones se reproducen aunque el sistema pida reducirlas (Playwright en Chromium, Firefox y WebKit).
+- [ ] Sistema, modo forzado y preferencia `reduce` producen la misma pose estática aprobada y detienen las animaciones de CSS y JS (los gags, en su reacción estática: catálogo §7.2); con `full`, las animaciones se reproducen aunque el sistema pida reducirlas (Playwright en Chromium, Firefox y WebKit).
 - [ ] La preferencia propia persiste, es reversible y vuelve a `system` al borrar todos los datos.
 - [ ] La verificación de destellos de `error` y la evaluación de WCAG 2.2.2 están documentadas.
 
@@ -164,7 +179,6 @@ Las observaciones de composición de la auditoría solo requieren cambios si el 
 - pose reducida de cada recurso, salvo la de `memory-wipe`, fijada en el catálogo (ficha 015);
 - pausas de `talking` y paso `blink` → `talking`;
 - composición (§11);
-- ubicación y versión reducida de los easter eggs;
 - diseño de la preferencia de movimiento;
 - selección de efectos sonoros.
 

@@ -17,7 +17,8 @@
     "eval:sheets": "node --experimental-strip-types evals/jev/fixtures/writeSheets.ts",
     "verify:bundle": "node --experimental-strip-types scripts/verifyClientBundle.ts",
     "measure:load": "node --experimental-strip-types scripts/measureLoad.ts",
-    "assets:sofi": "node --experimental-strip-types scripts/processSofiStatics.ts"
+    "assets:sofi": "node --experimental-strip-types scripts/processSofiStatics.ts",
+    "assets:gag-hit": "node --experimental-strip-types scripts/generateGagHitShapes.ts"
   },
   "dependencies": {
     "react": "^19.2.8",

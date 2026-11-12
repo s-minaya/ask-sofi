@@ -2,7 +2,7 @@
 
 ## Status
 
-En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). T062 (modos de movimiento en el Lab) completada el 2026-11-06 (§21). T063 (4.3 con `talking` y `onSpeakingChange`) completada el mismo día (§22). T064 (escenarios y secuencias del contrato) completada el mismo día (§23). T065 (Preview con los recursos reales y `presentationGate`) completada el mismo día (§24). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
+En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las cuatro decisiones aprobadas de plan §11.2: EX1 como línea base reproducible, sin umbral automático de FCP, `gzipSync` con opciones fijas y comparaciones A/B intercaladas. Registrados también T002 y T003 (2026-11-03): inventario y verificación de los 13 ZIP, sin discrepancias (§3). T004–T008 y VT1 completados (2026-11-03); la incidencia de pruebas de §4.4 está resuelta. A2 (T009–T016 y VT2) completado el mismo día (§5). T017–T026 (capa visual pura, parte 1) completadas el mismo día (§6). T027–T031 (registro, velocidades y estáticas) completadas el mismo día (§7). T032–T034 (modo efectivo durante `memory-wipe`) completadas el mismo día (§8). T035–T038 (`SofiSprite` y `SofiPortrait`) completadas el mismo día (§9). T039–T042 y VT3 (habla y controladores) completadas el mismo día (§10). T043–T044 (contrato de build y límite de incrustación) completadas el mismo día (§11). T045–T046 y VT4 (movimiento en Chromium, Firefox y WebKit) completadas el 2026-11-04 (§12). T047–T050 (contexto de audio compartido) completadas el mismo día (§13). T051–T053 (controlador de efectos sonoros y contrato de licencias) completadas el mismo día (§14). T054 (cierre del bloque A) completada el mismo día (§15). T055–T057 (playground frente a plan §8 y estado de sesión del inspector) completadas el mismo día (§16). T058 (inspector de los 14 recursos, con la excepción aprobada de `poking` a 1× y la sincronía de las capas CSS de los gags) completada el 2026-11-05 (§17). T059 (tamaño, fondos, pixelado y contenedores del inspector) completada el mismo día (§18). T060 (línea de tiempo por fotograma) completada el mismo día (§19). T061 (peso y memoria decodificada) completada el mismo día (§20). T062 (modos de movimiento en el Lab) completada el 2026-11-06 (§21). T063 (4.3 con `talking` y `onSpeakingChange`) completada el mismo día (§22). T064 (escenarios y secuencias del contrato) completada el mismo día (§23). T065 (Preview con los recursos reales y `presentationGate`) completada el mismo día (§24). T066 completada el 2026-11-12 (§34): prototipo parcial de la consulta móvil registrado el 2026-11-06 (§25), con su defecto de convivencia corregido el 2026-11-09 (§25.7) y la zona sensible limitada a lo visible el 2026-11-09 (§26) y probados los tres gags sobre el retrato grande de la consulta ancha, con dos candidatas de ubicación para el expediente (§27) y la candidata A prototipada (§28), con la composición de 4.8 revisada (§29), AV6 aprobada y la versión reducida presentada para AV4 (§30) y, con la nueva dirección, rehecha conservando los gags (§31), con la espera de `poking` a 5 s (§32) y aprobada el 2026-11-12, con las fuentes normativas al día (§33), y cerrada con el diagnóstico de los tiempos límite de 4.3 (§34). El resto de los hitos de `008-tasks.md` no se ha ejecutado.
 
 ## Cómo se lee
 
@@ -40,6 +40,7 @@ En curso. Registrados T001 y EX1 (2026-10-27) y revisados el mismo día con las 
 | T063 — 4.3 con `talking` y `onSpeakingChange` (B1) | El hueco provisional pasa a `SyncSlot`: `SofiSprite` con lo que decide `selectVisual({ speaking })`, alimentado por un único booleano de `SofiSpeech.onSpeakingChange`. Hablar, pausar, terminar, cambiar texto, «Ver todo», reducido y desmontar, en jsdom y en Chromium; sin repintados por carácter; las pausas son el reposo del contrato, rotulado como provisional hasta AV5. Límite: el primer `talking` llega con la carga diferida (EX3) | §22 |
 | T064 — escenarios y secuencias del contrato (B1) | Sección 4.6 de Motion & Sound: señales simuladas en local que consume `selectVisual` (con `wipeAfter` y `ambient`), con los tres gags reales, pasadas únicas con su fin real y el orden de la salida rápida y del borrado en un registro, sin persistencia simulada. RED real: el borrado descartaba la seguridad. Observación abierta: con movimiento reducido una pasada única no termina (AV4/009) | §23 |
 | T065 — Preview con recursos reales y `presentationGate` (B1) | Las pantallas de la Preview reciben, con props opcionales, el recurso que decide `selectVisual` (producción no cambia); `presentationGate` retiene solo la presentación de un resultado no crítico hasta el fin del primer ciclo o el límite, con límite, velocidad de `sofing` y latencia ajustables en la mesa y una tabla viva de lo que espera y lo que no. En Chromium: 3,03 s al límite, 1,77 s al fin del ciclo a 2×, error en el acto, cancelar y reducido sin esperar. Abiertos: el recorte de `error` corta el brazo, AV2 sin aprobar (el texto durante la retención se corrigió después, §24.6) | §24 |
+| T066 — gags en el Lab (B1) | Los tres gags reales en la insignia móvil (4.7), el retrato grande de la consulta ancha (4.8) y el retrato del expediente (4.9), con zona sensible limitada a lo visible y su precisión, inactividad ajustable y la versión reducida conservando los gags. Ubicación e inactividad aprobadas con AV6; versión reducida de los gags aprobada el 2026-11-12 (AV4 sigue pendiente de T069). Los tiempos límite de `MotionSync.test.tsx` con la suite completa no son defecto de T066, pero 4.7–4.9 encarecen esas pruebas: queda pendiente (§34.3) | §25–§34 |
 
 ---
 
@@ -1966,4 +1967,1380 @@ Fecha: 2026-11-06. Parte de `9c0f3bd` (T065), con la CI nº 37 en éxito. Corrig
 - **Navegador (Chromium).** Con los valores de partida, el marco pasa de «Leyendo entre líneas… · Sofi está leyendo tu mensaje.» (con barra) a las 2,1 s, al llegar el resultado, a «Ya tengo tu lectura · Ya la he leído: ahora te la enseño.» (sin barra) y a las 5,2 s a la lectura. Ningún fotograma muestra a la vez el titular de lectura lista y una afirmación de leer. Error, límite 0 y movimiento reducido: 0 de 87, 87 y 86 fotogramas con «Ya tengo tu lectura». Cancelar en esa fase vuelve a la consulta. «Carga» sigue leyendo con su aviso de espera larga. axe en el momento de la retención (1280 claro y oscuro, 390 y 320 oscuro): 0 violaciones del marco; solo `landmark-unique` del `<header>` del Lab y `region` de su barra superior, que salen igual con la operación pendiente y son anteriores. Sin errores de consola. Capturas locales, en la carpeta de trabajo de la sesión: `shots66\\retenido.png` y `retenido-390.png`.
 - **Límites.** El sprite `sofing` sigue en su primer ciclo durante la retención (es la excepción del catálogo §6.4, no se toca) y puede seguir pareciendo que trabaja: si debe seguir así o pasar a otra pose lo decide AV2/AV4, no esta corrección. El copy es provisional y solo en español. Sin Firefox ni WebKit. No se tocó ninguna pantalla de resultado ni valor de producción.
 
-**Siguiente tarea:** T066. No se ha aprobado ningún `AV#`.
+## 25. B1 — Gags en la insignia de la consulta móvil (T066, prototipo parcial)
+
+Fecha: 2026-11-06. Antes de empezar: `main` en `2a87b4d` (T065 y su corrección); árbol de trabajo limpio salvo los 13 ZIP. **T066 no está completada**: es un prototipo parcial que pidió la autora, solo de la consulta móvil, sin `AV#`. No se commitea ni se integra nada en producción ni se avanza al expediente ni a T087–T088.
+
+### 25.1 Alcance
+
+Instrucciones de la autora para este prototipo. **No son aprobaciones** (ver un prototipo funcionando no lo es, `008-tasks.md`): mantener la insignia actual («alternativa A1»), dejar que los efectos de los gags sobresalgan de ella y que `poking` se esconda tras el borde inferior de la propia insignia. «A1» no consta como etiqueta en ningún archivo de la feature; se ha leído como «la insignia de la consulta en una columna, sin cambios» (`art-direction/README.md`, decisión 5).
+
+Queda fuera, y por tanto pendiente de T066: la ubicación en el expediente y en la consulta a dos columnas, y la segunda candidata de ubicación (con A1 decidida no se prototipa).
+
+### 25.2 Qué se entrega
+
+- **Sección «4.7 · Gags en la insignia»** en Motion & Sound (`GagsSpec.tsx`, `GagBadge.tsx`, `GagsSpec.module.scss`). La insignia de la consulta (recuadro de 100 × 130 px, sprite de 128 px desplazado −16/−3) con los **tres controladores reales sobre un único anfitrión**, como en producción (plan §6), a través del adaptador de producción (`useSofiController` ×3 y `createAmbient`). Dentro de una «pantalla» de 320 px con el diálogo y el paso 1 de la consulta.
+- **Efectos que sobresalen:** el recuadro no lleva `overflow: hidden` (el de `SofiPortrait` sí). **`poking`:** el borde donde se esconde (`--poking-edge`) es el 100 %, que es el borde inferior interior de la insignia: con 2,5 px de borde el alto interior es 125 px y el sprite, desplazado 3 px, termina justo ahí. Consta en el SCSS aunque sea el valor por defecto.
+- **Inactividad ajustable** de `are-u-still-here` (5 s a 3 min, de 5 en 5 s). Parte de los 150 000 ms provisionales del plan §6 y dice si el valor cabe en la horquilla de 2–3 min de la spec §5. Cambiarla reinicia los tres controladores.
+- **Propuesta reducida** al lado, con la insignia de producción (`SofiPortrait`, fotograma 0): sin gags, controladores ni capas, y tocarla no hace nada. Es lo que ya decide D-1 y una de las opciones del catálogo (§4: los tres gags admiten suprimirse en reducido); no es una aprobación (AV4).
+- **Controles:** qué gags están montados, las cuatro causas de pausa y el registro de lo que hace `ambient` (extraído de 4.6 a `gagLog.ts`, sin cambio de comportamiento).
+- **Reutiliza** `LabSpec`, `LabStage`, `LabRange`, `LabCheck`, `LabReadout`, `LabNote`, `SofiDialog`, `StepTag`, `SofiPortrait`, `observeAmbient`. Ningún componente nuevo de la biblioteca.
+- **Sin cambios de producción.** Los únicos archivos fuera de lo nuevo: `MotionSection.tsx` (enlace 4.7 y la sección), `ScenariosSpec.tsx` (importa el registro movido) y `src/styles/units.test.ts` (excepción justificada de `width: 320px`, la misma razón que la de `UiSection`: píxeles de la pantalla, no del texto).
+- **Decisión de implementación:** el marco mide siempre 320 px, sin escalar (el pixel art se emborronaría y no sería el 320 real). Si la ventana es más estrecha, el contenedor se desplaza en horizontal, con foco de teclado (`role="region"`, `tabIndex`; ESLint lo desaconseja en general y la regla se desactiva en esa línea con su motivo: axe exige el foco en una región desplazable).
+
+### 25.3 Pruebas
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `gagBadge.test.ts` (rango y formato de la inactividad) | Visto fallar (módulo inexistente) | 11 |
+| `gagBadge.contract.test.tsx`: la geometría del prototipo es la de `ConsultationScreen` (renderizada) y dos decisiones del CSS leídas como texto (recuadro sin `overflow`; `--poking-edge` igual al borde inferior calculado con el token) | **Sin RED** (caracterizan lo que ya existe); se comprobó con 7 mutaciones | 5 |
+| `GagsSpec.test.tsx` (Lab real, controladores reales; solo se simulan los módulos dueños y la decodificación) | Visto fallar (módulo inexistente); dos expectativas mías mal escritas se corrigieron. El defecto de §25.5.1 se dejó como `it.fails` y se convirtió en prueba normal al corregirlo (§25.7) | 19 |
+| `ScenariosSpec.test.tsx` tras mover el registro | — | 26, sin cambios |
+
+**Sensibilidad** (12 mutaciones, todas detectadas; archivos restaurados y comprobados con `cmp`): geometría (`offsetX`, alto, tamaño del sprite, `offsetY`: 4), `overflow: hidden` en el recuadro, `--poking-edge` a 90 % y sin declarar (3), `calm` de `poking` siempre verdadero (3 fallos), `aria-hidden` fuera (1), `idleAfter` sin llegar a `are-u-still-here` (2), inactividad de partida a 90 s (3) y la propuesta reducida montando los gags (2).
+
+Comprobaciones del repo: `npx tsc -b`, `npx eslint .` y `npx prettier --check .` sin errores. `npx vitest run`: **120 archivos y 2 320 pruebas** (T065: 117 y 2 285), de las que 2 319 pasan y 1 era el fallo esperado de §25.5.1 (tras §25.7: 2 336 y ninguno esperado). Una ejecución anterior de la suite completa falló una vez en `MotionSync` (5,5 s sobre su límite de 5 s); sola tarda 1,7–2,0 s con y sin 4.7 (3 pasadas cada una), así que fue contención de los tres hilos, y la repetición pasó entera. `npx playwright test e2e/a11y.spec.ts e2e/motion --project=chromium`: **55 de 55**, con el axe de `?s=motion` incluida la sección nueva.
+
+### 25.4 Navegador real (Chromium, Playwright 1.64)
+
+Método: servidor de desarrollo propio en el puerto 5188, con los recursos y controladores reales. Toques con CDP (`Input.dispatchTouchEvent`, también de ~90 ms apoyado, que es lo que dura un toque humano), móvil emulado con `hasTouch`, a 3× y 2×. Guiones de usar y tirar, fuera del repositorio; las capturas son locales y no se versionan.
+
+| Comprobación | Resultado |
+|---|---|
+| Geometría en navegador | Recuadro 100 × 130, `overflow: visible`, anfitrión de 128 × 128 con las tres clases y 12 capas, sin errores de consola |
+| **Fidelidad con producción** | La insignia del prototipo (reducido forzado) frente a la de `SofiPortrait` de la tira de al lado, píxel a píxel: **0 píxeles distintos** de 19 096 (claro 1×), 171 864 (claro 3×) y 171 864 (oscuro 3×) |
+| Marco a 320 px | 320 px exactos con la ventana en 430 y en 320 (en 320 el contenedor se desplaza: 252 visibles de 336); sin desbordamiento horizontal de la página (320 = 320) antes, durante y después de los toques |
+| `poking` con toques reales | `curious → skeptical → stop → offended → hide` en 430 y en 320. Escondida, queda recortada por el borde inferior de la insignia, con las manos agarradas a él por delante (claro y oscuro) |
+| Efectos que sobresalen | El «?» de `poking` cruza el borde derecho; los Zzz y la alerta «!!» de `i-see-you` salen por la esquina superior derecha. Ninguno recortado |
+| `are-u-still-here` con 5 s | `idle → drowsy (4,7 s) → nodding → drowsy → nodding → asleep (14,2 s)`; un toque: `startled → guilty`. Con los 150 s de partida solo hay prueba con reloj simulado (jsdom), no en reloj real |
+| `i-see-you` con el dedo apoyado 3 s | `idle → watching → caught → smirk → tease` |
+| Arrastrar desde la insignia | La página se desplaza (`touch-action: manipulation`): el gag no bloquea el scroll |
+| Movimiento reducido | Sistema normal: gags vivos. **Sistema en reducir**, **«Reducido» del Lab** y el cambio en vivo completo → reducido: 0 capas, 0 atributos, 0 animaciones, y los toques no hacen nada; reducido → completo los recrea (12 capas, 4 atributos). **«Completo» con el sistema en reducir:** gags vivos (D-9) |
+| axe (WCAG 2.x A/AA y 2.2) sobre `#m-gags` | 0 violaciones en 1280 claro y oscuro, 390, 320 oscuro, y 1280 y 320 con el texto al 200 %; sin desbordamiento de página; 0 errores de consola |
+| Texto ampliado (100/150/200 %) | La insignia no cambia (px de la pantalla, como en producción); el diálogo crece como el de producción |
+| Tema oscuro | `curious` y `hide` correctos (anillo crema, sin artefactos) |
+
+Capturas locales de la sesión, en la carpeta de trabajo `shots\`: `p1-curious`, `p3-stop`, `p5-hide` (escritorio, 3×), `t320-poking-toque1` y `toque5`, `t430-toque3` y `toque5` (el solape de §25.5), `g-still-asleep-zzz`, `g-still-startled`, `g-see-caught`, `r-*` (reducido), `k-curious` y `k-hide` (oscuro), `v320-a-seccion`.
+
+### 25.5 Hallazgos y decisiones abiertas
+
+Numeradas para aprobarlas por número.
+
+1. **Defecto del adaptador: `i-see-you` dejaba su cara pintada mientras actuaba `poking`. RESUELTO el 2026-11-09 con autorización expresa (§25.7).** Se describió así: los controladores documentan el patrón `quiet` (al salir uno del reposo, los demás hacen `reset()` y `pause()`) y el adaptador solo hacía `pause()`; como `watching` cuenta como reposo, `poking` podía activarse con `i-see-you` mirando y la cara de este se quedaba (en `hide`, dos ojos flotando en el hueco). Aparecía en el primer toque de móvil (toque humano de ~90 ms: `poking`/`watching` a la vez en los 5 toques a 430 px).
+2. **Zona sensible mayor que la insignia visible. DECIDIDO el 2026-11-09 y prototipado en §26:** los gags solo responden sobre las partes visibles de Sofi (incluidas cabeza y manos cuando sobresalgan); lo transparente no. Sin el recorte, el anfitrión (128 × 128) respondía al toque y al puntero 14 px a cada lado del recuadro (100 px visibles).
+3. **Propuesta reducida. SIN DECISIÓN NUEVA (revisado el 2026-11-09):** ya la fijan plan §6 y D-1, y la deja a la autora AV4 (plan §9, punto 4; spec, «Provisional and pending»). Se propone «sin gags, pose de reposo» porque es lo que ya decide D-1 y una opción del catálogo. Mantener reacciones estáticas (catálogo §4) exigiría montar controladores con movimiento reducido, que contradice D-1: **no se prototipa**; si quieres verlas, hay que revisar D-1 antes. La aprobación es de AV4.
+4. **Contenedor «Insignia» del inspector (4.5) distinto de la insignia actual. SIN DECISIÓN NUEVA (revisado el 2026-11-09):** son dos cosas con el mismo nombre. «Insignia» del inspector es el tamaño `badge` de `SofiPortrait` (ficha 3.1, recorte de cara de 96 px), un marco genérico para comparar recursos (T059, cerrada); la insignia de la consulta es la decisión 5 del README (Sofi entera). Ninguna contradice a la otra ni afecta a los gags. `spriteInspector.ts` define «Insignia» como un recorte a la cara de 96 × 96 a 192 px (ficha 3.1), mientras que la decisión 5 del README y la consulta usan a Sofi entera en 100 × 130 con el busto apoyado en el borde. No se ha tocado (T059 está cerrada); queda anotado por si debe alinearse.
+5. **Las pruebas de movimiento de Firefox y WebKit son inestables en esta máquina, también en HEAD.** Cargan `?s=sofi` y `?s=ui`, donde 4.7 no se renderiza, y fallan al azar por esperas (5 s en `toBeVisible`, 30 s por prueba). Medido con `npx playwright test e2e/motion --project=firefox --project=webkit` (26 pruebas): HEAD limpio (`2a87b4d`) 1 fallo; con 4.7, 3 y 2 fallos (y 6 de 81 en una ejecución con Vitest y mutaciones en paralelo); falla una prueba distinta cada vez. `Spinner` en WebKit va al filo del límite (≈ 20–33 s para 30 s): en HEAD limpio dio 0 fallos en una tanda y **8 de 8** en otra posterior (31–33 s), y con 4.7, 4 de 8. Se probó y se descartó una hipótesis (el *warmup* del servidor también transforma los `.test.tsx`: quitando mis dos archivos de prueba, 7 de 24 fallos). No se ha identificado la causa, que varía entre tandas; no se ha tocado ningún tiempo de espera ni hay evidencia de que este cambio lo empeore. Chromium: 55 de 55. El presupuesto de 30 s de esas pruebas en WebKit es el punto frágil.
+
+### 25.7 Corrección del defecto de §25.5.1 (2026-11-09)
+
+Autorizada por la autora, limitada a `ambient.ts` y `useSofiController.ts`: al activarse un gag, los demás vuelven a `idle` con `reset()` y siguen pausados; las causas de la escena **no** resetean. Sin tocar spritesheets ni los controladores originales.
+
+- **`visual/ambient.ts`:** `PauseTarget` gana `reset?()` (opcional: sin él, el gag solo se pausa). `activate` llama a `reset()` de cada uno de los demás **y después** a `pause()` (orden del patrón `quiet`), solo cuando el gag entra (no al repetir la activación del activo ni en un intento rechazado). Se fija `active` antes del reset: el reset hace que el controlador avise de su reposo y eso llama a `deactivate`, que no debe liberar al recién activado.
+- **`useSofiController.ts`:** registra `reset: () => attached.reset()`. Los tres controladores lo exponen.
+- **Un archivo fuera de los dos autorizados, solo del Lab:** `design-lab/observeAmbient.ts` reconstruía el objetivo con `pause`/`resume` y **descartaba `reset`**, así que la corrección no llegaba a 4.7. Reenvía `reset` si existe (2 líneas, con prueba). Y se retiró la nota «Solape conocido» de 4.7.
+- **Pruebas (RED visto primero):** `ambient.test.ts` (8 nuevas; 6 en rojo antes, las otras 2 son guardas), `useSofiController.test.tsx` (6 nuevas con los **tres controladores reales sobre un mismo anfitrión**; 3 en rojo quitando la línea del adaptador: `i-see-you` se queda en `watching`), `observeAmbient.test.ts` (2; 1 en rojo) y el `it.fails` de `GagsSpec.test.tsx` pasa a normal. Casos: `poking` con `i-see-you` mirando → `idle`; sigue pausado y se reanuda al volver `poking` al reposo; las causas no resetean; `are-u-still-here` entrando en somnolencia con `i-see-you` mirando → `idle`; un objetivo sin `reset` no falla; reentrada.
+- **Sensibilidad** (5 mutaciones, todas detectadas; `cmp` tras restaurar): reset en cada causa (10 fallos), sin la guarda de entrada (1), reset también al activo (25), orden `pause` antes de `reset` (3) y reset antes de fijar `active` (16).
+- **Comprobaciones:** `tsc -b`, `eslint .` y `prettier --check .` sin errores; `vitest run`: **120 archivos, 2 336 pruebas, todas en verde**; `playwright e2e/a11y.spec.ts e2e/motion --project=chromium`: 55 de 55.
+- **Navegador (Chromium, controladores y CSS reales):** el toque humano de ~90 ms a 430 px da `curious/idle → skeptical/idle → stop/idle → offended/idle → hide/idle` (antes `/watching` en los cinco); con el ratón (mira y pincha) igual. Escondida ya no flotan los ojos (misma captura `t430-toque5`, regenerada). Una causa de pausa con `i-see-you` mirando **no** lo resetea (sigue `watching`); mirar + pinchar → `curious/idle`; a los 11 s `poking` vuelve a `idle` y `i-see-you` se reanuda y vuelve a mirar. 0 errores de consola.
+- **Límites:** Firefox y WebKit no se han ejecutado para esta corrección (las pruebas de movimiento son inestables en esta máquina, §25.5.5; el cambio es de lógica pura sin CSS). El caso de `are-u-still-here` activándose con `i-see-you` mirando está probado con reloj simulado, no en navegador real. Con el `reset`, `i-see-you` no recentra su mirada (el controlador solo la recentra al reaccionar): no se ve, porque su capa solo se pinta en `watching` y en la reacción.
+
+### 25.6 Límites
+
+- Solo Chromium para lo visual y los toques. Firefox y WebKit, y la limpieza de gags en navegador, son de T073–T076; esto no los sustituye.
+- Los toques son emulados (CDP), no un dispositivo real: sensación táctil, teclado virtual y Safari de iOS son de `015`.
+- Los 150 s de partida solo se han comprobado con reloj simulado; en navegador, con 5 s.
+- Con la ventana en 320 px la «pantalla» de 320 px se desplaza dentro de su contenedor; el resto de la sección y la página no desbordan.
+- A 1× el navegador redondea el borde de 2,5 px a 2 px y queda 1 px entre el pie del sprite y el borde (a 3×, 0,3 px); es igual en producción.
+- Sin `AV#`: ni A1, ni el desbordamiento, ni el escondite de `poking`, ni la propuesta reducida, ni la inactividad están aprobados.
+
+## 26. B1 — Zona sensible de los gags: solo las partes visibles de Sofi (T066, prototipo parcial)
+
+Fecha: 2026-11-09. Antes de empezar: `main` en `2a87b4d`; los cambios locales eran los de §25. Solo Design Lab: no se toca producción, ni parciales, ni controladores, ni tiras. Sin commit ni push.
+
+### 26.1 Decisión
+
+Aprobada por la autora el 2026-11-09 y registrada en `008-spec.md` §5 (con su criterio de aceptación), `008-plan.md` §6 y `008-tasks.md` T087: en la insignia móvil, los gags solo responden a toques sobre las partes visibles de Sofi, incluidas cabeza y manos cuando sobresalgan; las zonas transparentes no son interactivas.
+
+### 26.2 Estudio
+
+Los controladores escuchan en el propio anfitrión (`click`, `pointerenter`/`pointerleave`), así que la solución tenía que hacer que esos eventos solo lleguen desde lo visible, sin tocarlos.
+
+| Alternativa | Resultado |
+|---|---|
+| `clip-path` sobre el anfitrión | **Descartada:** recorta también lo pintado, y los efectos (el «?», los Zzz, la alerta) deben sobresalir |
+| Interceptar en captura (`stopPropagation`) con una prueba de alfa en JS | Posible y exacta por fotograma, pero exige componer en vivo todas las capas y transformaciones, y un `pointerenter` ya perdido no se recupera al entrar en lo visible. **No hecha** |
+| Un elemento aparte que reenvíe eventos sintéticos | Descartada: eventos falsos hacia controladores que no se modifican |
+| **Anfitrión sin respuesta propia y un `::after` suyo recortado con la silueta** | **Adoptada.** Un pseudoelemento no es un destino aparte: el toque llega al propio anfitrión, que es donde escuchan los controladores. Ningún parcial usa `::after` en el anfitrión |
+| Cabeza y manos: `clip-path` sobre la capa | Descartada: no se recorta lo pintado. Se usa el `::after` de cada capa, que sigue sus animaciones |
+
+Las siluetas salen de las **tiras reales**, sin modificarlas: máscara por bloques de 3 px de sprite (= 1 px de pantalla a 128), donde un bloque cuenta si algún píxel suyo tiene alfa ≥ 32 (≥ 1 en cabeza y manos). El alfa de las tiras es casi binario (≈ 99,5 % de los píxeles en 0 o ≥ 224).
+
+### 26.3 Qué se entrega
+
+- `scripts/gagHitShapes.ts` (puro: máscara por bloques, pegado con desplazamiento, rectángulos y trazado `path()`; qué recorte de qué tira por cada pose), `gagHitShapesFiles.ts` (lee con `sharp`, solo lee) y `generateGagHitShapes.ts` (CLI: `npm run assets:gag-hit`, solo a mano). Sin dependencias nuevas.
+- `src/design-lab/sections/_gagHitShapes.scss`: **generado** (13 KB, diez formas). Seis de cuerpo (reposo, «¡quieto!» con la palma, ofendida, cabezada, dormida, susto y pillada) y cuatro de capa (cabeza y manos, escondida y asomada).
+- `GagsSpec.module.scss`: `.host { pointer-events: none }`; `.host::after` con la silueta del estado; en `hide`, `peek` y `nope` el `::after` del cuerpo desaparece y responde el `::after` de cabeza y manos. Las capas dejan de ser sensibles con `!important`, porque el parcial de poking las hacía sensibles con su propio selector.
+- 4.7: «Mostrar la zona sensible» (tiñe los `::after`, para revisarla) y una nota con lo que responde y lo que no.
+
+### 26.4 Pruebas
+
+| Qué | RED | GREEN |
+|---|---|---|
+| `scripts/gagHitShapes.test.ts` (máscara, pegado, rectángulos, trazado que reconstruye exactamente la máscara, posición de cada pose, formato del SCSS) | Visto fallar (módulo inexistente; después `buildHitShapes` inexistente) | 22 |
+| `scripts/gagHitShapesFiles.test.ts` (con las tiras reales: el SCSS versionado está al día y ninguna forma queda vacía) | Sin RED (caracterización) | 2 |
+| `gagHitArea.contract.test.ts` (CSS compilado con Sass y leído con PostCSS: el anfitrión no responde, `::after` activo y recortado, diez recortes, **ningún recorte fuera de un `::after`**, cuerpo apagado escondida, capas no sensibles, el tinte no toca la forma, el recuadro sigue sin recortar) | Sin RED; **5 mutaciones, todas detectadas** (anfitrión sensible, recorte sobre una capa, capas sensibles, cuerpo sensible escondida, recuadro recortando) | 8 |
+| `GagsSpec.test.tsx` (interruptor del tinte solo en la insignia viva y sin cambiar el DOM; la nota) | Sin RED | +2 (21) |
+
+`vitest run`: **123 archivos y 2 370 pruebas** (§25.7: 120 y 2 336), todas en verde; `tsc -b`, `eslint .` y `prettier --check .` sin errores; `playwright e2e/a11y.spec.ts e2e/motion --project=chromium`: **55 de 55**. Una ejecución parcial del Lab dio un tiempo agotado en `MotionSync` (6,3 s sobre 5 s), que sola tarda 1,9–2,3 s y que pasó en la repetición: es carga, como en §25.3.
+
+### 26.5 Navegador real
+
+Servidor de desarrollo propio (5188), controladores y CSS reales, toques con CDP de ~90 ms; guiones de usar y tirar, fuera del repositorio.
+
+| Comprobación | Resultado |
+|---|---|
+| Barrido de los 128 × 128 px del anfitrión en reposo frente al alfa real de la tira | **Chromium, Firefox y WebKit idénticos:** 9 387 bloques visibles, 9 387 sensibles, **0 visibles sin respuesta y 0 sensibles sin nada visible en su bloque**. La zona sensible pasa del 100 % de la caja al 57,3 % |
+| Pintado con y sin los pseudoelementos, por estado (animaciones anuladas en ambas capturas) | **0 píxeles distintos** en reposo, «¡quieto!», ofendida, escondida y asomada, en Chromium y Firefox; en WebKit, 0 en todos los estados medibles (la asomada pasó a su vuelta entre las dos capturas: es el método). Una primera medida dio ~25 000 píxeles distintos y era **ruido de fase de las animaciones infinitas** (la vena, la mirada) entre dos capturas; un control con una regla irrelevante y la comparación determinista lo mostraron |
+| Toques en zonas transparentes (huecos a ambos lados y las dos esquinas del recuadro; 3 toques cada una) | `poking` sigue en `idle`; ningún punto es sensible |
+| Secuencia completa de `poking` tocando **solo lo visible** (320 px) | `curious → skeptical → stop → offended → hide → peek → nope → idle`. Igual con clics en los tres motores |
+| Escondida | Responde solo la franja baja (cabeza y manos: 3 990 px² frente a 9 574 en reposo); la mitad superior, nada. Tocar el vacío cada 0,5 s no retrasa la asomada (a los 2,0 s) |
+| Poses de `are-u-still-here` | Cabezada, dormida y susto/pillada con su silueta (8 260, 7 988 y 9 190 px²); los Zzz no responden; el pelo que sobresale del recuadro sí |
+| `i-see-you` con el dedo 1,7 s | «Pillada» **solo** con el dedo sobre Sofi; en el hueco o la esquina transparente, no (ver §26.6.1) |
+| Desplazamiento | Arrastrar desde Sofi o desde una zona transparente desplaza la página 97 px; sin desbordamiento horizontal a 320 |
+| Accesibilidad | axe: 0 violaciones en 1280 claro y oscuro, 390, 320 oscuro y texto al 200 % a 1280 y a 320; el anfitrión sigue sin foco ni teclado |
+| Movimiento reducido | Sistema en reducir y «Reducido» del Lab: 0 capas, atributos y animaciones; «Completo» con el sistema reduciendo, gags vivos; el cambio en vivo los destruye y recrea |
+
+Capturas locales de la sesión, en `shots\`: `h-1-idle`, `h-4-stop`, `h-5-offended`, `h-6-hide`, `h-7-peek`, `h-still-asleep`, `h-still-startled` (la zona sensible en azul sobre cada pose), `tint-idle` y `tint-peek` (el interruptor de 4.7).
+
+### 26.6 Límites y decisiones abiertas
+
+1. **La mirada de `i-see-you` sigue al toque y al puntero en toda la página.** Lo hace el controlador con oyentes en `document` (así «mira hacia donde se toca»): un toque en una zona transparente, o en cualquier parte de la pantalla, la hace mirar. La **reacción** («pillada») y los otros dos gags sí cumplen la decisión. Cumplirla también para la mirada exige impedir que el controlador vea los toques que no caen en Sofi, y eso rompería el seguimiento del puntero y que cualquier toque despierte a `are-u-still-here` (que es actividad real). Alternativas: **A)** aceptarlo (la mirada es seguimiento, no una respuesta al toque sobre Sofi); **B)** en táctil, filtrar en captura en `window` los toques fuera de la silueta solo para `i-see-you`: los oyentes comparten tipos de evento con los de `are-u-still-here`, así que no se pueden separar sin tocar los controladores; **C)** cambiar el controlador (no autorizado). Recomiendo A. **DECIDIDO el 2026-11-09: A**, registrado en `008-spec.md` §5. No hay nada que implementar: el controlador no se modifica.
+2. **Precisión.** Un bloque de 1 px de pantalla: la zona sensible cubre siempre lo pintado y se pasa, como mucho, 1 px de borde. Es una silueta **fija por pose**: cuando el cuerpo se mueve dentro de su pose (la cabezada de 0,36 s, el respingo del susto de 0,5 s, la subida de la asomada de 1,45 s) la zona no lo acompaña y hay un desajuste transitorio de unos píxeles. Las sacudidas de `poking` sí la acompañan (mueven el anfitrión, y su `::after` va con él).
+3. **Medidas en px.** Los trazados son para una insignia de 128 px; si cambia de tamaño hay que regenerarlos (o pasar a un `clip-path` en unidades relativas, con un SVG).
+4. **Producción (T088), a decidir.** Habría que llevar el mismo mecanismo: el SCSS generado (13 KB sin comprimir) en el CSS de los gags, el `::after` del anfitrión, la regla `!important` de las capas (para vencer al parcial de poking) y la dependencia de que ningún parcial use `::after` en el anfitrión. Es un coste de carga para medir en EX4. Safari real y dispositivos son de `015`.
+5. **Depende de los nombres de los parciales** (`data-poking`, `data-still-here`, `data-poking-layer`): si cambian, hay que repetir el contrato de §26.4 y el barrido de §26.5.
+6. **Sin `AV#`.** La decisión de la zona sensible es de la autora; el resto de T066 (ubicación en el expediente y consulta ancha, reducida, inactividad) sigue sin aprobar.
+
+## 27. B1 — Gags sobre el retrato grande de la consulta ancha y candidatas para el expediente (T066, prototipo parcial)
+
+Fecha: 2026-11-09. Antes de empezar: `main` en `2a87b4d`; los cambios locales eran los de §25 y §26. Solo Design Lab: no se toca producción, ni parciales, ni controladores, ni tiras. Sin commit ni push. **No son aprobaciones**: las instrucciones de la autora para este prototipo (los tres gags sobre el retrato grande existente, sin otra Sofi) no aprueban ninguna ubicación; no se cierra T066 ni se aprueba AV4 o AV6.
+
+### 27.1 Qué se entrega
+
+- **Sección «4.8 · Gags en el retrato grande»** (`GagsWideSpec.tsx`, `GagPortrait.tsx`, `GagsWideSpec.module.scss`, `gagWide.ts`). La columna «Sofi escucha» de la consulta a dos columnas, con los componentes reales (`LiveIndicator`, `SofiPortrait`, `SofiDialog`, `Tag`, `TextLink`) y las medidas de `ConsultationScreen.module.scss` desde 1080 px copiadas (producción no las exporta). **No hay otra Sofi:** el anfitrión de los tres controladores es el elemento de `sofi-blink` que renderiza el propio `SofiPortrait` de 384 px, con sus mismas props (`expression="attentive"`, `outline`, `alt`). Como `SofiPortrait` no expone su elemento, se localiza desde un envoltorio sin caja (`display: contents`).
+- **Anchura de la columna** (384, 460, 520 y 720 px): las medidas de la columna izquierda en la aplicación real a 1080, 1280, 1440 y 1920 px de ventana (383,7 · 459,7 · 520,5 · 720). El retrato no crece (384 px); solo lo hacen el diálogo y el aire.
+- **Escondite de `poking`:** *(sustituido el 2026-11-11 por el borde del 100 %, sin solape: §29)* `--poking-edge: 75 %`, que es (384 − 96) / 384: el diálogo sube 96 px sobre el pie del retrato (`.listenDialog`, `margin-top: -96px`), así que su borde superior cae a 288 px, justo el mínimo que pide el parcial (≳ 75 %). Durante la broma el anfitrión sube por encima del diálogo (`--poking-z`): el cuerpo, recortado en el borde, no lo pisa, y las manos se agarran a su borde por delante. *Corregido en §29.1: solo se recortan la escondida y la asomada; en `curious`, `skeptical` y `stop` el cuerpo tapaba el texto.*
+- **Zona sensible (decisión de §26) a escala ×3:** el mixin compartido `_gagHit.scss` (que 4.7 también usa, con escala 1) emite el mismo `::after` recortado con las mismas siluetas, sin regenerarlas: el `::after` mide un tercio del anfitrión y se amplía ×3 desde la esquina. Con el diálogo superpuesto, la caja del cuerpo no baja del borde de `poking`: lo que queda por debajo está tapado por el diálogo y el toque es suyo.
+- **Casilla «Etiqueta «Sofi» por encima de Sofi (alternativa)»:** solo para ver el hallazgo 27.4.1. **Retirada el mismo 2026-11-09**, al aprobarse la alternativa (§28.1): 4.8 lleva la etiqueta por encima.
+- **Refactor sin cambios de comportamiento:** el panel de controles y el estado de la escena salen de `GagsSpec` a `GagPanel.tsx` y `useGagScene.ts`, y los usan 4.7 y 4.8 (cada uno con su estado). 4.7 conserva sus 21 pruebas.
+
+### 27.2 Pruebas
+
+| Qué | Resultado |
+|---|---|
+| `gagWide.contract.test.tsx` (CSS compilado de producción desde 1080 px frente al del Lab: `.listen`, `.listenDots`, `.listenTag`, `.listenDialog` y el margen del retrato; el solape de 96 px; el borde del 75 %; el `SofiPortrait` de producción de 384 px) | 8 (9 en §28.3, con la etiqueta por encima) |
+| `gagHitArea.contract.test.ts` (ahora sobre los dos módulos, y la escala 3: el `::after` es un tercio ampliado ×3, no baja del borde de `poking`, las capas de cabeza y manos se amplían igual, y las siluetas son las mismas que en 4.7) | 20 (eran 8) |
+| `GagsWideSpec.test.tsx` (un anfitrión con los tres controladores y sus capas; una sola Sofi, la del `SofiPortrait`; sin foco ni teclado; toque; reducido; anchura; tinte; casilla; inactividad; causas; desmontaje con y sin StrictMode) | 17 (15 en §28.3, sin la casilla retirada) |
+| Sensibilidad (5 mutaciones, todas detectadas; archivos restaurados): borde 75 → 100 %, sin límite en el borde, escala 3 → 1, solape −96 → −80 px, una segunda Sofi | 5 de 5 |
+
+Sin RED previo: se escribieron después del prototipo, y la sensibilidad se comprobó con las mutaciones.
+
+`vitest run`: **125 archivos y 2 407 pruebas** (§26.4: 123 y 2 370), todas en verde; `tsc -b`, `eslint .` y `prettier --check .` sin errores. `src/styles/units.test.ts` pedía una excepción por los px de `GagsWideSpec.module.scss` (los mismos solapes que ya admite `ConsultationScreen`) y se añadió con su motivo. `playwright e2e/a11y.spec.ts e2e/motion --project=chromium`: **55 de 55**, pero no a la primera: con los 4 trabajadores por defecto salió un fallo distinto en cada una de tres ejecuciones (`Experience Preview · portada · 390 px`, `Design Lab · profile` por 30 s y `Experience Preview · consulta · 390 px` por 5 s de `toBeVisible`), cada uno de ellos pasa repetido solo, y la máquina tenía **0,8 GB libres de 8** (el Firefox del usuario abierto, el servidor de desarrollo y los navegadores de Playwright). Con `--workers=2`, `a11y.spec.ts` dio 42 de 42; el movimiento (13) pasó en la primera tanda. No se ha cambiado ningún tiempo de espera ni se ha probado que HEAD limpio se comporte igual: la causa que sostiene la medida es la memoria libre.
+
+### 27.3 Navegador real
+
+Servidor de desarrollo propio (5188), controladores y CSS reales, toques con CDP de ~90 ms; guiones de usar y tirar, fuera del repositorio.
+
+| Comprobación | Resultado |
+|---|---|
+| Fidelidad con producción (1280 px, animaciones anuladas) | La franja del retrato y la etiqueta «Sofi está escuchando»: **0 píxeles distintos**. El diálogo mide lo mismo (201 px de alto, mismos hijos) pero su texto se rasteriza con diferencias menores (5 421 píxeles de 87 000 en la franja del diálogo): no se ha investigado |
+| Barrido de los 384 × 384 px del anfitrión frente al alfa real, en Chromium, Firefox y WebKit (columnas de 384, 460 y 720) | **0 píxeles visibles sin respuesta** salvo los que tapa el propio diálogo, **0 sensibles sin nada visible en su bloque**, 0 sensibles bajo el borde del 75 %. La zona sensible es el 41,4 % de la caja. Lo que tapa el diálogo: 213 px en Chromium y WebKit (la fila inmediatamente sobre el borde, donde gana el diálogo por el redondeo de medio píxel de una posición fraccionaria) y, con la columna de 384 px, 105 más (la etiqueta «Sofi», 27.4.1) |
+| Pintado con y sin los pseudoelementos (reposo, «¡quieto!», ofendida y escondida) | **0 valores de píxel distintos** en Chromium, Firefox y WebKit |
+| Toques en zonas transparentes de la caja (esquinas y junto a los hombros, 3 toques cada una) | `poking` sigue en `idle`; ningún punto es sensible |
+| Secuencia completa de `poking`, con toques reales (Chromium) tocando solo lo visible | `curious → skeptical → stop → offended → hide → peek → nope → return → idle`. Con clics, igual en Chromium, Firefox y WebKit (columna de 384) |
+| Toque sobre lo que queda bajo el borde con `stop` y `offended` (el anfitrión sobre el diálogo) | 0 puntos del anfitrión bajo el borde; el enlace «Abrir expediente» sigue siendo lo que recibe el toque |
+| Escondida: zona sensible | Solo cabeza y manos; las manos agarradas al borde del diálogo responden 8 px por debajo de él. Clics en el vacío cada 0,5 s no retrasan la asomada (1,6 s en Chromium, 1,7 en Firefox, 1,8 en WebKit) |
+| Desplazamiento (arrastrar desde Sofi y desde una zona transparente) | La página se desplaza 97 px en los dos casos |
+| Desbordamiento de los efectos (caja de cada capa visible durante `poking`, `are-u-still-here` hasta `startled` y `guilty`, e `i-see-you`) | Lo que sobresale de la caja de 384 px: **como mucho 11 px por arriba** (la alerta de `i-see-you` y el estallido del susto) **y 1 px por la derecha**. Queda dentro de la columna (≥ 28 px de aire por encima, con 460 px de columna) y no toca la etiqueta «Sofi está escuchando». Los Zzz, el «?» y la vena quedan dentro del anfitrión |
+| Accesibilidad (axe, WCAG 2.2 AA) | 0 violaciones en 1280 claro y oscuro, 1920 (columna de 720), 1080 (384), 390, 320 oscuro y texto al 200 % a 1280 y a 320; sin desbordamiento horizontal de la página. A 390 y 320 la columna (460 px) se desplaza dentro de una región con foco (como en 4.7) |
+| Movimiento reducido | Sistema reducido y «Reducido» del Lab: 0 capas, atributos y animaciones; tocar no hace nada. «Completo» con el sistema reduciendo: gags vivos (12 capas) |
+
+Capturas locales de la sesión, en `shots\` del directorio temporal de la sesión: `c460\w-1-idle`, `c460\w-4-stop`, `c460\w-5-offended`, `c460\w-6-hide`, `c460\w-7-peek` (la zona sensible en azul; columna de 460), `w-384-hide-actual` y `w-384-hide-nametop` (el hallazgo 27.4.1, sin y con la alternativa) y `cand-A` y `cand-B` (27.5).
+
+### 27.4 Hallazgos y decisiones abiertas
+
+Numeradas para aprobarlas por número.
+
+1. **Con la columna estrecha, el pelo de Sofi escondida o asomada cubre la etiqueta «Sofi» del diálogo.** Se da con ventanas de 1080 a unos 1245 px (columna < ≈ 447 px): el pelo empieza a 58 px del lado izquierdo del retrato y la etiqueta termina a 89 px del lado del diálogo, y durante la broma el anfitrión (`z-index: 1`) queda por encima. Es pasajero (escondida y asomada duran unos 8 s), no tapa texto del diálogo y no afecta a la zona sensible de los controles, pero la etiqueta queda a medio cubrir (captura `w-384-hide-actual`). Alternativas: **A)** aceptarlo; **B)** subir la etiqueta por encima de Sofi (`z-index: 2`; en el Lab, la casilla; en producción sería un cambio de `SofiDialog` o de `ConsultationScreen`, que no estoy autorizado a hacer y que decide T088); **C)** subir el borde del escondite por encima de la etiqueta, que ya no sería el borde del diálogo. Recomiendo B. **DECIDIDO el 2026-11-09: la etiqueta queda por encima del retrato**, registrado en `art-direction/README.md` (decisión 11). El Lab 4.8 ya la lleva así y la casilla de la alternativa se retiró.
+2. **Precisión de la zona sensible a ×3.** Con las siluetas de 128 px ampliadas, un bloque es de 3 px de pantalla: cubre siempre lo pintado y se pasa, como mucho, 3 px de borde (en la insignia, 1 px). Alternativa: generar un juego de siluetas de 1 px para el retrato (más pesado, unas nueve veces más rectángulos). Recomiendo aceptarlo.
+3. **`SofiPortrait` no expone su elemento.** Para llevar esto a producción, el retrato grande de `ConsultationScreen` necesita dar su anfitrión a los controladores (una prop o una referencia en `SofiPortrait`). Es un cambio de un componente de producción: lo decide T088, no lo he hecho.
+4. **Reducido.** Sin propuesta aparte: con movimiento reducido el retrato grande es el que ya hay, sin controladores (D-1). Lo apruebe o no la autora, es AV4.
+5. **La columna es una copia.** Si cambian las medidas de `.listen`, `.listenDots`, `.listenTag` o `.listenDialog` en `ConsultationScreen`, salta `gagWide.contract.test.tsx`.
+6. **Sin `AV#`.** Ni la ubicación en la consulta ancha ni en el expediente están aprobadas, ni la versión reducida.
+
+### 27.5 Candidatas de ubicación para el expediente (no implementadas)
+
+Hechos medidos en la aplicación real (320, 390, 1080, 1280 y 1920 px de ventana), sin tocar nada:
+
+- El expediente ya tiene **una sola Sofi**, el retrato del cuestionario (192 px en una columna, 384 desde 1080 px; decisión 7 del README de dirección artística) justo encima del bocadillo de la pregunta, **sin solape: el pie del retrato es el borde superior del bocadillo** (hueco 0 en todos los anchos). Es el escondite natural (`--poking-edge: 100 %`, el valor por defecto) y no hace falta tocar el diálogo.
+- Ese retrato solo es el elemento de `sofi-blink` (el anfitrión) cuando Sofi está en `asking` o `waiting` (`sofiVisuals.ts`); en las reacciones (`acknowledging`, `uncertain`, `saved`, `validationError`, `deleting`, `deleted`) se ve una imagen estática. Los gags solo pueden vivir en esos dos estados, y la spec (§5) los excluye mientras se escribe, se interactúa con controles o Sofi habla: en la práctica, `waiting` sin foco en las respuestas ni en las notas, que es justo el momento en que `are-u-still-here` tiene sentido.
+- Los efectos (≤ 11 px por arriba a 384, ≈ 5,5 px a 192) caben en el hueco sobre el retrato: 8 px bajo el botón «Volver a la consulta» en una columna y 28 px a dos.
+- El pelo cubre la etiqueta «Sofi» del bocadillo como en 27.4.1, y además en una columna: a 320 px, 2 px; a 1080 px, 43 px; a 1280 px, 5 px; desde 1920, nada.
+- Zona sensible: a 384 px, la ampliación ×3 de 4.8; a 192 px, ×1,5 (bloques de 1,5 px).
+
+| | Candidata A · el retrato del cuestionario, en las dos anchuras | Candidata B · el retrato del cuestionario, solo desde 1080 px |
+|---|---|---|
+| Dónde | Sobre el retrato existente (192 y 384 px), con el borde superior del bocadillo como escondite | Igual, pero solo a dos columnas (384 px); en una columna el retrato queda como hoy |
+| Cuándo | `waiting`, escena tranquila (spec §5) | Igual, solo a dos columnas |
+| A favor | Una sola Sofi (decisión 7); mismo mecanismo en consulta y expediente en ambos anchos; en móvil, la zona sensible y los efectos van ya probados a ×1,5 con el mismo método | Menos superficie táctil junto a los controles en el móvil (el retrato queda por encima de las respuestas); menos código y carga en una columna |
+| En contra | En una columna el retrato mide 192 px y está pegado a las respuestas: un toque a Sofi y uno a una opción están cerca; ×1,5 es una escala no entera | La experiencia difiere entre anchos y la consulta sí los lleva en una columna (insignia, 4.7); deja sin cubrir el móvil, donde la inactividad es más probable |
+| Mockup | `cand-A` | `cand-B` |
+
+Recomiendo la A; B si se prefiere no tener gags junto a los controles en el móvil. Descartada una tercera (una insignia aparte en el expediente) porque añade una segunda Sofi, contra la decisión 7 del README; si la autora la quiere, se estudia. **Ninguna se implementa antes de que elija**, y elegir es parte de AV6.
+
+### 27.6 Límites
+
+- Los toques reales (CDP) son de Chromium; Firefox y WebKit se han probado con clics. Safari real, VoiceOver y TalkBack y los dispositivos son de `015`.
+- La zona sensible a ×3 se ha barrido en los tres motores con la columna de 384 y 460 px (Chromium también con 720); el barrido con toques y la secuencia con clics, con la columna de 384.
+- No se ha medido el coste de carga de llevar esto a producción (EX4).
+- La comparación píxel a píxel con producción excluye la rasterización del texto del diálogo (27.3).
+
+## 28. B1 — Candidata A del expediente: los tres gags sobre el retrato del cuestionario (T066, prototipo parcial)
+
+Fecha: 2026-11-09. Antes de empezar: `main` en `2a87b4d`; los cambios locales eran los de §25–§27. Solo Design Lab: no se toca producción (`ProfileSheet`, `SofiPortrait`, `ConsultationScreen` y demás), ni parciales, ni controladores, ni tiras. Sin commit ni push. **No son aprobaciones:** el prototipo es para decidir la ubicación definitiva; no se cierra T066 ni se aprueba AV4 o AV6.
+
+### 28.1 Decisión registrada
+
+**Etiqueta «Sofi» por encima del retrato cuando se solapen** (consulta ancha), aprobada el 2026-11-09 y registrada en `art-direction/README.md` (decisión 11), con un puntero en T087. El Lab 4.8 ya la lleva así y se retiró su casilla de alternativa. El mismo solape se da en el expediente (28.4.4): el prototipo 4.9 la aplica también, pendiente de que la autora lo confirme. **Confirmado el 2026-11-10** (decisión 11; 28.11.5).
+
+### 28.2 Qué se entrega
+
+- **Sección «4.9 · Gags en el expediente»** (`GagsProfileSpec.tsx`). Dos marcos de iframe, móvil (320 o 390 px) y escritorio (1280 px), como los de 6.3: la pantalla de verdad, con sus media queries. La composición es **el `ProfilePrototype` del Lab, que monta el `ProfileSheet` real** (formulario, índice, notas, guardado), sin modificar. Las composiciones de partida: «Sofi espera la respuesta» (nueva, `waiting`), «Sin completar», «Respuesta y reacción» y «Guardado y editable». Controles: qué gags, zona sensible e inactividad, enviados a los marcos por un `BroadcastChannel` sin recargarlos (el selector de «qué es interactuar con los controles» que tuvo esta sección se retiró al decidirse: 28.8). La sección muestra qué dice cada marco de su escena (estado de Sofi, si los gags viven y por qué).
+- **`SheetGags`** (`design-lab/profile/`): el Lab encuentra el retrato en el DOM (`section[aria-label="La pregunta de Sofi"] [role="img"]`, si es el elemento de `sofi-blink`) y le añade las clases de los gags, las de la zona sensible y las del escenario. Es una técnica de prototipo: `ProfileSheet` y `SofiPortrait` no exponen su elemento (28.4.5). Se vuelve a buscar con cada cambio del escenario, porque el retrato cambia de elemento al pasar a la imagen de una reacción.
+- **Estados permitidos (spec §5):** los gags solo viven con Sofi **esperando** la respuesta (`waiting`) y el retrato siendo el sprite. Preguntando (habla), con una reacción (imagen estática), borrando o con movimiento reducido se desmontan del todo: ni controladores, ni capas, ni tiras, ni escuchas. Causas de pausa: el foco en un control de la ficha (28.8) y la página oculta.
+- **Zona sensible (§26) a ×1,5 y ×3:** el mismo mixin `_gagHit.scss` con la escala en una variable (`--hit-scale`: 1,5 con el retrato de 192 px, 3 desde 1080 px con el de 384), las mismas siluetas.
+- **Escondite:** `--poking-edge: 100 %`, el valor por defecto del parcial: el pie del retrato es el borde superior del bocadillo (hueco 0 en todos los anchos), sin solape. Las manos se agarran al borde por delante y pisan 8 px del bocadillo.
+
+### 28.3 Pruebas
+
+| Qué | Resultado |
+|---|---|
+| `gagProfile.test.ts` (qué estados permiten gags, la configuración por la URL, el foco en un control y su vigilante; las lecturas de interacción de esta primera entrega se retiraron en 28.8) | 12 (hoy 18: 28.8) |
+| `SheetGags.test.tsx` con el `ProfilePrototype` real y los tres controladores del ZIP (retrato existente con los tres y sus capas; una sola Sofi; clases del Lab; preguntando sin gags y esperando con ellos; reacción sin anfitrión y vuelta; reducido; cada gag solo si está marcado; toque; foco; página oculta; el estado que cuenta el marco; desmontaje con y sin StrictMode) | 18 (hoy 21: 28.8) |
+| `gagHitArea.contract.test.ts` (ahora sobre tres módulos: ×1, ×3 y la escala variable del expediente; el borde del 100 %; la etiqueta por encima) | 32 (eran 20) |
+| `gagWide.contract.test.tsx` (+ la etiqueta por encima del retrato) y `GagsWideSpec.test.tsx` (sin la casilla retirada) | 9 y 15 |
+| Sensibilidad (5 mutaciones, todas detectadas; archivos restaurados): gags también preguntando, escala ×1,5 → ×2, borde 100 → 90 %, etiqueta sin `z-index`, la interacción no pausa | 5 de 5 |
+
+Sin RED previo: se escribieron después del prototipo, y la sensibilidad se comprobó con las mutaciones.
+
+`vitest run`: **127 archivos y 2 448 pruebas** (§27: 125 y 2 407), todas en verde; en la primera ejecución completa fallaron por tiempo (6,2 s y 5,4 s sobre 5 s) dos pruebas de `MotionSync.test.tsx`, que sola da 13 de 13 y que ya flaqueó bajo carga en §25.3: no se ha cambiado ningún tiempo de espera. `tsc -b`, `eslint .` y `prettier --check .` sin errores. `playwright e2e/a11y.spec.ts e2e/motion --project=chromium --workers=2`: **55 de 55**.
+
+### 28.4 Navegador real
+
+Servidor de desarrollo propio (5188), controladores y CSS reales, en el marco `?frame=gags-profile` abierto a la anchura real (Chromium; Firefox y WebKit donde se indica); toques con CDP de ~90 ms; guiones de usar y tirar, fuera del repositorio.
+
+| Comprobación | Resultado |
+|---|---|
+| **La composición no cambia con los gags** (reposo, animaciones anuladas, página entera) a 320, 390, 844 × 390, 1280 y 1920 | **0 píxeles distintos** y las mismas medidas con y sin ellos. Retrato de 192 px (escala 1,5) o 384 px (escala 3); hueco retrato-bocadillo 0; hueco «Volver a la consulta» → retrato, 8 px (una columna) o 28 px (dos); sin desplazamiento horizontal |
+| Barrido de la zona sensible frente al alfa real (192 y 384 px) | **Firefox y WebKit: 0 píxeles visibles sin respuesta y 0 sensibles sin nada visible**; Chromium a 384: 0; Chromium a 192 (×1,5): 17–18 píxeles de 20 977 (0,08 %) en el borde de la silueta, donde a medio píxel solo queda un píxel de sprite opaco. **Corregido en 28.11.4:** medido sobre lo que se pinta y en más anchuras, hay hasta 54 en Chromium y 41 en WebKit. La zona sensible es el 57 % de la caja. Los píxeles que tapa el diálogo son los del último píxel de fila (redondeo) y, a 384 px, los de su etiqueta «Sofi» |
+| Toques en transparente (esquinas y junto a los hombros) | `poking` sigue en `idle` a 390 (CDP) y a 1280 |
+| Secuencia completa tocando solo lo visible | `curious → skeptical → stop → offended → hide → peek → nope → return → idle`, a 390 con toques reales (CDP) y a 1280 y 1080 con clics; con clics también en Firefox y WebKit a 390 y a 1280. Clics en el vacío con Sofi escondida no retrasan la asomada (1,5–1,6 s) |
+| **Controles del formulario** en cada pose (`curious`, `skeptical`, `stop`, `offended`, `hide`, `peek`) | Las cuatro opciones, «Siguiente pregunta» y la nota reciben el toque (5 de 5 a 390 y a 1280): el anfitrión, elevado sobre el bocadillo durante la broma, no tapa nada. Con la zona sensible limitada a lo que se ve, solo las manos (8 px) pisan el borde del bocadillo |
+| **Responder en mitad del escondite** | La respuesta queda marcada; Sofi pasa a la imagen de la reacción (sin anfitrión, sin atributos ni capas del gag) y 2,3 s después vuelve a esperar y los gags se montan de nuevo |
+| **Estados** (composiciones del Lab) | Preguntando: sprite sin gags (a los ~2 s, esperando, con los tres). `answered`, `uncertain`, `completed`, `saved`, `empty-save`, `memory` y `deleting`: imagen estática, 0 de 3 gags. `waiting`: 3 de 3 |
+| **Interactuar con los controles** | Esta primera entrega comparó dos lecturas (con foco / solo escribiendo o pulsando). La autora eligió el foco el 2026-11-09 y las medidas vigentes son las de 28.8. Un hecho de entonces se mantiene: un clic en Sofi **quita el foco** del control y cuenta como pinchazo, así que la suspensión solo afecta a los gags pasivos (`are-u-still-here`, `i-see-you`) |
+| `i-see-you` con el puntero | Sin foco: `watching → caught → smirk`. Con foco en un control: no reacciona (28.8) |
+| Desplazamiento a 390 | Arrastrar desde Sofi o desde una zona transparente desplaza la página 97 px |
+| Desbordamiento de los efectos (caja de cada capa visible, los tres gags) | A 384 px: como mucho **11 px por arriba** (alerta de `i-see-you`), 7 por la derecha (el «?») y 5 (estallido del susto). A 192 px: como mucho 6 por arriba y 5 por la derecha. Dentro de la ventana; sin desbordamiento horizontal. En una columna la alerta de `i-see-you` (y su caja, 3 px) llega a la altura del botón «Volver a la consulta» (8 px más arriba) pero su dibujo no lo pisa (a 390 y a 320: capturas) |
+| Accesibilidad (axe, WCAG 2.2 AA) | **0 violaciones** en el marco a 320 oscuro, 390, 844 × 390, 1080, 1280 oscuro, y con el texto al 200 % a 1280 y a 320; con Sofi **escondida y asomada** a 390 oscuro y a 1280. En la sección 4.9 del Lab: 0 en 1280 claro y oscuro, 390, 320 oscuro y texto al 200 %. El retrato no tiene foco ni `tabindex` y el orden de tabulación (19 elementos) es idéntico con y sin gags |
+| Movimiento reducido | Sistema reducido y «Reducido» del Lab: 0 capas, atributos, clases de gag y animaciones; tocar no hace nada. **Corregido en 28.10.3:** quedaba la clase de la zona sensible del Lab, que tapaba parte de «Volver a la consulta». «Completo» con el sistema reduciendo: gags vivos (12 capas) |
+| Controles de la sección 4.9 | Quitar un gag o mostrar la zona sensible llega a los dos marcos sin recargarlos |
+
+Capturas locales de la sesión, en `shots\` del directorio temporal de la sesión: `p-mobile-idle` y `p-desktop-idle` (con la zona sensible en azul), `p-mob-hide`, `p-mob-peek`, `p-mob-stop`, `p-mob-offended`, `p-wide-hide`, `p-wide-peek`, `p-wide-stop`, `p-wide-offended`, `p-1080-hide-crop` (la etiqueta por encima del pelo), `p-alert-390` y `p-alert-320` (la alerta junto al botón «Volver»), `p-lab-desktop`, `p-lab-mobile` y `p-lab-desktop-2` (la sección 4.9).
+
+### 28.5 Hallazgos y decisiones abiertas
+
+Numeradas para aprobarlas por número.
+
+1. ~~Qué es «interactuar con los controles».~~ **Resuelta el 2026-11-09 por la autora: el foco** (spec §5, «Foco en los controles del expediente»). Medidas y hallazgos nuevos en 28.8; las decisiones que quedan de ahí son 7 a 10.
+2. ~~Zona sensible a ×1,5.~~ **Resuelta el 2026-11-10 por la autora con un criterio geométrico** (spec §5, «Precisión de la zona sensible»; 28.12). Incumplimientos del prototipo en 28.12.4. Lo que se planteaba: **detenida el 2026-11-10** (28.11.4). La autora aprobó tolerar 17 píxeles aislados en el contorno, siempre que no afecte perceptiblemente a la interacción ni cree zonas táctiles transparentes. Medido sobre lo que se pinta:
+   - Chromium: hasta 54 píxeles en anchuras habituales (375, 393, 412 y 430 px). WebKit: hasta 41. Firefox: 0.
+   - No están aislados: forman franjas de 1 px de ancho y hasta 20 de alto.
+   - Todos están a 1 px como mucho de la zona sensible. La zona sensible sin nada pintado no pasa de 2 px de la silueta.
+
+   Opciones:
+
+   - **A)** Registrar la tolerancia con lo medido: el contorno puede no responder solo a 1 px como mucho de la zona sensible, y la zona sensible sin nada pintado solo a 2 px como mucho de la silueta.
+   - **B)** Ajustar el Lab con siluetas propias para el retrato de 192 px (bloques de 1 px de pantalla), más pesadas, y volver a medir. Ensanchar la zona 1 px dejaría 0 píxeles sin respuesta, pero ampliaría el borde transparente.
+   - **C)** Dejarlo para T088.
+
+   Recomiendo A: una franja de 1 px no se nota al tocar. Lo que se planteaba: cubre lo pintado salvo 17 píxeles de 20 977 en Chromium; con ×3 no hay ninguno.
+3. ~~La decisión 11 también vale para el expediente.~~ **Resuelta el 2026-11-10 por la autora: sí** (README, decisión 11; 28.11.5). Lo que se planteaba: Con la columna estrecha el pelo cubre la etiqueta «Sofi» del bocadillo igual que en la consulta ancha, y además en una columna (2 px a 320 px; 43 px a 1080 px; 5 px a 1280 px). 4.9 la lleva por encima; hay que confirmar que la decisión se extiende.
+4. **Producción (T088).** Para llevar esto a producción, `ProfileSheet` (o `SofiPortrait`) tendría que dar su anfitrión a los controladores y saber que Sofi espera; la causa `interaction` debería salir de los manejadores del propio formulario (`onFocus`/`onBlur` de la ficha, con la misma regla de adónde va el foco que `watchControlFocus`, 28.8) y no de escuchas en `document`, como en el prototipo. Es un cambio de componentes de producción: lo decide T088, no lo he hecho.
+5. **Reducido.** Sin propuesta aparte: el retrato es el que ya hay, sin controladores (D-1). La aprobación es de AV4.
+6. **Sin `AV#`.** La ubicación en el expediente quedó aprobada el 2026-11-10 (A, spec §5), y también la inactividad (plan §6). AV6 sigue sin marcar porque incluye la ubicación en la consulta en reposo, que no está aprobada. Lo que se planteaba: la ubicación en el expediente no está aprobada (la regla del foco sí consta en la spec, pero no es un `AV#`).
+7. ~~Gag congelado en su pose con el foco.~~ **Resuelta el 2026-11-10 por la autora: al entrar el foco se cancela y Sofi vuelve al reposo** (spec §5; 28.9). Lo que se medía antes: **un gag en marcha cuando llega el foco queda congelado en su pose** mientras dure el foco, y al perderlo continúa donde estaba (28.8.3). Ejemplo: Sofi «escondida» (`hide`) se queda escondida mientras la persona contesta con el teclado. Aceptarlo, o que al empezar el foco los gags vuelvan al reposo (`reset()`): eso es un cambio de `ambient.ts` (la regla vigente es que las causas de la escena no hacen `reset()`) y de T088.
+8. ~~Mirada pendiente al reanudar.~~ **Resuelta con la 7** (28.9): ya no aparece. Lo que se medía antes: Si el puntero se mueve unos 90 ms antes de que llegue el foco, `i-see-you` conserva congelada su mirada pendiente y la muestra (`watching`, hasta 2,5 s) al reanudar, aunque el puntero ya no se mueva (28.8.3). No llega a `caught`. Mismo origen que el 7: el controlador congela sus temporizadores al pausar, no los borra. Aceptarlo o resolverlo junto con el 7.
+9. ~~El foco depende del navegador.~~ **Resuelta el 2026-11-10 por la autora: foco nativo, también en WebKit, sin forzarlo; las acciones del formulario prevalecen** (spec §5; 28.10). Lo que se planteaba: En Chromium y Firefox, clic o toque en una opción le da el foco; en WebKit (el motor de Safari) no: tras responder con el ratón o el dedo no hay foco en la opción y los gags no se suspenden. Con el teclado sí, en los tres. La regla es de foco, así que se cumple en todos; lo que cambia es cuándo hay foco (28.8.4). Confirmar que es lo que se quiere.
+10. ~~Qué es «control del formulario».~~ **Resuelta el 2026-11-10 por la autora: todos los controles del expediente, no los de la cabecera general** (spec §5; 28.10). Lo que se planteaba: El prototipo cuenta cualquier control de la ficha: opciones, notas, «Siguiente pregunta», el índice de áreas, «Volver a la consulta» y «Guardar expediente». No cuentan los de la cabecera de la página (tema, sonido, portada), que no son del expediente. Confirmar la lectura o acotarla (por ejemplo, solo opciones y notas).
+
+### 28.6 Para decidir la ubicación definitiva
+
+La candidata A funciona en las dos anchuras sin cambiar la composición (0 px de diferencia), sin tapar controles en ninguna pose y con el escondite natural en el borde del bocadillo. Lo que cambia entre **A (dos anchuras)** y **B (solo desde 1080 px)** es solo si en una columna, con el retrato de 192 px pegado a las respuestas, hay gags. La evidencia de 28.4 no muestra un problema a 192 px (controles alcanzables, sin solape, zona sensible al 57 %, axe a cero); la decisión es de producto. Recomiendo A. **Decidido el 2026-11-10: A** (spec §5).
+
+### 28.7 Límites
+
+- Toques reales (CDP) solo en Chromium; Firefox y WebKit, con clics. Safari real, lectores de pantalla y dispositivos son de `015`.
+- La zona sensible a ×1,5 y ×3 se barrió en los tres motores; los efectos y los estados se midieron en Chromium.
+- El marco usa el audio simulado del Lab: no se ha probado con voz real.
+- No se ha medido el coste de carga de llevar esto a producción (EX4).
+- Las comprobaciones del retrato de 4.9 se hicieron con el marco abierto directamente a cada anchura (el iframe de la sección lo escala para que quepa): lo que se ve en la sección es la misma pantalla reducida.
+
+### 28.8 Foco en los controles del expediente (decisión aprobada el 2026-11-09)
+
+Fecha: 2026-11-09. Solo Design Lab y la spec; sin tocar producción ni los controladores del ZIP, sin commit ni push, sin `AV#`.
+
+**28.8.1 Decisión y dónde consta.** Los gags del expediente permanecen suspendidos mientras cualquier control del formulario tenga el foco. Su única fuente normativa es `008-spec.md` §5 («Foco en los controles del expediente»); aquí no se repite. La spec no fijaba qué ocurre con un gag en marcha o con lo pendiente al reanudar (28.5, puntos 7 y 8); se decidió el 2026-11-10 (28.9). T088 sigue decidiendo el mecanismo de producción.
+
+**28.8.2 Qué cambia en el prototipo.**
+
+- Se retira de 4.9 el selector «Interactuar con los controles es…», la lectura «solo escribiendo o pulsando» y el parámetro `interaction` de la URL del marco (con `isTextEntry`, `pressed` y las escuchas de puntero y tecla): ya no hay dos lecturas, solo el foco.
+- `watchControlFocus` (`gagProfile.ts`) sustituye a las escuchas de `SheetGags`: avisa solo al cambiar el estado. Al ganar el foco lee el elemento activo; al perderlo mira adónde va (`relatedTarget`) y, si no va a ningún sitio, el elemento activo, con una lectura de confirmación en la tarea siguiente. Motivo: con Tab o las flechas de un grupo de opciones, el navegador reparte `focusout` y `focusin` con un punto de control de microtareas en medio, en el que el foco está en el documento; leerlo ahí reanudaría los gags un instante entre dos controles. Si la ventana pierde el foco, el control sigue siendo el elemento activo y los gags siguen suspendidos.
+- La sección 4.9 dice qué marco está suspendido («suspendidos: un control del formulario tiene el foco») y lo explica en una nota.
+
+**28.8.3 Pruebas.**
+
+| Qué | Resultado |
+|---|---|
+| `gagProfile.test.ts` (+ el foco en un control y `watchControlFocus`: avisa al ganar sin esperar y al perder sin esperar; de un control a otro, ni en el hueco entre los dos eventos; ventana que pierde el foco; darse de baja) | 18 |
+| `SheetGags.test.tsx` (foco en una opción, las notas o un botón suspende; Tab entre controles; un toque a Sofi con foco no activa `poking`; al perder el foco nada reaparece) | 21 |
+| Sensibilidad (6 mutaciones, todas detectadas; archivos restaurados): el foco no pausa; el foco nunca cuenta; la pérdida se lee sin `relatedTarget`; la baja no cancela la lectura pendiente; una ventana sin foco reanuda; (en el navegador) lo mismo sin `relatedTarget` | 6 de 6 |
+| `vitest run` completo | **127 archivos y 2 457 pruebas**, en verde |
+| `tsc -b`, `eslint`, `prettier --check .` | sin errores |
+| `playwright e2e/a11y.spec.ts e2e/motion --project=chromium --workers=2` | **55 de 55** |
+
+**28.8.4 Navegador real.** Servidor de desarrollo propio, controladores y CSS reales, el marco `?frame=gags-profile` abierto a la anchura real; guiones de usar y tirar, fuera del repositorio.
+
+| Comprobación | Resultado |
+|---|---|
+| **Teclado**: cada parada del tabulador (26) frente al estado que cuenta el marco | Chromium y WebKit: 15 paradas en la ficha; Firefox: 21. **0 desajustes** entre «control de la ficha con foco» y «suspendidos». Entre dos controles de la ficha, **ninguna reanudación**. En Chromium y WebKit la secuencia `T F T F T F` es salir de la ficha por la cabecera (tema, sonido, portada, 5 controles) y volver a entrar, no un hueco. Con la versión mutada (sin `relatedTarget`), 28 reanudaciones entre controles: la comprobación detecta el fallo |
+| **Foco** y `are-u-still-here` (5 s) | Sin foco: `drowsy` a los 3 s del montaje y `nodding` después. Con foco en un control: **`idle` durante 12 s**. Al perder el foco la cuenta empieza de cero: `drowsy` a los 5,0 s |
+| **Foco** y `i-see-you` | Con foco, mover el puntero por Sofi no cambia nada (`idle`). Ya reanudado, el puntero la hace mirar y la pilla (`watching → caught → smirk`). Sin ningún evento de puntero tras soltar el foco, no hay reacción (control sin mover el puntero, y con el puntero movido durante el foco y aparcado) |
+| **Perder el foco** y `poking` | Un clic (pulsar y soltar sin demora, o con 90 ms) o un toque sobre Sofi con el foco en un control **quita el foco y activa `curious`**: en Chromium, Firefox y WebKit, y con toque a 390. La pérdida se decide al pulsar, antes del clic |
+| **Responder con el teclado** (foco en la opción) | La respuesta se marca; Sofi pasa a la reacción (imagen estática) y a los ~2,3 s vuelve a esperar con los tres gags **montados pero suspendidos** (el foco sigue en la opción): `idle` durante 9 s con `are-u-still-here` a 5 s. Al soltar el foco, `drowsy` a los 5,0–5,1 s. Igual en Chromium, Firefox y WebKit |
+| **Gag en marcha cuando llega el foco** (`poking`; hallazgos 7 y 8) | Se congela en su pose mientras dure el foco: `curious`, `offended` y `hide` aguantan 6 s inmóviles. Al perder el foco continúa donde estaba: `hide → peek` 1,4 s después, `return` 5 s más tarde, `idle` 1,5 s después; `offended`, `idle` tras los ~9,6 s que dura sin foco; `curious`, `idle` 10 s después. Sin foco, `offended → idle` a los 9,6 s. Nada se repite ni empieza de nuevo. `are-u-still-here` no se congela: la propia pulsación del tabulador cuenta como actividad y lo devuelve a `idle` |
+| **Mirada pendiente** (`i-see-you`; hallazgo 8) | Si el puntero se mueve unos 90 ms antes de que llegue el foco, el gag pierde el control con la mirada aún por confirmar y la confirma al reanudar: `watching` a los 2,2 s (al soltar) y `idle` a los 2,4 s (reposo del cursor). Con el movimiento 3,5 s antes, o sin moverlo nunca, no pasa. Nunca llega a `caught` |
+| **Clic o toque da foco** (hallazgo 9) | Chromium (ratón y toque a 390) y Firefox: una opción, las notas y «Siguiente pregunta» reciben el foco y suspenden. **WebKit: una opción no recibe el foco con clic ni con toque** (no suspende); las notas y el botón, sí. **Matizado en 28.10.5:** ese botón recibe el foco por la gestión de foco de `ProfileSheet`, no por el clic; «Guardar expediente», pulsado, no lo recibe en WebKit |
+| Accesibilidad (axe, WCAG 2.2 AA) de la sección 4.9 del Lab, ya sin el selector | 0 violaciones a 1280 claro y oscuro, 390, 320 oscuro y texto al 200 %; sin desplazamiento horizontal; los controles en vivo siguen llegando a los dos marcos sin recargarlos; el resumen de cada marco dice «suspendidos» al darle el foco y vuelve a «sí» al quitarlo |
+
+Capturas locales de la sesión, en `shots\` del directorio temporal: `f-lab-focus` (la sección 4.9 con el foco en una opción del marco móvil) y `f-focus-pose-390` (Sofi congelada en `stop` con el foco en un control a 390).
+
+**28.8.5 Límites.**
+
+- Los toques son de Playwright (`touchscreen.tap`, sin demora) en Chromium y WebKit; no hay Safari real ni dispositivos (`015`).
+- «Ventana sin foco» solo se prueba en `jsdom` (evento sintético); en el navegador no se ha forzado.
+- Los hallazgos 7 y 8 se midieron con `poking` e `i-see-you` en Chromium; `are-u-still-here` no los tiene.
+
+### 28.9 Al entrar el foco, Sofi vuelve al reposo (decisión aprobada el 2026-11-10)
+
+Fecha: 2026-11-10. Solo Design Lab (4.9) y la spec. No se modifican producción, `ambient.ts`, `useSofiController.ts` ni los controladores del ZIP (fechas de modificación anteriores a esta sesión), ni las demás causas de pausa. Sin commit ni push, sin `AV#`.
+
+**28.9.1 Decisión y dónde consta.** Al entrar el foco en un control del formulario se cancelan los gags activos y Sofi vuelve al reposo; quedan suspendidos hasta perder el foco y, al reanudarse, no continúa ninguna reacción ni mirada pendiente. Única fuente normativa: `008-spec.md` §5 («Foco en los controles del expediente») y su criterio de aceptación. Resuelve los puntos 7 y 8 de 28.5.
+
+**28.9.2 Cómo lo hace el prototipo, sin tocar producción.** El adaptador ya registra en `ambient` un `reset()` por gag (el que `ambient` pide a los demás cuando uno se activa). `trackGagTargets` (`gagProfile.ts`) envuelve el `ambient` del Lab, como ya hacía `observeAmbient`, recuerda esos registros y ofrece `resetAll()`. Todo lo demás lo reenvía sin cambiar ninguna regla. En `SheetGags`, al entrar el foco en un control, primero se pone la causa `interaction` y después `resetAll()`. En ese orden, el gag activo, al volver al reposo, libera a los demás (`deactivate`) sin que ninguno se reanude ni un instante. Al perder el foco solo se quita la causa. Lo que hace `reset()` en cada controlador, sin cambiarlo:
+
+- `poking`: reposo sin animación de vuelta, cancela el tramo en curso y olvida el último pinchazo.
+- `i-see-you`: reposo, cancela la mirada pendiente, el reposo del cursor, el «cursor encima» y la reacción. Si estaba reaccionando, cuenta como reacción acabada y abre su espera de 15 s sin dejarse pillar, su regla de siempre (28.9.4).
+- `are-u-still-here`: reposo sin susto y la cuenta de inactividad vuelve a empezar.
+
+Ninguna otra causa (página oculta, ocupada, sensible) hace `reset()`: la regla general de `ambient` sigue igual.
+
+**28.9.3 Pruebas.**
+
+| Qué | Resultado |
+|---|---|
+| `SheetGags.test.tsx` con los controladores reales: `poking` en `curious` y en `hide` vuelve al reposo al instante y no sigue (20 s después, solo `idle`; un toque empieza de nuevo por `curious`); `i-see-you` pillada no sigue con la sonrisa; su reacción pendiente (cursor encima, aún sin pillarla) no se retoma; `are-u-still-here` dormida vuelve al reposo sin susto y la cuenta empieza de cero (4,9 s en reposo, `drowsy` a los 5,1); pasar de un control a otro no reanuda; la página oculta solo pausa (`curious` sigue en `curious`) | 28 (eran 21) |
+| `gagProfile.test.ts` (+ `trackGagTargets`: `reset()` a cada gag y solo cuando se pide; una causa sigue sin `reset()`; reenvía `activate`/`deactivate`; la baja de StrictMode) | 22 (eran 18) |
+| RED antes de implementar | 5 fallos, por el motivo esperado; las dos pruebas de alcance ya pasaban |
+| Sensibilidad (mutaciones; archivos restaurados) | Sin `reset` al entrar el foco: 5 fallos. `reset` solo a parte de los gags: 7. Baja sin comprobar el registro: 1. `reset` también al perder el foco: **no se detecta**, y es equivalente (al perder el foco todo está ya en reposo y durante la suspensión nada puede arrancar) |
+| `vitest run` completo | **127 archivos y 2 468 pruebas**, en verde |
+| `tsc -b`, `eslint .`, `prettier --check .` | sin errores |
+| `playwright e2e/a11y.spec.ts e2e/motion --project=chromium --workers=2` | **55 de 55** |
+
+**28.9.4 Navegador real** (servidor propio, controladores y CSS reales, el marco a 1280 salvo donde se indica). El foco entra como lo haría la persona: con el tabulador desde el último botón de la cabecera hasta «Volver a la consulta». Cada cambio de atributo del anfitrión se registró con un `MutationObserver` y el número de fotograma, para saber qué estados llegan a pintarse.
+
+| Comprobación | Chromium | Firefox | WebKit |
+|---|---|---|---|
+| `poking` en `curious`, `offended` y `hide` → Tab | `idle` en el mismo instante; al soltar el foco, 12 s sin ningún cambio | igual | igual |
+| `i-see-you` pillada (`caught`) → Tab | `idle` al instante; al soltar, 6 s sin cambios | igual | igual |
+| `i-see-you` mirando (`watching`) → Tab | `idle` al instante; al soltar, sin cambios | igual | igual |
+| **Mirada pendiente** (puntero movido justo antes del Tab: el caso del punto 8) | **Ningún `watching`**, ni con foco ni al soltar (antes: `watching` al reanudar) | igual | igual |
+| `are-u-still-here` en `drowsy` → Tab | `idle`; 8 s en reposo con foco; al soltar, `drowsy` a los 5,0 s | igual (5,3 s) | igual (5,0 s) |
+| `are-u-still-here` dormida (`asleep`) → Tab | La pulsación del tabulador cuenta como actividad y la despierta (`startled`), pero el foco la devuelve a `idle` **en el mismo fotograma: el susto no se pinta**. Al soltar, `drowsy` a los 5,0 s | igual | igual |
+
+También en Chromium:
+
+- **Sin regresiones del foco:** las 26 paradas del tabulador dan 0 desajustes y ninguna reanudación entre controles, como en 28.8. Un clic sobre Sofi con el foco en un control quita el foco y activa `curious`, con 0 y con 90 ms de pulsación. Al responder con el teclado, los tres gags se montan suspendidos y en reposo (9 s en `idle`), y al soltar, `drowsy` a los 5,1 s.
+- **Los gags siguen vivos tras reanudar:** `poking` cancelado en `hide` empieza de nuevo con cinco toques (`curious → skeptical → stop → offended → hide`). `i-see-you` cancelado en `caught` vuelve a mirar al puntero, pero con el cursor encima no se deja pillar durante los 20 s medidos. Es su espera tras una reacción («si estaba reaccionando, cuenta como reacción acabada»), no una reacción pendiente; dura 15 s de su reloj, que no corre mientras el foco lo suspende.
+- **Accesibilidad:** axe de la sección 4.9 con la nota nueva, 0 violaciones a 1280 claro y oscuro, 390, 320 oscuro y texto al 200 %. Los controles en vivo siguen llegando a los marcos sin recargarlos.
+
+Capturas locales de la sesión (`shots\` del directorio temporal): `f-reset-before-390` (Sofi escondida, `hide`, a 390) y `f-reset-after-390` (tras dos Tab, con el foco en la primera opción: Sofi en reposo).
+
+**28.9.5 Límites.**
+
+- El foco entra con el tabulador; con clic y toque, la entrada del foco depende del motor (28.5, punto 9, sin decidir).
+- La espera de `i-see-you` tras cancelar una reacción es del controlador y no se ha cambiado. Si se quisiera que pudiera pillarse enseguida, haría falta otro mecanismo, y se consultaría antes.
+- Sin Safari real, lectores de pantalla ni dispositivos (`015`).
+
+### 28.10 Foco nativo y alcance de los controles (puntos 9 y 10, decisiones aprobadas el 2026-11-10)
+
+Fecha: 2026-11-10. Solo Design Lab (4.9) y la spec. Sin tocar producción ni controladores, sin commit ni push, sin `AV#`.
+
+**28.10.1 Decisiones y dónde constan.** Única fuente: `008-spec.md` §5 («Foco en los controles del expediente») y sus criterios de aceptación.
+
+- **Punto 9:** se respeta el foco nativo de cada navegador, también en WebKit; no se fuerza al tocar o pulsar respuestas, y las acciones del formulario siempre prevalecen sobre los gags.
+- **Punto 10:** todos los controles del expediente suspenden los gags mientras tienen el foco, y se excluyen los de la cabecera general.
+
+**28.10.2 Qué ya cumplía el prototipo.**
+
+- No fuerza el foco: `SheetGags`, `gagProfile.ts` y el marco no llaman a `focus()`. El único `focus()` del prototipo es el del título de la ficha al cambiar de vista (`ProfilePrototype`), que imita la gestión de foco de producción (`AppShell`) y no toca las respuestas.
+- El alcance es «dentro de la ficha» (`main`), y la cabecera queda fuera.
+
+**28.10.3 Contradicción encontrada y corregida (solo en el Lab).** La zona sensible del Lab (`styles.host`) se ponía en el retrato aunque no hubiera ningún gag montado: con todos desmarcados, con **movimiento reducido** (del sistema o «Reducido» del Lab) y durante la carga de las tiras. Su `::after` se coloca respecto al anfitrión gracias al `position: relative` que le dan los parciales de los gags. Sin ninguno, quedaba colocado respecto al escenario y, ampliado ×3, **tapaba parte de «Volver a la consulta»**: 85 de 91 puntos a 1280 y 49 de 91 a 390, cuando el marco de producción del Lab (`frame=profile`) no tapa ninguno. Eso incumplía «las acciones del formulario siempre prevalecen». También corrige lo dicho en 28.4 («Movimiento reducido: 0 … clases de gag; tocar no hace nada»): en reducido quedaba la clase de la zona sensible del Lab, y con ella el bloqueo. Corrección: la clase solo se pone con algún gag montado. Producción no tenía el problema.
+
+**28.10.4 Pruebas.**
+
+| Qué | Resultado |
+|---|---|
+| `SheetGags.test.tsx` (+ sin ningún gag marcado, sin zona sensible; con un solo gag, sí; con movimiento reducido, tampoco) | 30 (eran 28). Sin la corrección fallan 2 |
+| `vitest run` completo | **127 archivos y 2 470 pruebas**, en verde |
+| `tsc -b`, `eslint .`, `prettier --check .` | sin errores |
+| `playwright e2e/a11y.spec.ts e2e/motion --project=chromium --workers=2` | **55 de 55** |
+
+**28.10.5 Navegador real** (servidor propio, Chromium, Firefox y WebKit).
+
+| Comprobación | Resultado |
+|---|---|
+| **Punto 10, inventario** de lo enfocable en 9 composiciones (`empty`, `waiting`, `answered`, `uncertain`, `completed`, `saved`, `empty-save`, `memory`, `deleting`) | Los tres motores dan lo mismo. En la ficha hay de 14 a 17 controles según la composición, y **todos cuentan**. Lo enfocable que no cuenta son el título de la ficha (`h1`, `tabindex=-1`, solo lector de pantalla) y, al borrar, el título del aviso (`h3`, `tabindex=-1`): son títulos, no controles. Fuera de la ficha solo están los 5 controles de la cabecera general (portada, Claro, Oscuro, Sistema, Sonido de Sofi), que no suspenden; no hay ningún otro control fuera de `main` |
+| **Punto 10, recorrido con el tabulador** | Sin cambios respecto a 28.8 y 28.9: 0 desajustes entre «control de la ficha con foco» y «suspendidos» |
+| **Punto 9, dónde queda el foco tras cada acción** (Sofi esperando, con el ratón) | **Chromium y Firefox:** el índice de áreas lleva el foco a la primera opción (lo hace `ProfileSheet`), «Siguiente pregunta» a su propio botón, las notas a sí mismas, una opción a sí misma (al volver a esperar sigue ahí) y «Guardar expediente» a sí mismo: todo suspende. **WebKit:** el índice, «Siguiente pregunta» y las notas, igual; **pulsar una opción o «Guardar expediente» no da el foco** (queda en el documento), así que los gags no se suspenden por esa pulsación, como pide la decisión. Corrige lo dicho en 28.8.4: el botón que allí recibía el foco en WebKit era «Siguiente pregunta», y lo recibe por la gestión de foco de `ProfileSheet`, no por el clic |
+| **Punto 9, las acciones prevalecen**: rejilla de 7 × 5 puntos sobre cada control visible de la ficha, en reposo, en cada pose de `poking` (`curious`, `skeptical`, `stop`, `offended`, `hide`, `peek`), con `i-see-you` pillada (con su alerta) y con `are-u-still-here` dormida (con sus Zzz) | En Chromium, Firefox y WebKit a 1280 y en WebKit a 390, **exactamente los mismos puntos que sin gags** en todas las poses. Los únicos puntos que no responden, también sin gags, son de «Ir a guardar» y «Quitar respuesta», que en esa composición están ocultos e inertes (`visibility: hidden` dentro de un `span` con `inert`): no son controles disponibles |
+| **Punto 9, responder con un gag en marcha** | Con Sofi asomada (`peek`), la opción queda marcada y Sofi pasa a la reacción; con Sofi dormida, la opción queda marcada. En los tres motores |
+| **La corrección de 28.10.3**, frente al marco de producción del Lab, en 9 estados (sin gags, los tres, cada uno solo, reducido del sistema, «Reducido» del Lab, preguntando, reacción) a 1280 y 390 | **0 puntos de más** en los tres motores. Antes: 31 de más a 1280 y 15 a 390 (Chromium), sin gags y en reducido |
+
+Guiones de usar y tirar, fuera del repositorio.
+
+**28.10.6 Lo que hay que saber.**
+
+- **En WebKit, pulsar una respuesta no suspende los gags**, porque el navegador no da el foco. No choca con el resto de §5: la pulsación marca la respuesta y Sofi pasa a la reacción, que desmonta los gags, y una pulsación en un control no es un toque a Sofi (`poking` no se activa). Sí cuenta como actividad para `are-u-still-here`, y la mirada de `i-see-you` puede seguirla (excepción aprobada de §5).
+- Al entrar en la vista, el foco está en el título de la ficha (lo pone la gestión de foco de producción), que no es un control: los gags viven.
+
+**28.10.7 Límites.** Toques con Playwright sin demora; sin Safari real, lectores de pantalla ni dispositivos (`015`). La rejilla de las acciones a 390 es de WebKit; Chromium y Firefox, a 1280 (a 390, con el barrido de estados de 28.10.5).
+
+### 28.11 Decisión 11 en el expediente, ubicación A e inactividad (decisiones aprobadas el 2026-11-10); tolerancia de la zona sensible, detenida
+
+Fecha: 2026-11-10. Solo Design Lab y fuentes normativas. Sin tocar producción ni controladores, sin commit ni push, sin `AV#`.
+
+**28.11.1 Dónde constan.**
+
+| Decisión | Única fuente |
+|---|---|
+| La etiqueta «Sofi» queda por encima del retrato cuando se solapan, también en el expediente | `art-direction/README.md`, decisión 11 |
+| Ubicación A en el expediente: sobre el retrato del cuestionario, en móvil y escritorio | `008-spec.md` §5 |
+| `are-u-still-here`: 150 000 ms | `008-plan.md` §6 (la spec §5 remite al plan) |
+| Tolerancia de 17 píxeles aislados en el contorno de la zona sensible móvil | **No registrada**: lo medido no cabe en ella (28.11.4) |
+
+T066 (`008-tasks.md`) ya no llama provisional al valor. AV6 sigue sin marcar: incluye la ubicación en la consulta en reposo (4.7 y 4.8), que no está aprobada.
+
+**28.11.2 Qué cambia en el Lab.** Solo textos y comentarios:
+
+- 4.9 pasa a «ubicación A», pendiente solo de AV4. Su nota dice que la ubicación y la inactividad están aprobadas y que la etiqueta queda por encima (decisión 11).
+- 4.7, 4.8, la nota de inactividad (`GagPanel`), los escenarios de 4.4 y el inspector ya no llaman provisional al umbral. 4.7 y 4.8 siguen remitiendo a AV6 para la ubicación en la consulta.
+- El comportamiento no cambia: el marco ya partía de `STILL_HERE_IDLE_MS` (150 000 ms) y la etiqueta ya iba por encima (28.1).
+
+**28.11.3 Evidencia del umbral definitivo (150 000 ms).**
+
+Pruebas (Vitest, temporizadores falsos, controlador real a través del adaptador):
+
+| Prueba | Resultado |
+|---|---|
+| `SheetGags.test.tsx` (nuevas, 4.9 con los tres gags): el marco parte de 150 000 ms; a 149 999 ms `idle`, a 150 000 ms `drowsy`; con una tecla a los 100 s, a 149 999 ms de ella `idle` y a 150 000 ms `drowsy` | 2 de 2. Con el valor del marco cambiado a 149 000 ms fallan las dos (archivo restaurado) |
+| Ya existentes: `useSofiController.test.tsx` (149 000 ms `idle`, 150 500 ms `drowsy`), 4.7 (`GagsSpec.test.tsx`) y 4.8 (`GagsWideSpec.test.tsx`) | En verde, sin cambios de lógica |
+
+Navegador real (marco 4.9, controlador real, reloj de Playwright que el controlador lee a través de `performance.now`). Se mide desde la última actividad que el controlador cuenta, en pasos de 1 ms:
+
+| Motor | Anchura · gags | Actividad | A 149,990 s | Pasa a `drowsy` |
+|---|---|---|---|---|
+| Chromium | 390 y 320 · solo `are-u-still-here` | ratón | `idle` | a los **150,000 s** |
+| Chromium | 390 y 320 · solo `are-u-still-here` | tecla | `idle` | a los **150,000 s** |
+| Chromium | 1280 · los tres | tecla | `idle` | a los **150,000 s** |
+| Firefox | 390 y 320 · solo `are-u-still-here` | ratón | `idle` | a los **150,000 s** |
+| Firefox | 390 y 320 · solo `are-u-still-here` | tecla | `idle` | a los **150,000 s** |
+| Firefox | 1280 · los tres | tecla | `idle` | a los **150,000 s** |
+| WebKit | 390 y 320 · solo `are-u-still-here` | tecla | `idle` | a los **150,000 s** |
+| WebKit | 1280 · los tres | tecla | `idle` | a los **150,000 s** |
+| Chromium y Firefox | 390 · solo `are-u-still-here` | rueda (desde el `scroll` que provoca) | — | **150,00 s** después del `scroll` |
+
+Sobre el método:
+
+- **Ratón en WebKit.** El movimiento sintético de Playwright llega sin desplazamiento (`movementX` y `movementY` a 0). El controlador no cuenta un movimiento así: lo descarta a propósito, porque el navegador manda esos eventos al hacer scroll. Por eso, en WebKit el ratón no se pudo medir y se midió con tecla. En Chromium y Firefox, el primer movimiento tampoco tiene desplazamiento y no cuenta; el segundo, sí.
+- **Rueda.** Con el reloj parado, el navegador entrega la rueda y su `scroll` en el siguiente fotograma. Medido desde ese `scroll`, el paso es exacto (Chromium: 31,08 → 181,08 s; Firefox: 30,49 → 180,49 s).
+- **Reloj falso.** Hizo falta dar a `performance` un `addEventListener` vacío, porque el de Playwright no lo tiene y la página no arrancaba. No cambia el reloj.
+
+**28.11.4 Tolerancia de la zona sensible móvil: contradicción, detenida.** La tolerancia aprobada habla de 17 píxeles aislados. Esa cifra salió de 28.4: Chromium, 390 px, comparando la zona sensible con el alfa calculado de la tira. Antes de registrarla se volvió a medir con lo que se pinta de verdad:
+
+- dos capturas con el fondo del anfitrión en magenta y en verde, con solo Sofi visible y animaciones paradas;
+- cada píxel del retrato de 192 px (escala ×1,5) probado con `elementFromPoint` en su centro;
+- Sofi en reposo.
+
+| Motor | Anchuras de ventana | Pintados sin respuesta | Mayor grupo | Distancia a lo sensible |
+|---|---|---|---|---|
+| Chromium | 320, 360, 390, 480, 600 | 11–12 | 2 px | ≤ 1 px |
+| Chromium | 321, 333, 375, 393, 412, 430 | **54** (19 grupos) | **20 px** | ≤ 1 px |
+| Chromium | 768, 844, 1000, 1079 | 0 | — | — |
+| WebKit | 320, 360, 390, 412, 430 | 0 | — | — |
+| WebKit | 321, 375, 393, 1079 (retrato en medio píxel) | **41** (10 grupos) | **20 px** | ≤ 1 px |
+| Firefox | 320 a 1079 (9 anchuras) | 0 | — | — |
+
+- **Lo que no cabe en lo aprobado.** En anchuras móviles habituales (375, 393, 412 y 430 px) hay más de 17 píxeles: 54 en Chromium y 41 en WebKit. Y no están aislados: el mayor grupo es una franja de 1 px de ancho y 20 de alto en el borde derecho del pelo rubio y el hombro (captura `g4-chromium-412`). Depende de dónde cae el retrato respecto a la rejilla de píxeles.
+- **Lo que sí se cumple.** Todo píxel pintado sin respuesta está a 1 px como mucho de la zona sensible. Por el otro lado, hay de 327 a 447 píxeles sensibles sin nada pintado, todos a 2 px o menos de lo pintado: es el borde que deja la silueta por bloques de 1,5 px (26.6.2). No hay zona sensible más allá de ese borde.
+- **Medida anterior.** El método del alfa calculado de 28.4 descuadra con el retrato en medio píxel: a 1079 px daba 95 píxeles sensibles sin nada visible que la captura real no confirma. Queda sustituido por este.
+
+No se ha registrado la tolerancia ni se ha tocado la zona sensible. Las alternativas, para la autora, están en 28.5.2.
+
+**28.11.5 Decisión 11 en el expediente: el Lab la cumple.** Marco 4.9, `poking` llevado a escondida y asomada con clics. En cada píxel de la etiqueta «Sofi» se mira qué elemento queda encima.
+
+| Ventana | Solape de la caja de la etiqueta con el retrato | Encima de la etiqueta (Chromium, Firefox, WebKit) |
+|---|---|---|
+| 320 | 19 × 19 px (WebKit, 20 × 19) | la etiqueta en todos sus puntos; el retrato en ninguno, en las dos poses |
+| 390 | ninguno | la etiqueta |
+| 1080 y 1280 | 47 × 22 px | la etiqueta en todos sus puntos; el retrato en ninguno, en las dos poses |
+| 1920 | ninguno | la etiqueta |
+
+En los tres motores, el contenedor de la etiqueta tiene `z-index: 2`. En WebKit a 320 px, 2 de 1 240 puntos dan en otro elemento del bocadillo (redondeo del borde), nunca en el retrato. Capturas: `g5-<motor>-<anchura>-hide` y `-peek` (por ejemplo, `g5-chromium-1080-hide`: el pelo pasa por detrás de la etiqueta).
+
+**28.11.6 Pruebas.**
+
+| Qué | Resultado |
+|---|---|
+| `vitest run` completo | **127 archivos y 2 472 pruebas**, en verde (eran 2 470: +2 de umbral en `SheetGags.test.tsx`) |
+| `tsc -b`, `eslint .`, `prettier --check .` | sin errores |
+| `playwright e2e/a11y.spec.ts e2e/motion --project=chromium --workers=2` | **55 de 55** |
+
+Guiones de usar y tirar, fuera del repositorio. Capturas locales de la sesión, en `shots\` del directorio temporal de la sesión.
+
+**28.11.7 Límites.**
+
+- El umbral se midió con el reloj simulado de Playwright, sin esperar 2,5 min reales, y sin Safari real ni dispositivos (`015`).
+- La zona sensible se midió en reposo; las demás poses, como en 26.5 y 28.4.
+- En el código de producción (`useSofiController.ts`), un comentario dice que el valor definitivo lo aprueba el Lab (AV6). No se ha tocado; se actualiza en T088.
+
+### 28.12 Precisión geométrica de la zona sensible (decisión aprobada el 2026-11-10)
+
+Fecha: 2026-11-10. Solo la spec y una medición del Lab 4.9. No se toca el código, ni se generan máscaras, ni se modifica producción ni los controladores. Sin commit ni push, sin `AV#`.
+
+**28.12.1 Decisión y dónde consta.** Sustituye a la tolerancia de 17 píxeles, que no llegó a registrarse (28.11.4). Su única fuente es `008-spec.md` §5 («Precisión de la zona sensible»), y el criterio de aceptación de la zona sensible remite a ella.
+
+**28.12.2 Método.**
+
+- Marco 4.9 con los controladores reales y el reloj de Playwright parado en cada pose, para que el controlador no cambie de pose durante la medida.
+- Las animaciones CSS corren en tiempo real, así que se espera 2,2 s a que acabe la entrada de la pose y luego se pausan donde estén.
+- **Pintado:** dos capturas con solo Sofi visible, sin los efectos (el «?», la vena, los Zzz y el estallido no responden por diseño), y el fondo del lienzo en magenta y en verde. Lo que no cambia es opaco, dentro y fuera de la caja.
+- **Sensible:** `elementFromPoint` en el centro de cada píxel, con 16 px de margen, cae en el anfitrión o en una de sus capas.
+- **Distancia:** de tablero (Chebyshev), en píxeles de pantalla.
+- **Matriz:**
+  - 8 poses: reposo; `curious`, `skeptical`, `stop`, `offended`, `hide` y `peek` de `poking`; y `are-u-still-here` dormida;
+  - 5 anchuras: 320, 375 y 412 px con el retrato de 192 px (×1,5); 1080 y 1281 px con el de 384 px (×3);
+  - 3 motores: 120 medidas.
+- **Corrección del método:** una primera versión comparaba lo que sobresale de la caja con la página sin Sofi. Daba falsos «sensibles sin pintar» bajo las manos, donde la piel se parece al fondo crema, y contaba la vena de `stop` como Sofi sin respuesta. Se descartó.
+
+**28.12.3 Resultado.** Por escala y pose, el peor caso de las anchuras y los motores:
+
+| Pose | ×1,5 (192 px) | Peor ×1,5 (sin respuesta / sin pintar) | ×3 (384 px) | Peor ×3 (sin respuesta / sin pintar) |
+|---|---|---|---|---|
+| Reposo, `curious`, `skeptical` | 9/9 cumplen | 1 px / 2 px | **3/6** (falla 1080) | 0 / **3 px**, 1–2 píxeles |
+| `stop`, `offended` | 9/9 | 1 / 2 | 6/6 | 0 / 2 |
+| `hide` | 9/9 | 1 / 2 | **0/6** | 0 / **3 px**, 14 píxeles |
+| `peek` | **6/9** (Chromium 375; Firefox 375 y 412) | **3 / 4 px** | **0/6** | **9 / 11 px** (Firefox; Chromium y WebKit, 1 / 3 px) |
+| Dormida | **8/9** (WebKit 375) | **2 / 4 px** | 6/6 | 0 / 2 |
+
+Cumplen 95 de 120 medidas. En las que fallan, nunca hay zona sensible lejos de Sofi: el peor caso son 11 px junto a su contorno. Los efectos no responden en ninguna.
+
+**28.12.4 Incumplimientos (no corregidos: exigen máscaras nuevas).**
+
+1. **El borde de 3 px a ×3.**
+   - Con el retrato de 384 px, la zona sensible se pasa de lo pintado hasta **3 px** en puntos sueltos del contorno: de 1 a 40 píxeles por pose.
+   - Ocurre en reposo, `curious` y `skeptical` (a 1080 px), en `hide` (siempre) y en `peek`.
+   - Causa: las siluetas son de bloques de 1 px de la insignia de 128 px, que a ×3 son bloques de 3 px de pantalla (ya anotado en 27.4.2).
+   - Para cumplir los 2 px harían falta siluetas propias del retrato de 384 px. Afecta igual a 4.8, que usa las mismas siluetas a ×3 (medido en 28.13).
+2. **Movimiento dentro de la pose (`peek` y la dormida).** *Corregido en 28.13.7: la medida por fotograma no reproduce estas cifras, salvo la dormida de WebKit a 375 px, que es fija.*
+   - La silueta es fija por pose (26.6.2): cuando Sofi mira a un lado y a otro asomada, o se mece dormida, se desplaza dentro de su pose y la zona no la sigue.
+   - En el fotograma medido: hasta **3 px** sin respuesta y **4 px** sensibles sin pintar a ×1,5; **9 y 11 px** a ×3 (Firefox, en el punto más lejano de la mirada; captura `g9-firefox-1080-peek`).
+   - Depende de en qué momento de la animación se mide. Es pasajero: vuelve a cumplir cuando Sofi regresa a su posición.
+   - Cumplirlo exigiría una silueta por fotograma o que la zona siguiera la animación.
+3. **Lo que sí se cumple siempre:** en las poses quietas a ×1,5 (reposo, `curious`, `skeptical`, `stop`, `offended` y `hide`, en todas las anchuras y motores), y en `stop`, `offended` y la dormida a ×3.
+
+**28.12.5 Límites.**
+
+- No se ha medido `i-see-you` (pillada) ni la cabezada y el susto de `are-u-still-here` (medidos en 28.13).
+- Se mide un fotograma por pose: en las poses con movimiento, el peor caso real puede ser algo mayor.
+- Sin Safari real ni dispositivos (`015`). La insignia (4.7, ×1) y la consulta ancha (4.8, ×3) no se han vuelto a medir.
+
+Capturas de los casos que fallan: `g9-<motor>-<anchura>-<pose>` en `shots\` del directorio temporal de la sesión.
+
+### 28.13 Poses dinámicas con las máscaras actuales: medida por fotograma y toques reales (estudio, 2026-11-10)
+
+Fecha: 2026-11-10. Solo medidas del Lab. No se generan máscaras, ni se modifica producción ni los controladores, ni cambia el criterio de spec §5.
+
+La autora aceptó el 2026-11-10 hasta 3 px de desviación en el contorno estático del retrato de 384 px (×3). Esa aceptación aún no consta en spec §5 (*registrada el 2026-11-11: 28.14*). Las desviaciones de las poses dinámicas se estudian aquí sin aprobarlas.
+
+**28.13.1 Método.**
+
+- **Fotogramas:**
+  - Controladores reales, llevados a cada estado con el reloj de Playwright parado.
+  - Todas las animaciones del anfitrión, en pausa y recorridas con `currentTime` cada 80 ms, hasta 6 s.
+  - Cada fotograma distinto se mide como en 28.12.2.
+- **Estados medidos:**
+  - `poking`: `peek`, `nope` y `return`.
+  - `i-see-you`: `watching` con sus cuatro miradas, `caught`, `smirk`, `tease` y `giggle`.
+  - `are-u-still-here`: `drowsy`, `nodding`, `asleep`, `startled` y `guilty`.
+- **Superficies:**
+  - 4.7, insignia a ×1, con 1280 px de ancho;
+  - 4.8, retrato grande a ×3, con 1440 px;
+  - 4.9, expediente a ×1,5 con 390 px y a ×3 con 1280 px;
+  - además, `peek` y la dormida a 375 y 412 px, y `peek` de Firefox a 1080 y 1281 px.
+- **Motores:** los tres.
+- **Toques reales:** son toques táctiles de Playwright. Chromium los recibe por CDP, que también permite la pulsación larga; WebKit y Firefox, con `touchscreen.tap`. Se prueban dos fotogramas por estado y dos puntos en cada uno:
+  - **Interior:** todo sensible a 6 px a la redonda.
+  - **Transparente próximo:** nada sensible a 6 px, el más cercano posible (a 8 px) y a más de 16 px de cualquier control.
+- **Controles próximos:** los que están a 160 px o menos. Se prueba una rejilla de 7 × 5 puntos por control en cada fotograma, para ver si alguno lo recibe Sofi.
+- **Ajuste de toque:** toques transparentes a 3–40 px de la zona sensible y a más de 24 px de los controles. También la franja bajo «← Volver a la consulta».
+- **Corrección del método en 4.8.**
+  - Bajo Sofi hay una capa decorativa de puntos, hermana del retrato.
+  - La medida descartaba esos píxeles, así que «sin respuesta» salía siempre 0.
+  - Se repitió dejando esa capa transparente al toque, solo durante la medida.
+
+**28.13.2 Dónde tiene función la zona sensible.** Lo fijan los controladores:
+
+- **`poking`** cuenta el clic sobre el anfitrión en reposo y en `curious`…`peek`. En `hide`, el toque retrasa la asomada. En `nope` y `return` lo ignora.
+- **`i-see-you`:** `watching` cuenta como reposo, así que `poking` responde y el puntero quieto sobre Sofi la pilla. En `caught`…`giggle`, los otros gags están en pausa.
+- **`are-u-still-here`:** cualquier actividad en la página la despierta. Fuera del reposo, los otros gags están en pausa.
+
+Por tanto, la zona solo tiene efecto en estos estados: reposo, `curious`…`peek` y `watching`. En los demás, un desajuste es solo de píxeles.
+
+**28.13.3 Estados con función táctil.** Peor caso de los fotogramas, en px: sin respuesta / sensible sin pintar. El criterio de spec §5 es ≤ 1 / ≤ 2.
+
+| Estado | 4.7 (×1) | 4.9 (×1,5) | 4.9 (×3) | 4.8 (×3) |
+|---|---|---|---|---|
+| `peek` | 1 / 2; Chromium **2** / 1 (2 píxeles, en 2 de 62 fotogramas) | 1 / 2 (Firefox, 375–412); Chromium a 375 **2** / 2 (1 píxel); WebKit a 375 1 / **3** (1 píxel, 1 fotograma) | 1 / **3**; Firefox 1 / **4** (4 píxeles), igual a 1080, 1280 y 1281 | 1 / **3**; Firefox 1 / **5** (15 píxeles por encima de 3 px) |
+| `watching` (4 miradas) | ≤ 1 / ≤ 1 | ≤ 1 / 2 | 0 / 2 | 0 / 2; Firefox 1 / **3** (fijo: es el contorno estático) |
+
+- A ×1 y ×1,5, `peek` y `watching` cumplen, salvo píxeles sueltos a 2 o 3 px.
+- A ×3, `watching` queda dentro de los 3 px aceptados.
+- **`peek` a ×3 en Firefox** es lo único que pasa de 3 px: hasta 4 px en 4.9 y 5 px en 4.8, en unos pocos píxeles del contorno del pelo.
+
+**28.13.4 Estados sin función táctil: diferencias de píxeles sin efecto.**
+
+| Estado | Peor caso | Por qué no tiene efecto |
+|---|---|---|
+| `nope` | Hasta 99 px sin respuesta a ×3 (18 px a ×1,5). La cabeza sube y la zona se queda a la altura de `peek`. | `poking` ignora el toque. |
+| `return` | Hasta 99 px sensibles sin pintar. La zona vuelve a la silueta completa mientras la cabeza aún asoma. | `poking` ignora el toque. |
+| `nodding` | 11 px a ×3. | Cualquier actividad la despierta, y los demás gags están en pausa. |
+| `startled` | 17–18 px. | Lo mismo. |
+| `guilty` | 3–5 px. | Lo mismo. |
+| `caught` y `giggle` | 3–4 px a ×3. | Los demás gags están en pausa. |
+| `drowsy` y `asleep` | Cumplen, o se quedan en los 3 px estáticos a ×3, salvo la dormida de WebKit a 375 px, con 2 / 4 px fijos (redondeo de esa anchura). | Lo mismo. |
+
+- Ningún control próximo pierde toques en ninguno de estos fotogramas.
+- El cursor no cambia sobre Sofi, así que el desajuste no se ve.
+- **Esto es evidencia, no una tolerancia.** En estos estados no responde nada, así que el criterio de aceptación («los gags solo responden sobre las partes visibles») se cumple. Los límites de spec §5 no se relajan para ellos: si uno de estos estados pasara a responder al toque, se le aplicarían enteros.
+
+**28.13.5 Toques reales.** Se probaron las tres superficies con los tres motores y la mirada de WebKit a 192 px. En todos los casos dieron el resultado esperado.
+
+- **`peek`:** un toque transparente próximo no tiene reacción (4/4; 5/5 en 4.8). Un toque sobre Sofi da `nope` (4/4; 5/5).
+- **`watching`:** un toque transparente no tiene reacción y un toque sobre Sofi da `curious`, 2/2 por mirada. La mirada en el momento del toque no se fijó en cada pasada (el atributo leído iba a veces una mirada por detrás). Las miradas comparten silueta, y cada una se midió en 28.13.3.
+- **Puntero quieto 1,3 s:** sobre la zona transparente queda en reposo o en `watching`; sobre Sofi da `caught`.
+- **Pulsación larga** (solo Chromium): sobre la zona transparente no la pilla y `poking` sigue en reposo; sobre Sofi da `caught`.
+- **Dormida:** un toque transparente la despierta (`startled`), porque es actividad en cualquier parte de la página.
+- **Controles próximos:** ninguno pierde toques en ningún estado, fotograma, superficie ni motor:
+  - 4.9: 2 controles a ×1,5 y 9 a ×3;
+  - 4.8: 5;
+  - 4.7: ninguno a 160 px o menos.
+
+**28.13.6 Ajuste de toque de WebKit (hallazgo; no depende de las máscaras).**
+
+- **Hacia Sofi.** WebKit lleva el clic de un toque al elemento con clic más próximo.
+  - Un toque transparente a 3 px de la zona sensible hace reaccionar a Sofi (`curious`) en las cuatro superficies; a 5 px o más, no.
+  - Chromium y Firefox no hacen ese ajuste.
+  - En WebKit, el alcance efectivo es unos 3 px mayor que la zona. Sigue sin haber zona táctil alejada de Sofi.
+- **Hacia «← Volver a la consulta».** En 4.9, a 320–412 px, el botón está 8 px por encima de la caja de Sofi, y lo pintado de Sofi empieza 18 px por debajo de él.
+  - WebKit lleva al botón los toques hasta 10 px por debajo, haya gags o no.
+  - Ningún píxel visible de Sofi queda dentro de esa franja.
+  - Un toque transparente a 11 px del botón cerró el expediente durante la primera pasada de las pruebas. Es el comportamiento normal de la plataforma.
+- No se ha comprobado en Safari real ni en dispositivos (`015`).
+
+**28.13.7 Corrección de 28.12.4.2.** La medida por fotograma no reproduce lo que daba el fotograma único de 28.12.
+
+| Caso | 28.12 (fotograma único) | 28.13 (por fotograma) |
+|---|---|---|
+| `peek` ×3, Firefox | 9 / 11 px | 1 / 4 px, a 1080, 1280 y 1281 px |
+| `peek` ×1,5 | 3 / 4 px (Chromium a 375; Firefox a 375 y 412) | Firefox cumple a 375 y 412. Chromium a 375: 1 píxel a 2 px sin respuesta |
+
+- En la captura de 28.12 (`g9-firefox-1080-peek`) todo el pintado está desplazado de lado respecto de la zona, en rojo a un lado y en azul al otro.
+- Encaja con un pintado y un mapa de toques tomados en instantes distintos de una animación en curso.
+- En `peek`, la zona de la cabeza va en la misma capa que la cabeza y la sigue. Por eso no es cierto que «la zona no la sigue».
+- La dormida de WebKit a 375 px (2 / 4 px) sí se reproduce, pero es fija: viene de redondear esa anchura, no del movimiento.
+
+**28.13.8 Conclusión.**
+
+- No aparece ningún fallo funcional perceptible:
+  - los toques sobre Sofi reaccionan;
+  - los toques transparentes próximos no;
+  - ningún control pierde toques.
+- Todos los incumplimientos del criterio son diferencias de píxeles:
+  - unos van de 2 a 5 px junto al contorno, en estados con función;
+  - otros son mayores, en estados en los que el toque no tiene efecto.
+- Lo único que supera los 3 px aceptados en un estado con función es `peek` a ×3 en Firefox: un toque a 4–5 px del pelo cuenta como toque a Sofi. No se aprueba aquí (*aprobado el 2026-11-11 como excepción de spec §5: 28.14*).
+
+**28.13.9 Límites.**
+
+- Toques sintéticos de Playwright, sin Safari real ni dispositivos (`015`).
+- Pulsación larga, solo en Chromium.
+- Fotogramas cada 80 ms.
+- Con movimiento reducido no hay gags (D-1).
+- No se mide la versión reducida.
+
+Guiones y capturas en el directorio temporal de la sesión:
+
+- **Guiones:** `g10-frames.mjs`, `g12-frames.mjs` (4.8), `g13-frames.mjs` (anchuras), `g11-taps.mjs` y `g14-taps.mjs` (toques), `g16-band.mjs` y `g18-adjust.mjs` (ajuste de toque).
+- **Capturas:** en `shots\`.
+
+### 28.14 Excepciones de precisión táctil registradas en spec §5 (2026-11-11)
+
+Fecha: 2026-11-11. Solo documentación. No se generan máscaras, ni se modifica producción ni los controladores, ni se mide nada nuevo: se contrastan las medidas de 28.12 y 28.13.
+
+**28.14.1 Registro.**
+
+- **Dónde:** `008-spec.md` §5, «Precisión de la zona sensible», única fuente.
+- **Qué recoge:** dos excepciones aprobadas por la autora.
+  - Hasta 3 px en el contorno estático del retrato de 384 px (2026-11-10).
+  - Hasta 5 px solo durante `peek` a ×3 en Firefox (2026-11-11).
+- **Alcance:** las dos afectan solo al segundo límite, la zona sensible sin nada pintado debajo. El primero (un píxel visible sin respuesta, a 1 px o menos) sigue igual. No hay ninguna otra excepción (*ampliadas el 2026-11-11 con las de `peek`: 28.15*).
+- **Trazabilidad:**
+  - el criterio de aceptación sigue remitiendo a §5 sin repetirla;
+  - T066 remite a §5 y a esta evidencia;
+  - el plan no repite límites;
+  - el README de dirección de arte y el catálogo de animaciones no mencionan la precisión.
+
+**28.14.2 Contraste con lo medido, solo en los estados con función táctil** (28.13.2). Cifras en px, sin respuesta / sensible sin pintar:
+
+| Caso | Medido | ¿Dentro de §5? |
+|---|---|---|
+| Poses quietas a ×1,5: reposo, `curious`…`hide` y `watching` | ≤ 1 / ≤ 2 | Sí, en la regla general |
+| `watching` a ×1 | ≤ 1 / ≤ 1 | Sí, en la regla general |
+| Poses quietas a ×3, en 4.8 y 4.9: reposo, `curious`, `skeptical`, `hide` y `watching` | 0–1 / 3 | Sí, en la excepción del contorno estático |
+| `peek` a ×3 en Firefox, en 4.8 y 4.9 | 1 / 4–5 | Sí, en la excepción de `peek` |
+| `peek` a ×3 en Chromium y WebKit | 1 / 3 | **Por decidir.** La silueta de `peek` es fija, pero Sofi se mueve dentro de ella. Si eso es «contorno estático», entra en la primera excepción. Si no, queda fuera, porque la segunda es solo para Firefox. |
+| `peek` a ×1 en Chromium | **2** / 1 (2 píxeles, en 2 de 62 fotogramas) | **No**: supera el primer límite |
+| `peek` a ×1,5 en Chromium, a 375 px | **2** / 2 (1 píxel) | **No**: supera el primer límite |
+| `peek` a ×1,5 en WebKit, a 375 px | 1 / **3** (1 píxel, 1 fotograma) | **No**: supera el segundo límite, y a ×1,5 no hay excepción |
+
+- Los tres «No» son píxeles sueltos de `peek`.
+- Los toques reales dieron lo esperado en todos los casos (28.13.5), así que no hay fallo funcional.
+- No se aprueban aquí ni se cubren con las excepciones. Se quedan como incumplimientos abiertos (*aprobados el 2026-11-11, junto con `peek` a ×3 en Chromium y WebKit: 28.15*).
+
+**28.14.3 Poses no interactivas.** La evidencia de 28.13.4 se queda en este documento. No pasa a la spec ni es una tolerancia general (28.13.4, último punto).
+
+### 28.15 Excepciones de `peek` registradas en spec §5; investigación de precisión concluida (2026-11-11)
+
+Fecha: 2026-11-11. Solo documentación. No se mide nada nuevo, no se modifican máscaras, producción ni controladores.
+
+**28.15.1 Registro.** `008-spec.md` §5, «Precisión de la zona sensible», única fuente, recoge las excepciones de `peek` aprobadas por la autora:
+
+- a ×3, Chromium y WebKit: hasta 3 px sensibles sin pintar;
+- a ×1,5, Chromium: hasta 2 px de píxel visible sin respuesta;
+- a ×1,5, WebKit: hasta 3 px sensibles sin pintar;
+- a ×1, Chromium: hasta 2 px de píxel visible sin respuesta.
+
+Se agrupan con la de Firefox a ×3, bajo «Mientras dura `peek`». La del contorno estático y los dos límites generales no cambian. Cada excepción vale solo para el límite, la escala y los motores que nombra.
+
+**28.15.2 Coherencia con la evidencia.** Ninguna excepción es más amplia que lo medido. Ningún caso de los estados con función táctil queda fuera de §5.
+
+| Caso de `peek` | Medido (28.13.3) | Excepción |
+|---|---|---|
+| ×3 (4.8 y 4.9), Chromium y WebKit | 1 / 3 | 3 px sensibles sin pintar |
+| ×3, Firefox | 1 / 4–5 | 5 px sensibles sin pintar |
+| ×1,5, Chromium (a 375 px; a 390 y 412, 1 / 2) | 2 / 2 | 2 px sin respuesta |
+| ×1,5, WebKit (a 375 px; a 390, 1 / 2) | 1 / 3 | 3 px sensibles sin pintar |
+| ×1,5, Firefox | 1 / 2 | ninguna: regla general |
+| ×1, Chromium | 2 / 1 | 2 px sin respuesta |
+| ×1, Firefox y WebKit | 1 / 2 | ninguna: regla general |
+
+Siguen como estaban:
+
+- las poses quietas a ×1 y ×1,5, dentro de la regla general;
+- las poses quietas a ×3, dentro de la excepción del contorno estático;
+- las poses no interactivas, como evidencia y no como tolerancia (28.14.3).
+
+**28.15.3 Cierre.** Queda concluida la investigación de precisión táctil de T066:
+
+- **Incumplimientos de 28.12.4:** todos están corregidos (28.13.7) o cubiertos por §5. La excepción es la dormida de WebKit a 375 px, que no tiene función táctil (28.13.4).
+- **Funcionamiento:** los toques reales dieron lo esperado (28.13.5).
+- **Si se reabre:** solo ante un defecto funcional nuevo.
+
+Lo que queda pendiente es:
+
+- el mecanismo de producción (T088);
+- Safari real y los dispositivos (`015`).
+
+## 29. B1 — Revisión de 4.8: Sofi entera y el diálogo sin tapar (T066, prototipo)
+
+Fecha: 2026-11-11. Solo Design Lab. No se toca producción, ni los controladores, ni las máscaras. Sin commit ni push. **No es una aprobación:** 4.8 sigue pendiente de AV6, y T066 y AV4 siguen abiertos. *(Actualización del mismo día: la autora aprobó AV6, con esta composición de 4.8; consta en §30.)*
+
+### 29.1 Problemas de la versión revisada por la autora
+
+- **Sofi cortada por el cuello.** La columna copiaba la consulta real: el diálogo sube 96 px sobre el pie del retrato (`.listenDialog`, `margin-top: -96px`) y tapa el busto.
+- **Durante `poking`, el cuerpo tapa el texto del diálogo.**
+  - El anfitrión sube por encima del diálogo (`--poking-z`).
+  - El parcial solo recorta en el borde las poses escondida y asomada.
+  - En `curious`, `skeptical` y `stop`, el jersey pasa por encima del texto: **unos 17 000 píxeles del texto tapados**, con cualquier anchura de columna (29.3).
+- **27.1 se equivocaba** al decir que «el cuerpo, recortado en el borde, no lo pisa». La comprobación de entonces (27.3) solo medía la zona sensible, no lo pintado por encima del texto.
+
+### 29.2 Qué cambia
+
+Con 4.9 como referencia de composición, el retrato apoya el pie en el borde superior del diálogo, sin solaparse.
+
+| | Antes | Ahora |
+|---|---|---|
+| Solape del diálogo (`.dialog`, `margin-top`) | −96 px, copia de producción | 0 |
+| Escondite de `poking` (`--poking-edge`) | 75 % | 100 %, el valor por defecto del parcial, como 4.9 |
+| Constantes (`gagWide.ts`) | `WIDE_OVERLAP = 96` | `PRODUCTION_OVERLAP = 96` (la pantalla real) y `WIDE_OVERLAP = 0` (la propuesta); `WIDE_EDGE_PERCENT` pasa a 100 |
+
+Se mantiene lo demás:
+
+- una sola Sofi (el `SofiPortrait` de 384 px);
+- la etiqueta «Sofi» por encima del retrato (decisión 11);
+- la zona sensible ×3 y su límite en el borde;
+- la etiqueta «Sofi está escuchando», los puntos, el diálogo y su pie;
+- los gags y su comportamiento.
+
+La columna sigue siendo la de la consulta. Lo único que difiere de producción es el solape.
+
+Cambian también:
+
+- **Textos:** la descripción de la sección y los comentarios.
+- **`gagWide.contract.test.tsx`:**
+  - sigue comparando con producción todo lo demás;
+  - comprueba que producción sigue con 96 px;
+  - comprueba que la propuesta no se solapa y que su borde está al 100 %.
+- **`units.test.ts`:** se quita la excepción de `margin-top: -96px`, que ya no se usa.
+
+### 29.3 Verificación
+
+Servidor propio (5188), con los controladores y el CSS reales. Para medir la versión fallida se inyectan en la página sus dos valores antiguos.
+
+| Comprobación | Antes | Ahora |
+|---|---|---|
+| Píxeles del texto del diálogo que cambian al ocultar a Sofi (reposo y `poking` hasta `peek`, columnas de 384, 460, 520 y 720 px, Chromium) | Reposo: 0. `curious`, `skeptical` y `stop`: **15 962–17 125** | **0** en todas |
+| Pie del retrato y borde del diálogo | El borde 96 px por encima del pie | Coinciden al píxel en las cuatro columnas |
+| Cada fotograma de los tres gags (`poking` `peek`/`nope`/`return`; `i-see-you` con sus 4 miradas, `caught`…`giggle`; `are-u-still-here` de `drowsy` a `guilty`), cada 160 ms, Chromium, Firefox y WebKit, a 1440 px | — | **0 píxeles del texto tapados** |
+| Texto al 150 y al 200 % (reposo, `curious` y `peek`, columnas de 384 y 460) | — | 0 tapados; el pie coincide con el borde |
+| axe (WCAG 2.2 AA) en la sección 4.8: 1440 claro y oscuro, 1280 con texto al 200 % y 390 | — | 0 violaciones y sin desbordamiento horizontal de la página |
+
+En el pie del diálogo cambian 58–72 píxeles en algunos fotogramas. Son el triángulo de «Abrir expediente», que parpadea (`TextLink`, `animation: blink`), no Sofi: salen también en `return`, con ella ya escondida.
+
+Capturas de la sesión, en `shots\`:
+
+- **Antes:** `g20-antes-chromium-460-reposo` y `g20-antes-chromium-460-curious`.
+- **Ahora:** `g20-despues-chromium-<columna>-<estado>`, y con el texto al 200 %, `g20-zoom200-chromium-<columna>-<estado>`.
+
+**Pruebas:**
+
+- `gagWide.contract.test.tsx`, `gagHitArea.contract.test.ts` y `GagsWideSpec.test.tsx`: 57 de 57. `units.test.ts`: 2 de 2.
+- Sensibilidad: con el solape de −96 px, la prueba de la propuesta falla. El valor se restauró a 0.
+- Lab completo (`src/design-lab`): 657 de 657 en dos ejecuciones. Una primera, a la vez que las medidas en tres navegadores, dio 1 fallo que no se identificó.
+- Suite completa (`vitest run`): 2 471 de 2 473. Fallaron dos pruebas de 4.3 (`MotionSync.test.tsx`), que no se ha tocado, por superar los 5 s de tiempo de espera. Solas pasan 13 de 13, dos veces. No se ha investigado la causa ni se ha cambiado ningún tiempo de espera.
+- `tsc -b`, ESLint y Prettier, sin errores, en los archivos tocados.
+
+### 29.4 Consecuencias y decisiones abiertas
+
+Numeradas para aprobarlas por número.
+
+1. ~~Aprobar la composición de 4.8.~~ **Aprobada el 2026-11-11 con AV6** (§30).
+2. **La consulta real sigue solapando 96 px.** Llevar la propuesta a producción es un cambio de `ConsultationScreen`, que decide T088. Ahí también hay que decidir si la consulta en reposo, sin gags, cambia igual. No se ha tocado. *(2026-11-11: la decisión 11 fija la composición de la consulta ancha sin solape, sin distinguir si hay gags; T086 y T087 remiten a ella y el cambio va en T088. §30.)*
+3. ~~Decisión 11 del README.~~ **Actualizada el 2026-11-11** (§30). Lo que se planteaba: Su texto dice cuándo se solapan la etiqueta y el retrato («con ventanas de 1080 a unos 1245 px»). Sin solape del diálogo, la etiqueta sobresale siempre por encima de su borde y se solapa con el pie del retrato cuando caen en la misma vertical: en reposo con la columna de 384 px, y más con el texto grande. La etiqueta sigue por encima. Si se aprueba 4.8, ese rango hay que actualizarlo en el README. No se ha cambiado, porque la composición no está aprobada.
+
+**Siguiente tarea:** T066 sigue abierta, a la espera de revisar AV4. Quedan *(actualizado en §30.5: la ubicación quedó aprobada con AV6)*:
+
+- la versión reducida;
+- la ubicación en la consulta en reposo (4.7 y 4.8; la composición revisada de 4.8, §29.4);
+- los hallazgos de §27.4 y §28.5 pendientes.
+
+No se ha aprobado ningún `AV#`.
+
+## 30. B1 — AV6 registrada y versión reducida de los gags para AV4 (T066, prototipo)
+
+Fecha: 2026-11-11. Fuentes normativas, Design Lab y su registro. No se toca producción, ni los controladores, ni las máscaras. Sin commit ni push. **AV4 sigue sin marcar y T066, abierta.**
+
+### 30.1 Dónde consta AV6
+
+La autora aprobó AV6 el 2026-11-11: las ubicaciones de 4.7, 4.8 y 4.9 y el umbral de inactividad de 150 000 ms.
+
+| Decisión | Única fuente |
+|---|---|
+| Ubicación en la consulta en reposo: la insignia en una columna (4.7) y el retrato de 384 px desde 1080 px (4.8), sin otra Sofi | `008-spec.md` §5 (nueva) |
+| Ubicación en el expediente (4.9) | `008-spec.md` §5 (ya constaba desde el 2026-11-10) |
+| Composición de la consulta ancha: retrato entero, diálogo sin solape y texto legible en reposo y durante los gags; la etiqueta «Sofi», por encima del retrato cuando coinciden | `art-direction/README.md`, decisión 11 (reescrita) |
+| `are-u-still-here`: 150 000 ms, definitivos | `008-plan.md` §6 |
+
+Trazabilidad, sin copiar las decisiones:
+
+- **`008-tasks.md`:**
+  - AV6 marcada, con remisión a sus fuentes;
+  - T066 dice que solo queda la versión reducida (AV4);
+  - T086 no cambia el layout, y el solape de la consulta ancha lo retira T088;
+  - T087 remite a la decisión 11 para la composición y la etiqueta.
+- **`008-plan.md`:** §6 (superficies e inactividad) y §9, punto 6.
+- **`008-spec.md`:** en «Provisional and pending» solo queda la versión reducida de los gags. Además, el umbral remite al plan.
+
+**Decisión 11.** Ya no da el rango de «1080 a unos 1245 px». Sin solape, la etiqueta sobresale siempre por encima del borde del diálogo (§29.4.3), así que coincidir con el retrato depende de la anchura de la columna y del tamaño del texto. El README lo dice así, sin cifras.
+
+### 30.2 Qué cambia en el Lab
+
+- **Textos:**
+  - 4.7 y 4.8 pasan a «Prototipo T066 · pendiente AV4»;
+  - las notas de 4.7, 4.8 y 4.9 dicen que la ubicación y la inactividad están aprobadas (AV6) y cómo ver la versión reducida;
+  - comentarios en `gagBadge.ts`, `gagWide.ts`, `GagsWideSpec.module.scss` y la prueba de contrato.
+- **Rótulo:** la tira de 4.7 y la columna de 4.8 dicen «Movimiento reducido · sin gags» con movimiento reducido. Antes decían «Completo · gags vivos» también entonces.
+- **Cómo se presenta la versión reducida.** Se ve con «Reducido» en Movimiento, en la cabecera del Lab, que es el mismo mecanismo que en producción. Los marcos de 4.9 lo reciben por la URL. No hay una copia reducida aparte en 4.8 ni en 4.9:
+  - el documento tiene un único `data-motion` (plan §4.1), así que una copia en la misma página no estaría reducida de verdad;
+  - la tira «Movimiento reducido» de 4.7 es una imagen fija del fotograma 0, y la nota lo dice.
+
+**Defecto del Lab corregido.** Con un gag activo, pasar a reducido (o desmarcar el gag) dejaba la lectura «Gag activo» en ese gag, aunque ya no había ninguno.
+
+- **Causa:** `ambient` libera al gag activo al darlo de baja, sin pasar por `deactivate`, y el envoltorio del Lab (`observeAmbient`) no avisaba de la baja. **Producción no tiene el defecto:** `ambient` ya libera bien, y lo prueba «dar de baja el gag activo libera a los demás» (`ambient.test.ts`).
+- **Corrección:** `observeAmbient` avisa con `unregister`. `gagReducer` libera al gag activo y anota «‹gag› se desmonta»; si no era el activo, no anota nada. Vale para 4.6–4.9, que comparten el registro.
+- **Pruebas (RED primero):** 4 en rojo antes de corregir:
+  - `gagLog.test.ts` (nuevo);
+  - las 2 de `observeAmbient.test.ts`, de las que la de baja cambia de expectativa: ahora la anota;
+  - la de 4.8 «pasar a reducido con poking en marcha»: las capas ya desaparecían y solo fallaba la lectura.
+
+  El rótulo también tuvo su RED: 2 pruebas, una en 4.7 y otra en 4.8.
+
+### 30.3 Verificación de la versión reducida
+
+Servidor propio (5188), con los controladores y el CSS reales.
+
+| Comprobación | Chromium | Firefox | WebKit |
+|---|---|---|---|
+| Tres vías (sistema en reducir con «Sistema»; sistema normal con «Reducido»; sistema en reducir con «Reducido»), en 4.7, 4.8 y los marcos de 4.9 a 390 y 1280 px: sin atributos de gag, capas ni animaciones vivas; lectura «Reducido…» | sí | sí | sí |
+| Tras 5 toques o clics sobre Sofi, el puntero por encima y la espera: 0 píxeles cambiados, registro vacío, «Gag activo» en ninguno, ni capas ni atributos | 0 en todos | 0 en todos | 0 en todos |
+| Control, sistema en reducir con «Completo»: gags vivos (12 capas) | sí | sí | sí |
+| Pasar a «Reducido» en mitad de cada gag (`poking` escondida, `i-see-you` mirando, `are-u-still-here` dormida), en 4.7 y 4.8: a los 150 ms, sin atributos, capas ni animaciones y «Gag activo» en ninguno; en 4.8, 0 píxeles del texto tapados y el pie en el borde | sí, los 6 | sí, los 6 | sí, los 6 |
+| Volver a «Completo»: renacen en reposo y responden (`curious`, `watching`, `drowsy` tras el umbral) | sí | sí | sí |
+
+La espera es de 151 s de reloj simulado (más que el umbral aprobado) en Chromium y WebKit. En Firefox, el reloj simulado de Playwright impide montar la página, así que se usa tiempo real: 7 s con la inactividad al mínimo del Lab (5 s) en 4.7 y 4.8, y en los marcos de 4.9 solo los toques y el puntero.
+
+**Pose de reposo (F0), Chromium, claro y oscuro:**
+
+- 4.7 reducida frente a su copia fija del fotograma 0: 0 de 19 096 píxeles distintos;
+- 4.8 reducida frente a `sofi-blink` en «Completo» con sus animaciones paradas en el instante 0: 0 de 147 456.
+
+**axe** (WCAG 2.2 AA, sistema en reducir) en 4.7, 4.8 y 4.9:
+
+- 0 violaciones a 1440 px en claro y en oscuro, a 1280 con el texto al 200 % y a 390;
+- sin desbordamiento horizontal de la página;
+- los marcos de 4.9 a 390 y 1280 px, en claro y en oscuro: 0.
+
+**Capturas de la sesión,** en `shots\`:
+
+- `r3-<tema>-4.7`, `r3-<tema>-4.8-384` y `-460`, `r3-<tema>-4.9-movil` y `-escritorio`: la versión reducida;
+- `r2-<motor>-<sección>-<gag>-antes` y `-reducido`: el cambio a mitad de gag;
+- `r1-<motor>-…`: el estado reducido tras toques y espera.
+
+Lo que muestran:
+
+- En las tres ubicaciones, Sofi entera en reposo.
+- En 4.8 y 4.9, el busto apoyado en el borde del diálogo y el texto legible.
+
+### 30.4 Hallazgos
+
+Numerados para decidirlos por número.
+
+1. **«Gag activo» se quedaba en el gag que estaba activo. RESUELTO** (30.2): es solo del Lab.
+2. **Firefox: `InvalidStateError` en la consola al cambiar el selector de movimiento del Lab.**
+   - Sale cuando se recargan los marcos (`iframe`): en Motion & Sound, los dos de 4.9; en la sección Perfil (004, sin gags), los suyos. En las secciones sin marcos que se recarguen, no sale.
+   - No sale al abrir o cerrar un marco suelto, ni en Chromium.
+   - Sin efecto visible. No es de T066, ni lo introduce este cambio: la sección Perfil también lo da.
+   - No se ha investigado la causa. Se anota para T073/VT6.
+3. **Zona sensible inerte con movimiento reducido.** En 4.7 y 4.8 el `::after` del anfitrión existe aunque no haya controladores. Recibe el toque y no pasa nada (0 píxeles, sin registro). En producción, T088 decide si existe con movimiento reducido.
+4. **Medida aislada en Firefox, sin reproducir.** Una medida de r2 con movimiento completo dio 15 444 píxeles del texto «tapados» al entrar en `hide` en 4.8.
+   - Su captura muestra el texto despejado.
+   - En cinco repeticiones del mismo escenario dio 0, y también fotograma a fotograma en §29.3.
+   - No se ha identificado la causa. No cambia lo medido en §29.
+5. **Del arnés, no de la página.** El reloj simulado de Playwright sustituye `performance` y el Lab da 2 errores (`performance.addEventListener is not a function`). Sin el reloj, 0.
+
+### 30.5 Pendientes de T066 antes de proponer su cierre
+
+1. **AV4, versión reducida de los gags.** *(Sustituido el 2026-11-12: nueva dirección de la autora, los gags se conservan en reducido; propuesta en §31.)* Es de la autora. La propuesta era «sin gags, Sofi en su pose de reposo (F0), tocarla no hace nada», que es lo que ya decide D-1 y una de las opciones del catálogo (§4 y §7.2). La alternativa del catálogo son reacciones estáticas breves, o la pose de sueño fija para `are-u-still-here`. Exigiría montar controladores con movimiento reducido, contra D-1, así que habría que revisar D-1 antes de prototiparla. Las poses reducidas de los demás recursos son de T069, no de T066.
+2. **La suite completa.** Resultado de esta sesión en 30.6.
+3. **Nada más de T066:**
+   - candidatas y ubicaciones: §25, §27, §28 y AV6;
+   - inactividad: AV6;
+   - versión reducida: esta sección;
+   - precisión de la zona sensible: §28.12–28.15.
+
+   Lo que queda en §27.4 y §28.5 es de T088 (`SofiPortrait` y `ProfileSheet` sin anfitrión expuesto, causa de foco en producción) o de AV4. Además, en producción hay un comentario de `useSofiController.ts` que todavía dice que el umbral lo aprueba AV6; se actualiza en T088, que es quien toca ese archivo.
+
+### 30.6 Pruebas y comprobaciones
+
+- **Suite completa** (`vitest run`, sin navegadores en marcha): 128 archivos, **2 477 de 2 477**. Esta vez pasan también las dos de 4.3 que en §29.3 superaron los 5 s con la máquina cargada. No se ha investigado aquella causa.
+- **Lab de los gags** (`src/design-lab/sections` y `profile`, con `gagWide.contract.test.tsx`): 291 de 291 en tres ejecuciones.
+  - Una cuarta, la primera tras editar, dio 1 fallo que no se repitió. Su marco de error apuntaba a la línea 584, que solo existe en `InspectorSpec.test.tsx` (4.5, sin cambios aquí).
+  - Es el segundo fallo aislado del Lab sin identificar (el otro, en §29.3).
+- **Tipos, lint y formato:** `tsc -b`, `eslint .` y `prettier --check .`, sin errores.
+
+**Siguiente tarea:** T066 sigue abierta, solo a la espera de AV4 (30.5.1). No se ha marcado AV4 ni se ha avanzado T067.
+
+## 31. B1 — Versión reducida de los gags: propuesta con los gags conservados (T066, AV4 pendiente)
+
+Fecha: 2026-11-12. Solo Design Lab, más la dirección en la spec. No se toca producción (`useSofiController`, `ambient`, `ConsultationScreen`, `ProfileSheet`), ni los controladores, ni los parciales, ni las tiras. Sin arte nuevo. Sin commit ni push. **AV4 sigue sin marcar y T066, abierta.** Sustituye a la propuesta «sin gags» de §30.5.1.
+
+### 31.1 Dirección y dónde consta
+
+La autora aprobó el 2026-11-12 una dirección: conservar los tres gags también con movimiento reducido, en versiones estáticas o mínimamente cambiantes, sin movimiento continuo ni seguimiento animado. Consta en `008-spec.md` §5. La versión concreta de cada gag es AV4.
+
+**Contradicción abierta (31.5.1).** Plan §6 dice que el adaptador monta el controlador solo si el estado efectivo no es reducido, y lo mismo D-1 en plan §4. La dirección nueva exige cambiarlo. No se ha tocado: cambiarlo es tocar `useSofiController` (producción), y hay que consultarlo.
+
+### 31.2 Cómo se prototipa
+
+- **Las máquinas de estados de los ZIP, sin modificar.** `createPokingMachine`, `createISeeYouMachine` y `createStillHereMachine` las ofrece cada controlador para «pintar tú las capas» (comentario de cabecera de cada `.js`).
+- **Las poses fijas de cada parcial.** Los tres parciales ya definen una pose fija por estado y solo animan con `prefers-reduced-motion: no-preference` («se ven los mismos estados, sin desplazamientos»). Con movimiento reducido, la transformación de D-1 deja solo esas poses.
+- **El Lab solo decide qué entradas cuentan y qué estado se pinta** (`src/design-lab/reducedGags.ts`).
+- **`useReducedGag`** (`src/design-lab/useReducedGag.ts`) es el espejo del adaptador para movimiento reducido:
+  - misma escena tranquila, mismas causas de pausa y un solo gag activo (`ambient`);
+  - tiras decodificadas antes de aplicar la clase;
+  - pausa con la pestaña oculta o fuera de pantalla;
+  - limpieza completa.
+- **`useLabGags`** junta los dos adaptadores en 4.7, 4.8 y 4.9: con movimiento completo, el de producción; con reducido, este. Nunca conviven.
+- **La tira fija «Movimiento reducido · propuesta» de 4.7 se retira:** enseñaba la propuesta anterior. La versión reducida se ve con «Reducido» en Movimiento. El rótulo pasa a «Movimiento reducido · gags reducidos».
+- **Una nota común** (`ReducedGagsNote`) en las tres secciones, y pistas del panel para reducido.
+
+### 31.3 La propuesta, gag a gag
+
+| | `poking` | `i-see-you` | `are-u-still-here` |
+|---|---|---|---|
+| **Se activa** | Toque o clic sobre la zona sensible de Sofi, como en completo. Teclado, no | Puntero quieto 1,2 s sobre la zona sensible, o el dedo apoyado ese tiempo (el `dwell` del controlador). Mover el puntero por la página no hace nada | Inactividad real con el umbral aprobado (150 000 ms), contada con la misma actividad que en completo (`ACTIVITY`) |
+| **Qué se ve** | Un escalón por toque (cada 300 ms como mucho): curiosa con el «?» fijo, escéptica, «¡quieto!» con la palma y la vena fijas, y ofendida de brazos cruzados. Ahí se queda; a los 10 s sin toques, reposo | Pillada (cara 04 y la alerta «!» fija) 1,1 s; después, la sonrisa pícara (06) hasta el reposo, 4,2 s más | Somnolienta (fotograma 1 de `sofi-blink` con los párpados pesados y la boca de 01, quietos) mientras dura el adormecerse (9,4 s). Después, dormida (03) con los Zzz quietos hasta que vuelve la actividad. Al volver, la cara de pillada (05 sobre la pose 04) 3,1 s, y reposo. Si vuelve antes de dormirse, reposo directo |
+| **Fotogramas** | `poking-face.webp` (celdas 0–2 y palma), `poking-fx.webp` («?» y vena), `poking.webp` (ofendida) | `i-see-you.webp` (pillada, sonrisa, alerta) | `sofi-blink` F1, `are-u-still-here.webp` (párpados, boca, dormida, pose 04, cara 05), `are-u-still-here-fx.webp` (Zzz) |
+| **Se elimina** | Brinco, retroceso, sacudidas y bufido. El «?» que salta y flota y la vena que late. Y toda la parte de esconderse: escondida, asomada, «¡NOPE!» y volver a subir (Sofi desaparecía de golpe tras el borde) | Seguir al puntero por toda la página (escuchas en `document`, miradas en cinco direcciones) y pillarla «jugando» con él. El parpadeo al mirar, el respingo, la alerta que aparece y se va, la lengua con el destello (`tease`) y la risita con saltitos (`giggle`) | El parpadeo lento de somnolienta, las dos cabezadas (que, aun quietas, alternan la pose cuatro veces), los Zzz que flotan, el susto con su estallido y su temblor, y el balanceo de la cara de pillada |
+
+### 31.4 Verificación
+
+**Pruebas (RED primero):**
+
+- `reducedGags.test.ts`, 11:
+  - qué estados aceptan toques y qué se pinta;
+  - las capas son las mismas que crea cada controlador del ZIP. Si un ZIP las cambia, falla.
+- `useReducedGag.test.tsx`, 20, con las máquinas reales y la sonda de fugas:
+  - **`poking`:** la secuencia de 8 toques; reposo a los 10 s; teclado no; gag activo en `ambient`.
+  - **`i-see-you`:** el puntero por la página no cambia nada; en la página solo escucha `visibilitychange`; quieto encima → `caught`, `smirk` y reposo; si se va antes, nada.
+  - **`are-u-still-here`:** nunca `nodding` ni `startled`; parte de 150 000 ms.
+  - **Los tres:**
+    - con movimiento completo no hace nada;
+    - pasar a completo en mitad de la reacción lo quita del todo;
+    - al irse, también con StrictMode, la sonda vuelve a la referencia.
+- **Sensibilidad.** Tres mutaciones de `reducedGags.ts`, cada una detectada por 1 prueba, y el archivo restaurado (`cmp`):
+  - aceptar toques en cualquier estado;
+  - pintar la lengua y la risita;
+  - pintar las cabezadas.
+- **Pruebas que cambian de expectativa** porque cambia la dirección (antes afirmaban «sin gags»): las de reducido de 4.7, 4.8 y 4.9, y el estado del marco de 4.9, que ahora dice «escena tranquila, en versión reducida». Lab: 693 de 693.
+- **Suite completa:** 130 archivos, 2 508 de 2 509. Falló «habla, calla en cada pausa…» de 4.3 (`MotionSync.test.tsx`, sin cambios aquí), por superar los 5 s.
+  - Sola tarda 1,8–2,0 s; quitando los ganchos reducidos de `useLabGags`, 2,4–3,8 s. No lo causa este cambio (archivo restaurado, `cmp`).
+  - La prueba monta Motion & Sound entera y avanza el reloj carácter a carácter. Con la suite en paralelo va al límite de sus 5 s; es la tercera vez (§29.3).
+  - No se ha subido ningún tiempo de espera. Queda como pendiente: o la prueba monta solo 4.1 y 4.3, o se mide qué la encarece.
+- **Tipos, lint y formato:** `tsc -b`, `eslint .` y `prettier --check .`, sin errores.
+
+**Navegador** (servidor propio, 5188; «Reducido» en el Lab y, en 4.9, `motion=reduce`):
+
+| Comprobación | Chromium | Firefox | WebKit |
+|---|---|---|---|
+| 4.7 y 4.8, `poking`: 6 clics reales sobre Sofi dan curiosa, escéptica, «¡quieto!» y ofendida tres veces | sí | sí | sí |
+| `i-see-you`: el puntero por la página, reposo y mirada al centro; quieto encima, pillada; a los 1,6 s de la sonrisa, sigue la sonrisa; luego reposo | sí | sí | sí |
+| `are-u-still-here` (inactividad al mínimo del Lab, 5 s): somnolienta, y 5 s después sigue somnolienta (sin cabezada); dormida; al pulsar una tecla, pillada (sin susto); reposo | sí | sí | sí |
+| Animaciones vivas en Sofi, en cada uno de esos estados | 0 | 0 | 0 |
+| 4.8: píxeles del texto del diálogo tapados, en cada estado | 0 | 0 | 0 |
+| 4.9, marcos de 390 (toque) y 1280 px: los tres gags reducidos montados; 5 toques hasta ofendida; 0 animaciones vivas; «Volver a la consulta» libre; foco en una opción, los tres al reposo (spec §5) | sí | sí | sí |
+| axe (WCAG 2.2 AA, sistema en reducir), 4.7, 4.8 y 4.9: 1440 claro y oscuro, 1280 con texto al 200 % y 390; marcos de 4.9 a 390 y 1280 en claro y oscuro | 0 violaciones, sin desbordamiento | — | — |
+
+En Firefox, el toque de 4.9 a 390 px es un clic: Firefox no admite `isMobile`.
+
+**Capturas,** en `shots\`:
+
+- `r20-chromium-<sección>-<gag>-<estado>.png`, cada pose en 4.7 y 4.8;
+- `r20-mosaico-4.8.png`, las diez poses juntas;
+- `r21-chromium-<anchura>-ofendida.png`, 4.9.
+
+### 31.5 Decisiones abiertas y riesgos
+
+Numerados para decidirlos por número.
+
+1. **D-1 y plan §6.** Para llevar esto a producción, el adaptador tendría que montar las máquinas también con movimiento reducido, con una variante como la del Lab o un modo de `useSofiController`. Es un cambio de producción y del plan (§4 y §6) que hay que consultar antes, después de AV4. Las pruebas de `useSofiController` que afirman «con reducido, nada» cambiarían de expectativa.
+2. **«Reacción estática muy breve»** (catálogo §7.2, para `poking` e `i-see-you`):
+   - en `poking` cada pose se queda hasta el siguiente toque o 10 s, el tiempo del controlador;
+   - en `i-see-you` la reacción dura 5,3 s, con dos cambios.
+
+   Se pueden acortar con la opción `timing` de las máquinas, que no modifica el controlador, pero no se ha hecho sin decisión.
+3. **Cara de pillada sobre la pose del susto.** El parcial pinta la cara 05 sobre el cuerpo 04, el del susto, con el pelo revuelto: quieta, pero parece recién asustada. Alternativa con fotogramas existentes: volver directamente al reposo, sin cara de pillada, que pierde el «no he hecho nada». No se ha prototipado.
+4. **Cambios de pose bruscos.** No hay movimiento, pero cada estado cambia la imagen de golpe. Los más grandes: ofendida (pose entera) y dormida, con el cuerpo más bajo. No son destellos (WCAG 2.3.1): `poking` se queda en ofendida tras cuatro cambios, y el controlador no cuenta toques a menos de 300 ms.
+5. **`i-see-you` con el dedo:** hace falta una pulsación larga de 1,2 s sobre Sofi. Puede coincidir con gestos largos del sistema (menú contextual, lupa) en algunos dispositivos. Es de `015`.
+6. **Sin seguimiento no hay «pillada jugando»:** solo se activa quedándose encima. Mantiene la intención (la pillan mirándola), pero es más difícil de descubrir.
+7. **`are-u-still-here` sigue escuchando la actividad en la página** (como en completo). Lo permite spec §5, porque el gag puede activarse. `i-see-you` reducido, en cambio, no escucha en la página.
+8. **4.6 (Escenarios)** sigue sin gags con movimiento reducido: no es una de las ubicaciones y no se ha tocado.
+
+### 31.6 Límites
+
+- Las tres vías de reducido (sistema, «Reducido» y las dos a la vez) comparten `useReducedMotion`, y en §30.3 se comprobó que coinciden. Esta propuesta se ha medido con «Reducido» del Lab (y `motion=reduce` en 4.9), no con las tres por separado.
+- La inactividad real de 150 s solo se comprueba con reloj simulado (prueba de `useReducedGag`); en el navegador, con el mínimo del Lab (5 s).
+- Safari real, lectores de pantalla y dispositivos son de `015`.
+
+**Siguiente tarea:** T066 sigue abierta, a la espera de AV4 sobre esta propuesta (31.3) y de las decisiones de 31.5. No se ha marcado AV4 ni se ha avanzado T067.
+
+## 32. B1 — Versión reducida: `poking` con 5 s de espera (T066, AV4 pendiente)
+
+Fecha: 2026-11-12. Solo los prototipos de movimiento reducido del Design Lab. No se toca producción ni los controladores. Sin commit ni push. **AV4 sigue sin marcar y T066, abierta.**
+
+### 32.1 Qué cambia
+
+| | Antes (§31) | Ahora |
+|---|---|---|
+| `poking`: espera sin toques hasta el reposo | 10 s, el `TIMING.reset` del controlador | **5 s** (`POKING_REDUCED_RESET_MS`), pasados con la opción `timing` de `createPokingMachine`, que no modifica el controlador. Las cuatro reacciones estáticas no cambian |
+| `i-see-you` | 5,3 s (pillada 1,1 s y sonrisa 4,2 s) | Igual |
+| `are-u-still-here`: reacción al despertar | 3,1 s de cara de pillada | Igual |
+
+Con movimiento completo, `poking` sigue con los 10 s del controlador (adaptador de producción, sin cambios).
+
+También cambian la nota común de 4.7–4.9 y la pista del panel: «a los 5 s sin toques, reposo (en prueba; en completo, 10 s)».
+
+### 32.2 Pruebas
+
+- **`useReducedGag.test.tsx`, 29.** Las 6 de `poking` estaban en rojo con los 10 s y pasan con los 5 s:
+  - 4 999 ms en la reacción y, 1 ms después, reposo;
+  - lo mismo en cada una de las cuatro reacciones;
+  - un toque que cuenta vuelve a empezar los 5 s;
+  - en «ofendida» los toques no cuentan ni alargan la espera;
+  - tras el reposo, otro toque empieza otra serie;
+  - una causa de pausa congela la espera, y al quitarla sigue lo que faltaba.
+- **Guardas de lo que no cambia,** en verde también antes del cambio:
+  - **`i-see-you`:** 1 099 ms en pillada, 4 199 en sonrisa y luego reposo. Irse durante la reacción no la corta. Luego hay 15 s sin dejarse pillar, el reposo del controlador.
+  - **`are-u-still-here`:** 3 099 ms en pillada y luego reposo; más actividad no la alarga. Desde el reposo, el umbral entero otra vez. Con actividad antes de dormirse, reposo directo.
+- **`reducedGags.test.ts`:** fija la comparación (5 000 ms en reducido; `TIMING.reset` del controlador, 10 000).
+- **Lab:** 703 de 703. La suite completa, en 32.5.
+
+### 32.3 Navegador
+
+Servidor propio (5188), tiempo real, muestreo cada 25 ms; 4.8 con «Reducido» y 4.9 con `motion=reduce`.
+
+| Medida | Chromium | Firefox | WebKit |
+|---|---|---|---|
+| `poking`, un toque, hasta el reposo: reducido | 5,02 s | 5,09 s | 5,00 s |
+| Lo mismo con movimiento completo (los 10 s anteriores) | 10,01 s | 10,34 s | 10,05 s |
+| Reinicio: segundo toque a los 3 s (escéptica); reposo tras ese toque | 5,03 s | 5,09–5,20 s | 5,03 s |
+| Cuatro toques, `curious`→`skeptical`→`stop`→`offended`; dos toques más en ofendida no cuentan; reposo tras el 4.º | 5,01 s | 5,07–5,22 s (véase 32.4.3) | 5,03 s |
+| «Sofi ocupada» de los 2 a los 8 s: a los 8 s sigue curiosa; reposo tras quitarla (faltaban 3 s) | 2,97 s | 2,18 s | 2,79 s |
+| `i-see-you`: pillada / sonrisa / total | 1,07 / 4,22 / 5,30 s | 0,90 / 4,25 / 5,15 s | 1,08 / 4,29 / 5,37 s |
+| `are-u-still-here`: de la tecla a la pillada / al reposo | 0,01 / 3,08 s | 0,05 / 3,31 s | 0,01 / 3,13 s |
+| 4.9 (390 px): `poking` hasta el reposo | 5,02 s | 5,26 s | 5,02 s |
+| 4.9: foco en una respuesta, los gags al reposo (spec §5) | sí | sí | sí |
+| Animaciones vivas en Sofi | 0 | 0 | 0 |
+
+Las diferencias de algunas centésimas, o pocas décimas en Firefox, son del muestreo y de la carga: los tiempos los dan los temporizadores del controlador.
+
+**axe** (WCAG 2.2 AA, sistema en reducir), 4.7, 4.8 y 4.9:
+
+- 0 violaciones a 1440 en claro y en oscuro, a 1280 con el texto al 200 % y a 390;
+- sin desbordamiento;
+- los marcos de 4.9 en claro y oscuro: 0.
+
+### 32.4 Hallazgos
+
+1. **Tocar a Sofi con el foco en una respuesta (4.9) la hace reaccionar,** en reducido y en completo por igual, en los tres motores. El toque saca el foco del control (queda en `body`), así que deja de haber causa `interaction` y los gags se reanudan. Es la regla aprobada del foco nativo (spec §5: el foco no se fuerza). No es una regresión de la propuesta reducida.
+2. **«Sofi ocupada» congela la espera:** los 5 s cuentan solo el tiempo sin causas de pausa, como en completo.
+3. **Firefox, una medida aislada sin reproducir.** En la primera ejecución completa del guion, un toque en «ofendida» dio `curious`, y el reposo llegó a los 10,62 s del 4.º toque. En dos ejecuciones completas más, y en dos aisladas con registro de cada cambio, da lo esperado: los toques se ignoran y el reposo llega 5,03–5,22 s después. No se ha identificado la causa.
+4. **Servidor:** al relanzar el de 5188, el anterior seguía vivo (huérfano tras pararlo). Se cerró por su PID, comprobando antes que era el de 5188.
+
+### 32.5 Contradicciones y decisiones abiertas
+
+Numeradas para decidirlas por número.
+
+*(Actualización del mismo día: la autora aprobó la versión reducida; las cinco quedan resueltas en los documentos en §33.2–§33.3, y el mecanismo de producción, pendiente en §33.8.)*
+
+1. **D-1 y plan §6:** siguen como en §31.5.1. La propuesta exige montar las máquinas con movimiento reducido. El cambio es de producción y hay que consultarlo tras AV4.
+2. **Catálogo, ficha de `poking`:** «vuelve al reposo tras el descanso/reinicio previsto por su controlador». Con movimiento reducido el reinicio ya no es el previsto (10 s), sino 5 s, aunque se pase por una opción del propio controlador. Si se aprueba, habría que decir en el plan (§6) que en reducido el reinicio es otro. No contradice el catálogo §7.2 («reacción estática muy breve»), al que se acerca más.
+3. **Spec §8, excepción de `poking` (conserva su velocidad original, 1×).** No es un cambio de velocidad: solo cambia un tiempo, solo en reducido, y la pausa entre toques sigue en 300 ms. Pero se puede leer como una excepción a esa excepción. Si se aprueba, conviene dejar claro en la spec o en el plan que el 1× es de velocidad y no impide un reinicio propio en reducido.
+4. **`i-see-you` dura 5,3 s.** Es más que «muy breve» (catálogo §7.2), aunque son dos caras quietas. Se mantiene por decisión de la autora. Para WCAG 2.2.2 no es contenido que se mueva o parpadee: dos cambios de imagen.
+5. **`are-u-still-here`:** los 3,1 s de la cara de pillada siguen sobre la pose del susto (§31.5.3).
+
+**Suite completa:** 130 archivos, **2 519 de 2 519** (esta vez, también las de 4.3). `tsc -b`, `eslint .` y `prettier --check .`, sin errores.
+
+**Siguiente tarea:** T066 sigue abierta, a la espera de AV4 sobre esta propuesta y de las decisiones de 32.5 y 31.5. No se ha marcado AV4 ni se ha avanzado T067.
+
+## 33. B1 — Versión reducida de los gags aprobada: fuentes normativas y criterios de T066
+
+Fecha: 2026-11-12. Fuentes normativas, copy y comentarios del Design Lab. No se toca producción (`useSofiController`, `ambient`, pantallas), ni los controladores, ni los parciales, ni las tiras. Sin commit ni push. **AV4 sigue sin marcar** (quedan las poses reducidas, T069), **T066 sigue abierta** a la espera de la autora, y no se avanza T067 ni T088.
+
+### 33.1 Dónde consta la aprobación
+
+La autora aprobó el 2026-11-12 las versiones reducidas de los tres gags tal como están en el Lab (§31), con el retorno de `poking` a los 5 s (§32). Cada parte vive en una sola fuente; aquí solo se remite:
+
+| Qué | Fuente |
+|---|---|
+| Regla general: reacción estática frente a animación completa | Catálogo §7.2 (párrafo nuevo y filas de los gags) |
+| Versión de cada gag | Catálogo, fichas 006, 008 y 009 («Reducido»; en 006, también «Termina») |
+| Mecanismo, entradas, estados pintados y espera de 5000 ms | `008-plan.md` §6 |
+| Requisito de la feature | `008-spec.md` §5 (remite a las dos anteriores), §6, §7, §8 y un criterio nuevo en «Easter eggs y controladores» |
+| Estado de AV4 y tareas afectadas | `008-tasks.md`: T066, AV4, T073, C5, T087 y T088; plan §9, punto 4 |
+
+### 33.2 Contradicción con D-1 y el plan §6, resuelta en los documentos
+
+- **D-1 no prohíbe nada de esto.** Solo fija la transformación PostCSS de los módulos dueños, y es la que deja con reducido las poses fijas de cada estado que pinta la reacción estática. No cambia. En §30.5.1 y §31.5.1 se atribuyó a D-1 algo que decían otras frases; consta aquí la corrección.
+- **Lo que chocaba** era «lo monta solo si … el estado efectivo no es reducido» (plan §6), junto con «detener CSS y JS» y «limpiar temporizadores de animación» (catálogo §7.2, spec §7 y su criterio, checklist del catálogo). Además, el catálogo §6.3 contaba «motion reduce» entre las causas de pausa.
+- **Resolución:** el catálogo §7.2 distingue la **animación completa** (el controlador `attach*`, que con reducido no se monta nunca) de la **reacción estática** (la máquina de estados del mismo ZIP, que cambia de pose fija sin movimiento). Las demás frases remiten a esa distinción. La de plan §6 sigue siendo cierta para el controlador completo, y la sigue el bloque nuevo.
+
+### 33.3 Las contradicciones de §32.5, una por una
+
+1. **D-1 y plan §6:** resuelta en 33.2. Queda el mecanismo de producción (33.6).
+2. **Ficha de `poking` («reinicio previsto por su controlador»):** la ficha dice ahora que, con reducido, vuelve al reposo tras la espera de su versión reducida, y el valor está en plan §6.
+3. **Excepción de `poking` a 1× (spec §8):** aclarada: es de velocidad y no impide la espera de la versión reducida.
+4. **«Muy breve» del catálogo §7.2:** la fila ya no lo dice; remite a las fichas, que describen la reacción aprobada, incluidos los 5,3 s de `i-see-you`.
+5. **Cara de pillada sobre la pose del despertar:** aprobada tal como está; plan §6 lo describe.
+
+### 33.4 Coherencia documental
+
+- Se buscaron en la constitution, la spec, el plan, las tareas y `AGENTS.md` estas frases: «motion reduce», «muy breve», «desactivación del gag», «gag desactivado», «supresión de la secuencia», «versión reducida de los easter eggs», «pendiente (de) AV4», «no es reducido», «sin controlador», «controladores JS», «JS activo», y «reducido» cerca de «controlador». No queda ninguna sin matizar. Las de §30–§32 de este registro son históricas y no se reescriben.
+- `tech-stack.md`, `roadmap.md` y `art-direction/README.md` no dicen nada del comportamiento reducido de los gags.
+- **Duraciones:** no se copian. Plan §6 fija solo la espera de `poking` (5000 ms), que es un valor propio de Ask Sofi, como el umbral de inactividad. Los demás tiempos son los del controlador; las cifras medidas, en §32.3.
+
+### 33.5 Design Lab
+
+- La nota común de 4.7–4.9 pasa a «Movimiento reducido (aprobado el 2026-11-12)», sin «en prueba». El rótulo de las tres secciones pasa a «Prototipo T066 · aprobado, producción en T088», y su lectura, a «Reducido: gags en versión reducida».
+- La nota de la zona sensible dice ahora que la mirada por toda la página de `i-see-you` es solo con movimiento completo. Con reducido no la hay, y antes la nota lo daba por hecho en los dos modos.
+- Los comentarios de `reducedGags.ts`, `useReducedGag.ts`, `useLabGags.ts`, `gagBadge.ts`, `gagWide.ts`, `gagProfile.ts`, `SheetGags.tsx`, `GagBadge.tsx`, `GagPortrait.tsx` y sus pruebas remiten a la aprobación.
+- **Pruebas:** las de 4.7 y 4.8 sobre la nota se cambiaron antes que el copy y se vieron fallar. Comprueban el texto aprobado, que no queda «en prueba» ni ninguna mención a AV4, y el rótulo de T088. La de 4.7 comprueba también la nota de la mirada. Sin cambios de comportamiento: las 29 de `useReducedGag` y las 12 de `reducedGags`, sin tocar, siguen en verde.
+
+### 33.6 Criterios de T066
+
+| Criterio (`008-tasks.md`) | Estado | Evidencia |
+|---|---|---|
+| Dos candidatas de ubicación, consulta en reposo y expediente | Cumplido; ubicación aprobada (AV6) | §25, §27–§30 |
+| Inactividad ajustable, 150 000 ms aprobados | Cumplido (AV6) | §25, §30 |
+| Versión reducida propuesta | Cumplido; aprobada el 2026-11-12 | §31–§32, 33.1 |
+| Zona sensible con la precisión de spec §5 y sus excepciones | Cumplido | §28.12–§28.15 |
+| Investigación de precisión táctil concluida | Cumplido, sin defectos funcionales nuevos | §28.15.3, §31, §32 |
+| Lab: componentes nuevos visibles y con pruebas (`AGENTS.md`) | Cumplido | §25–§33 |
+| Pruebas, tipos, lint, formato | Véase 33.7 | — |
+| Responsive y accesibilidad | axe 0 y sin desbordamiento en 4.7–4.9; solo cambia el texto de las notas | §31, §32.3 |
+
+**Propuesta:** con la aprobación de la autora, T066 puede cerrarse. No se marca aquí.
+
+### 33.7 Ejecución
+
+- Lab: **703 de 703**.
+- `tsc -b`, `eslint .` y `prettier --check .`, sin errores.
+- Suite completa, dos ejecuciones: **2 518 de 2 519** y **2 517 de 2 519**. Solo fallan pruebas de `MotionSync.test.tsx` (4.3), por pasar de los 5 s de su tiempo límite: en la primera, «habla, calla en cada pausa…»; en la segunda, esa (7,9 s) y «no se repinta por carácter» (7,6 s). El archivo solo pasa 13 de 13 dos veces seguidas (1,9 s la más lenta), y en la ejecución del Lab entero también. Este turno no toca nada que use 4.3: solo textos y comentarios. **No es verde:** consta como pendiente en 33.8.
+
+### 33.8 Decisiones de arquitectura pendientes de la autora (para T088)
+
+Constan en plan §6 como pendientes; no se decide ninguna aquí.
+
+1. **Dónde vive la reacción estática en producción.** Opciones:
+   - un modo de `useSofiController`, el mismo hook que elige completo o reducido;
+   - un adaptador hermano, como el `useReducedGag` del Lab;
+   - un hook que componga los dos, como `useLabGags`.
+2. **Dónde viven las reglas de entradas y estados pintados** (`pokingAccepts`, `seeYouShown`, `stillHereShown` y la espera de 5000 ms): hoy, en `src/design-lab/reducedGags.ts`. Producción no puede importar del Lab (D-4), así que habría que moverlas a la capa visual (`visual/`) o junto al adaptador.
+3. **Las capas del controlador** (`REDUCED_LAYERS`) son una copia del marcado que crea cada `attach*`, que no lo exporta. Una prueba de contrato las compara. Las opciones son:
+   - aceptar la copia con su prueba;
+   - pedir al repositorio de spritesheets que exporte las capas (un recurso nuevo: fuera de esta feature).
+4. **Cambio de expectativa en las pruebas de `useSofiController`** que afirman «con reducido, nada»: pasarían a «con reducido, ni controlador completo ni animaciones, y la reacción estática».
+5. **Escuchas de `are-u-still-here` con reducido:** la actividad se escucha en el documento, como con el controlador completo. Lo permite spec §5 (el gag puede activarse), pero sigue el riesgo de plan §12 («Listeners globales»).
+
+**Otros puntos abiertos, no de arquitectura** (§31.5):
+
+- `i-see-you` en táctil se activa dejando el dedo apoyado 1,2 s, lo que puede chocar con la pulsación larga del sistema (`015`).
+- La sección 4.6 (Escenarios) no muestra los gags reducidos.
+- **`MotionSync.test.tsx` (4.3) con la suite completa** (33.7): dos de sus pruebas pasan de los 5 s, con 1,9 s ejecutadas solas. Ya ocurrió en §32, y un A/B de entonces lo descartó como efecto de T066. No se ha subido el tiempo límite. Queda investigar la causa; parece que esas pruebas van en tiempo real con la suite cargada. Es de T063, no de T066.
+
+**Siguiente tarea:** T066, a la espera de que la autora apruebe su cierre (33.6) y decida 33.8 antes de T088. No se ha marcado AV4 ni se ha avanzado T067.
+
+## 34. B1 — Cierre de T066 y diagnóstico de los tiempos límite de 4.3
+
+Fecha: 2026-11-12. La autora pidió cerrar T066 si se cumplen sus criterios y verificaciones (`008-tasks.md`; `tech-stack.md` §42.7). Sin cambios de código de producción ni del Lab en este registro, salvo copias temporales de diagnóstico, ya borradas. Sin commit ni push. **AV4 sigue pendiente de T069**, la arquitectura de T088 no se decide (§33.8) y no se avanza T067.
+
+### 34.1 Criterios y evidencias
+
+Los de §33.6, revisados con sus registros:
+
+- **Ubicación y candidatas:** cumplido, aprobado con AV6 (§25, §27–§30).
+- **Inactividad ajustable:** cumplido, 150 000 ms aprobados con AV6 (§25, §30).
+- **Versión reducida:** aprobada el 2026-11-12 (§31–§33).
+- **Zona sensible y su precisión:** cumplido (§28.12–§28.15).
+- **Precisión táctil:** investigación concluida, sin defectos funcionales nuevos (§28.15.3, §31, §32).
+
+**Verificaciones propias (§42.7: pruebas de la tarea, tipos y lint):**
+
+- Lab, **703 de 703**, incluidas las 29 de `useReducedGag`, las 12 de `reducedGags` y las de 4.7, 4.8 y 4.9.
+- `tsc -b`, `eslint .` y `prettier --check .`, sin errores.
+
+Todo es de la última ejecución tras el último cambio de código (§33.5 y §33.7). Desde entonces solo han cambiado documentos, así que no se repite.
+
+**Navegador:** tres motores, axe 0, sin desbordamiento y 0 animaciones vivas (§31, §32.3). Los textos de las notas cambiaron después (§33.5). No se ha vuelto a pasar axe con ellos: son texto dentro de las mismas `LabNote`, y queda para T076, que audita estas secciones.
+
+**T066 se marca completada.**
+
+### 34.2 Diagnóstico de `MotionSync.test.tsx`
+
+**Síntoma:**
+
+- Con la suite completa, «habla, calla en cada pausa…» y «no se repinta por carácter» pasan del tiempo límite por defecto de 5 s: 5,5–7,9 s, en tres ejecuciones completas de §32 y §33 (en la última de §32 pasó).
+- El archivo solo pasa, con 1,9–2,5 s la más lenta.
+- No se ha cambiado ningún tiempo límite.
+
+**Método:** dos copias temporales de la prueba, con 4 ejecuciones aisladas de cada variante, alternadas y decididas de antemano. Las copias estaban instrumentadas para contar pasos, temporizadores y elementos, y medir con el reloj real (`performance.now`, guardado antes de los temporizadores falsos, que también falsean `performance` y `process.hrtime`):
+
+- **A:** como es, con 4.7–4.9;
+- **B:** con `GagsSpec`, `GagsWideSpec` y `GagsProfileSpec` sustituidas por `null`.
+
+**Resultados:**
+
+| Medida | A (con 4.7–4.9) | B (sin ellas) |
+|---|---|---|
+| Pasos de `runToEnd` | 215 | 215 |
+| Temporizadores pendientes al terminar | 1 | 1 |
+| Elementos en el documento | 789 | 539 |
+| «habla, calla…» (3 ejecuciones) | 2,44–2,70 s | 1,93–2,30 s |
+| «no se repinta…» (3 ejecuciones) | 2,01–2,16 s | 1,53–1,73 s |
+| Montar la sección (`open`, 2 ejecuciones) | 286–302 ms | 198–202 ms |
+| Preparar el texto y reproducir (2 ejecuciones) | 1 011–1 036 ms | 602–684 ms |
+| Recorrido letra a letra (`runToEnd`, 2 ejecuciones) | 1 152–1 238 ms | 1 045–1 198 ms |
+
+Las secciones de 4.7–4.9 se pintan una vez en toda la pasada, no en cada letra: el recuento con un envoltorio da 2 pintados.
+
+**Conclusiones:**
+
+1. **No es un defecto de T066 ni de 4.3.**
+   - 4.7–4.9 no añaden pasos, temporizadores ni repintados al habla de 4.3.
+   - Las aserciones nunca fallan: solo vence el tiempo.
+   - Las pruebas de T066 no fallan.
+2. **La causa es el coste de CPU de las dos pruebas.** Montan Motion & Sound entera y recorren 215 pasos con `act()`. Solas tardan unos 2–2,5 s; con la suite completa en paralelo van 2,5–3,5 veces más lentas y pasan de 5 s. Sin 4.7–4.9 tardan 1,5–2,3 s, también sin margen ante esa carga.
+3. **T066 sí las encarece, un 20–30 %.** No es por el habla, sino por montar la sección (+0,1 s) y por preparar el texto (+0,35–0,43 s). La preparación busca los controles en todo el documento (`screen.getByRole`, `getByLabelText`), y 4.7–4.9 añaden 250 elementos, muchos de ellos controles.
+
+### 34.3 Pendiente e incertidumbre
+
+- **Pendiente, de T063 y no de T066:** quitar el margen sin tocar el tiempo límite. Una vía es buscar con `within` dentro de 4.1, en vez de en todo el documento. Otra es pintar solo 4.1 y 4.3 en lugar de Motion & Sound entera. No se hace aquí, por ser un cambio ajeno a T066. Mientras tanto, la suite completa puede fallar por tiempo en máquinas cargadas, también en CI.
+- **Incertidumbre:**
+  - El reparto dentro de la preparación (búsquedas frente a pintado del cambio de texto) se infiere, no se midió por separado.
+  - No se midió el desglose con la suite completa: el factor de carga sale de comparar los tiempos aislados con los de la suite.
+  - No se sabe con qué frecuencia falla en CI.
+
+**Siguiente tarea:** T067, que no se ha empezado.

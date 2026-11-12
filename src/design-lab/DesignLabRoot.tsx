@@ -9,6 +9,10 @@ import { DesignLab } from './DesignLab'
 const PreviewFrameRoot = lazy(() => import('./preview/PreviewFrameRoot'))
 // Composiciones del expediente (004), cada una en su propio iframe.
 const ProfileFrameRoot = lazy(() => import('./profile/ProfileFrameRoot'))
+// El expediente con los tres gags (T066, ubicación A aprobada), en su propio iframe.
+const GagsProfileFrameRoot = lazy(
+  () => import('./profile/GagsProfileFrameRoot'),
+)
 
 // Cabecera sola, para verla dentro de un iframe estrecho con sus media queries reales.
 function HeaderFrame() {
@@ -31,6 +35,14 @@ export function DesignLabRoot() {
     return (
       <Suspense fallback={null}>
         <ProfileFrameRoot />
+      </Suspense>
+    )
+  }
+
+  if (frame === 'gags-profile') {
+    return (
+      <Suspense fallback={null}>
+        <GagsProfileFrameRoot />
       </Suspense>
     )
   }
