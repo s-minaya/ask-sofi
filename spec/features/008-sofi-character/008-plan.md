@@ -140,7 +140,8 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
 - **Poses:**
   - por defecto, la del propio parcial (D-2);
   - `memory-wipe`, la que fija el catálogo (ficha 015): la pose aterrorizada dura lo que la confirmación funcional del borrado y, al terminar esta, la intención vuelve a neutral (D-16). La capa visual no usa temporizador ni animación para ello: la señal de fin la emite la interfaz dueña, `009` (D-15);
-  - una desviación aprobada en el Lab solo puede sustituir la pose por otro recurso o fotograma existente.
+  - una desviación aprobada en el Lab solo puede sustituir la pose por otro recurso o fotograma existente;
+  - aprobadas con AV4 el 2026-11-16, sin desviaciones: §11.7.
 - **Orden de los gags:** su CSS va después del de `sofi-blink`, como en el playground. Se cumple por construcción: el parpadeo es estático (§7) y los gags son diferidos. La build lo comprueba.
 
 ## 5. Capa visual (D-4)
@@ -342,10 +343,10 @@ Se amplía `Motion & Sound` (catálogo §8):
 
 Cada punto se aprueba expresamente y se registra en su fuente de verdad (§8).
 
-1. Indicador de actividad: formas de píxel, ritmo de ida y vuelta (120 ms como referencia de partida, no definitiva) y copy de las etiquetas.
+1. Indicador de actividad: formas de píxel, ritmo de ida y vuelta (120 ms como referencia de partida, no definitiva) y copy de las etiquetas. Aprobado el 2026-11-12 (AV1): §11.6.
 2. Duración y límite del primer ciclo (§5.3).
 3. Velocidad de producción de cada recurso.
-4. Poses reducidas, salvo `memory-wipe`, y versión reducida de los gags. La versión reducida de los gags se aprobó el 2026-11-12: catálogo §7.2 y fichas 006, 008 y 009, y §6 de este plan. Quedan las poses reducidas.
+4. Poses reducidas, salvo `memory-wipe`, y versión reducida de los gags. La versión reducida de los gags se aprobó el 2026-11-12: catálogo §7.2 y fichas 006, 008 y 009, y §6 de este plan. Las poses reducidas, el 2026-11-16 (AV4): §11.7.
 5. Pausas de `talking` y paso `blink` → `talking`.
 6. Ubicación de los gags. Aprobada el 2026-11-11 (AV6), junto con la inactividad: spec §5 y §6 de este plan.
 7. Ubicación y diseño del control de preferencia de movimiento. Cabecera y portada, junto a `ThemeSwitch`, son solo la propuesta de partida.
@@ -463,6 +464,42 @@ El plan §11.1 fija las restricciones; estas son las decisiones de implementaci�
 | D-29 | Manifiesto de licencias en `src/assets/sofi/effects/licenses.json` (`{ "effects": [] }`). Cada entrada: `file`, `title`, `author`, `source` (https), `license`, `licenseUrl` (https), `attribution` (obligatoria con CC-BY) y `verifiedOn` (fecha ISO). Licencias admitidas: `CC0-1.0`, `CC-BY-3.0`, `CC-BY-4.0`, `MIT`, `Apache-2.0` y `LicenseRef-AskSofi-Original` (creado por la autora). Quedan fuera NC, ND, SA, las licencias propias de un sitio y las desconocidas; la exclusión de SA es una política del proyecto, no una incompatibilidad jurídica general con MIT. Ningún campo puede mencionar Myinstants ni Nintendo. El contrato está en `effectsLicenses.test.ts` |
 
 **Pregunta abierta, reservada para T100–T101 (y `009`).** Al borrar los datos, `SoundProvider` vuelve al silencio inicial (`subscribeToUserDataCleared` desactiva el sonido). Los efectos de `memory-wipe` solo pueden sonar tras el borrado efectivo (spec §9), con el sonido activado: hay que decidir cómo encajan, porque con el sonido ya desactivado no sonaría ninguno. No se resuelve aquí: `createEffectsAudio` solo garantiza que nunca suenan antes del borrado.
+
+### 11.5 Indicador de actividad: componente nuevo (T067, 2026-11-12)
+
+Evaluación que pide spec §4 antes de crearlo. Se crea `ActivityIndicator` en `src/components/ui/ActivityIndicator/` (§3). `Spinner` y `Loader` no cambian.
+
+| Candidato | Qué es hoy | Por qué no se extiende |
+|---|---|---|
+| `Spinner` | Tres píxeles de 6 px que se encienden por turnos (opacidad, `--duration-spin`). Solo lo usa `Button` con `loading`, del diseño aprobado en `002` | D-8 pide un único glifo que cambia de forma, en ida y vuelta. Con `Spinner` solo comparte `aria-hidden` y el mixin reducido. Cambiarlo alteraría el botón aprobado; una variante metería en el mismo componente otro DOM, otros keyframes y otro ritmo |
+| `Loader` | Barra de celdas indeterminada a todo el ancho (`--duration-loader`, `steps(24)`), en `ProcessingState` y el Lab | Es un medidor, no un glifo junto a una etiqueta. Con movimiento reducido se oculta, y el indicador tiene que quedarse quieto y visible (spec §4) |
+
+- Conserva el contrato que ya comparten: decorativo con `aria-hidden`, sin `role` ni región viva (catálogo §7.1), `className` opcional y `u.reduced-motion`, que conoce `full` (D-1).
+- Como el resto de `ui/`, no depende de `components/sofi/`: el copy sigue en `visual/activityLabels.ts`.
+- Se muestra en el Lab (T068) y se prueba (T079–T080). `src/design-lab/coverage.test.ts` lo exige en cuanto se exporta.
+- No se decide aquí si `Loader` sigue en `ProcessingState` junto al indicador o lo sustituye: es de T068 (AV1) y T081.
+
+### 11.6 Indicador de actividad aprobado (AV1, 2026-11-12)
+
+Aprobado por la autora sobre la ficha 4.10 del Lab (evidencia: `008-verification.md` §35). Lo implementan T079–T081.
+
+| Aspecto | Aprobado |
+|---|---|
+| Glifo | Destello: rejilla de 7 × 7 y cinco fotogramas, de un punto a un asterisco de ocho brazos. Los dibujos son los de la variante `bloom` de `src/design-lab/activityLab.ts`, que T080 lleva al componente |
+| Ritmo | Ida y vuelta sin repetir los extremos (8 pasos), a 120 ms por paso: 960 ms por vuelta |
+| Movimiento reducido | Quieto en el fotograma 4, el asterisco de ocho brazos |
+| Color | Acento (`--color-accent`) |
+| Tamaño | El «Pequeño» de la ficha: etiqueta en `u.type-small` y glifo de 1 em de ese texto |
+| Copy | El de D-21, como copy inicial aprobado |
+
+### 11.7 Poses reducidas aprobadas (AV4, 2026-11-16)
+
+Aprobadas por la autora sin cambios sobre la ficha 4.11 del Lab (evidencia: `008-verification.md` §37). Con ellas, AV4 queda completa: la versión reducida de los gags se aprobó el 2026-11-12 (§6).
+
+- **Las 10 poses propuestas son la del propio parcial (D-2), sin desviaciones:** `sofi-blink`, `sofing`, `rolling`, `talking`, `favoriting`, `needs-context`, `error`, `eureka`, `suspicious` y `uncertain`. El fotograma lo fija cada parcial, que sigue siendo la única fuente (catálogo §1); la descripción de cada uno consta en `008-verification.md` §37.2 y no se copia aquí.
+- Incluye que, con movimiento reducido, `rolling` y `talking` se vean como el reposo de `sofi-blink` (§37.4): la carga y el habla constan en texto (catálogo §7.1). El catálogo no cambia.
+- `memory-wipe` conserva la pose que fija el catálogo (ficha 015; §4.4).
+- En el registro, `reducedPose: 'partial'` ya lo expresa para los 10; T083 lo fija con sus pruebas.
 
 ## 12. Riesgos y pendientes
 

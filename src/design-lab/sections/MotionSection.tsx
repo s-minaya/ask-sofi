@@ -44,7 +44,9 @@ import {
   LabStage,
 } from '../parts/LabParts'
 import { createSimulatedAudio } from '../simulatedAudio'
+import { ActivitySpec } from './ActivitySpec'
 import { InspectorSpec } from './InspectorSpec'
+import { ReducedPosesSpec } from './ReducedPosesSpec'
 import { GagsSpec } from './GagsSpec'
 import { GagsProfileSpec } from './GagsProfileSpec'
 import { GagsWideSpec } from './GagsWideSpec'
@@ -704,6 +706,8 @@ export function MotionSection() {
             num: '4.9',
             label: 'Gags en el expediente',
           },
+          { href: '#m-activity', num: '4.10', label: 'Actividad' },
+          { href: '#m-reduced', num: '4.11', label: 'Poses reducidas' },
         ]}
         aside={
           <Burst
@@ -735,6 +739,8 @@ export function MotionSection() {
       <GagsSpec />
       <GagsWideSpec />
       <GagsProfileSpec />
+      <ActivitySpec />
+      <ReducedPosesSpec />
     </>
   )
 }

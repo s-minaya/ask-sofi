@@ -1,0 +1,143 @@
+@use 'utilities' as u;
+
+.layout {
+  display: grid;
+  gap: 1.75rem;
+
+  @include u.bp-from(u.$bp-columns) {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: 2.5rem;
+    align-items: start;
+  }
+}
+
+.panel {
+  display: grid;
+  gap: 1.375rem;
+  align-content: start;
+  min-width: 0;
+  padding: 1.5rem clamp(1rem, 2vw, 1.75rem) 1.75rem;
+  border: var(--stroke-structure) solid var(--color-border);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+.variants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13.5rem), 1fr));
+  gap: 1.75rem 1.5rem;
+  min-width: 0;
+}
+
+.variant {
+  display: grid;
+  gap: 0.875rem;
+  align-content: start;
+  min-width: 0;
+}
+
+.stage {
+  padding: 1.5rem 1rem;
+}
+
+// Alto estable: al aparecer o desaparecer la actividad no se mueve la página.
+.live {
+  display: flex;
+  align-items: center;
+  min-height: 2.5em;
+  min-width: 0;
+}
+
+.small {
+  @include u.type-small;
+}
+
+.large {
+  @include u.type-display-m;
+}
+
+.activity {
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: center;
+  min-width: 0;
+}
+
+.label {
+  overflow-wrap: anywhere;
+}
+
+.empty {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+// El glifo mide lo que el texto: crece con la tipografía y con el zoom de texto.
+.glyph {
+  display: inline-block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  color: var(--color-text);
+}
+
+.accent .glyph,
+.sample.accent {
+  color: var(--color-accent);
+}
+
+// Todos los pasos de ida y vuelta en fila, recorridos a saltos.
+.strip {
+  display: flex;
+  width: calc(1em * var(--frames));
+  height: 1em;
+  animation: cycle calc(var(--frame-ms) * var(--frames)) steps(var(--frames))
+    infinite;
+
+  // Quieto, no oculto (spec §4): se ve el fotograma propuesto (`--still`).
+  @include u.reduced-motion {
+    transform: translateX(calc(-1em * var(--still)));
+    animation: none;
+  }
+}
+
+@keyframes cycle {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-1em * var(--frames)));
+  }
+}
+
+.frame {
+  display: block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+}
+
+.frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 1.75rem;
+}
+
+.sample {
+  padding: 0.125rem;
+  color: var(--color-text);
+  border: var(--stroke-detail) solid var(--color-rule-soft);
+}
+
+.still {
+  border-color: var(--color-border);
+  outline: var(--stroke-detail) solid var(--color-border);
+}

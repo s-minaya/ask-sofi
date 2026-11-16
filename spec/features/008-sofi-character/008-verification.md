@@ -3344,3 +3344,117 @@ Las secciones de 4.7–4.9 se pintan una vez en toda la pasada, no en cada letra
   - No se sabe con qué frecuencia falla en CI.
 
 **Siguiente tarea:** T067, que no se ha empezado.
+
+## 35. B1 — Prototipos del indicador de actividad en el Lab (T068, AV1 pendiente)
+
+Fecha: 2026-11-12. Ficha nueva 4.10 «Actividad» en Motion & Sound (`src/design-lab/sections/ActivitySpec.tsx`, `src/design-lab/activityLab.ts`), según la decisión de T067 (plan §11.5). No crea `ActivityIndicator` ni toca `ProcessingState` (T079–T081). No se elige variante ni se marca AV1. Sin commit ni push.
+
+### 35.1 Qué hay en la ficha
+
+- Tres variantes con glifos de píxel propios, dibujados en rejilla (sin caracteres, logotipos ni código de Claude): **Destello** (7 × 7, 5 fotogramas, 120 ms por paso), **Chispa** (7 × 7, 4 fotogramas, 150 ms) y **Píxel gordo** (5 × 5, 4 fotogramas, 180 ms). Ida y vuelta sin repetir los extremos (`pingPong`). Ritmo propio de cada una o uno común (60–300 ms), color acento o texto, y tres tamaños de texto.
+- Animación solo con CSS: una tira con el ciclo completo que se desplaza con `steps()`. Sin temporizadores. El movimiento reducido lo detiene únicamente `u.reduced-motion` (que conoce `full`, D-1), en el fotograma quieto propuesto (recuadrado en la ficha).
+- Una operación simulada, común a las tres: análisis, carga, adelantar 4 s, resultado retenido y fin. La etiqueta sale de `activityLabel` con el copy provisional de D-21. Glifo y etiqueta van en un contenedor `aria-hidden`, sin roles ni regiones vivas.
+
+### 35.2 Verificaciones
+
+- **Vitest:** `activityLab.test.ts` (23) y `ActivitySpec.test.tsx` (7), más los que montan Motion & Sound o el Lab entero (`DesignLab`, `MotionModes`, `MotionSync`, `ScenariosSpec`, `coverage`, `reducedMotion`, `TextField`): 9 archivos, 124 pruebas en verde. `tsc -b`, ESLint y Prettier, sin errores.
+- **Playwright, guion temporal ya borrado**, en Chromium, Firefox y WebKit, con los seis modos aplicados con el selector global del Lab (sistema `no-preference` o `reduce` × Sistema, Reducido o Completo): 18 de 18.
+  - En los modos animados, una sola animación por glifo, con la duración esperada (pasos × ritmo), y cada paso cae en su sitio (saltos de 1 em, sin posiciones intermedias). Esto incluye Completo con el sistema en reducir.
+  - En los modos reducidos no hay animaciones, se ve el fotograma propuesto y la etiqueta no pasa a «cooking…».
+  - Con el resultado retenido, no queda ningún glifo.
+- **Chromium, claro y oscuro a 320, 390 y 1280 px:** sin desbordamiento horizontal ni recortes, y axe (WCAG 2.2 AA) limitado a 4.10 sin violaciones (6 de 6).
+- **Texto del navegador al 200 %** (perfil con `default_font_size` 32, como `text-size.spec.ts`), a 320 y 1280 px: sin desbordamiento, y el glifo mide lo que su texto (68 px en «Titular») sin salirse del recuadro.
+
+### 35.3 Incidencias resueltas durante la verificación
+
+1. **Reloj desfasado en la ficha:** tras cada acción, la etiqueta esperaba al siguiente tic de 200 ms. Se corrigió poniendo el reloj en hora en cada acción, y lo cubre `ActivitySpec.test.tsx`.
+2. **Hook y CSS podían discrepar** si `data-motion` se cambiaba sin el proveedor. El glifo depende ya solo del CSS. Las pruebas usan el selector del Lab, que fija contexto y atributo a la vez.
+3. **Tiempo límite en Firefox y WebKit con dos trabajadores** (un caso de 18 por ejecución, siempre con la página entera). La traza mostró que todos los pasos pasaban y que se excedía el total de 30 s. Midiendo los huecos del hilo principal con y sin operación en curso, el reloj de 4.10 no encarece la página (Firefox, p50 de 5,0 ms en ambos casos). La causa es el peso de Motion & Sound con dos motores a la vez, ya descrito en `playwright.config.ts`. Con un trabajador pasa, sin tocar tiempos límite.
+4. **Contraste en oscuro a 320 px, intermitente** (2 de 5 con dos trabajadores). axe medía el botón recién pulsado durante los 120 ms de la transición de hover de `Button`: el texto ya en tinta y el fondo aún sin pasar a mantequilla (1,13:1). Es de `Button` (`002`), no de 4.10. Con el puntero fuera, 5 de 5. Queda como observación para T076.
+
+### 35.4 Pendiente
+
+- **AV1 (autora):** variante, formas, ritmo, pose quieta, color y copy de las etiquetas.
+- Con decimales de tamaño, los píxeles del glifo no siempre miden lo mismo (`crispEdges` redondea cada uno). Se revisa al elegir variante y tamaño.
+- T076 (axe y responsive de las secciones nuevas), T079–T081 y la integración en `ProcessingState`, sin empezar.
+
+**Siguiente tarea:** T068 sigue abierta, a la espera de que la autora revise las propuestas (AV1).
+
+## 36. B1 — Cierre de T068 con AV1
+
+Fecha: 2026-11-12. La autora aprobó AV1; la aprobación consta solo en `008-plan.md` §11.6 y aquí no se repite. Sin cambios de diseño ni del componente definitivo. En el Lab solo cambian la marca de estado de 4.10 y los comentarios que decían «pendiente de AV1». Sin commit ni push.
+
+| Criterio de T068 | Evidencia |
+|---|---|
+| Dos o tres variantes de formas de píxel y ritmo, con 120 ms solo como punto de partida | Tres variantes, con 120, 150 y 180 ms (§35.1); `activityLab.test.ts` |
+| Sin logotipos ni código de Claude | Rejillas de píxel propias; `ActivitySpec.test.tsx` comprueba que no se pinta ningún carácter de la referencia |
+| Copy de etiquetas ligado a estados reales | `activityLabel` con la operación simulada: análisis, carga, adelanto, retención y fin (§35.1–35.2) |
+| Con movimiento reducido, quieto | Seis modos en Chromium, Firefox y WebKit (§35.2) |
+
+- **Repetido hoy tras los cambios de texto:** Vitest de 4.10, `activityLabels`, `coverage` y `DesignLab` (5 archivos, 57 pruebas), `tsc -b`, ESLint y Prettier, en verde. No se repitió Playwright: desde §35 no ha cambiado nada que afecte al movimiento ni a la composición.
+- **Pendiente para T079–T080:** nitidez y uniformidad de los píxeles en el tamaño aprobado (`008-tasks.md`, T080).
+
+**Siguiente tarea:** T069, que no se ha empezado.
+
+## 37. B1 — Poses reducidas de los 14 recursos en el Lab (T069, AV4 pendiente)
+
+Fecha: 2026-11-12. Ficha nueva 4.11 «Poses reducidas» en Motion & Sound (`src/design-lab/sections/ReducedPosesSpec.tsx`, `src/design-lab/reducedPoses.ts`). No cambia el registro (`reducedPose: 'partial'` en los 14), los parciales, el arte ni producción. No se marca AV4. Sin commit ni push.
+
+### 37.1 Qué hay en la ficha
+
+- Los 14 sprites reales, uno junto a otro, a 192 px. Se cargan al pulsar «Mostrar las 14 poses», para no encarecer más Motion & Sound (§35.3). No fuerza ningún modo: manda el selector global del Lab, como en el inspector (T062), y un aviso dice cuál está activo.
+- En cada recurso, su estado:
+  - **10 propuestas:** la pose del parcial (D-2).
+  - **`memory-wipe`:** fijada por el catálogo (ficha 015).
+  - **Los tres gags:** versión reducida ya aprobada. Se pintan con su anfitrión real y un ambiente compartido.
+- En cada recurso, lo que pide su ficha del catálogo y lo que fija el parcial.
+- En las 10 propuestas, los fotogramas existentes de la tira principal: lo único por lo que podría cambiarse una pose (plan §4.4). El número de fotogramas se lee de la propia imagen.
+
+### 37.2 Revisión de cada pose frente a su ficha
+
+Con «Reducido», en Chromium, Firefox y WebKit, cada parcial deja la posición de tira que describe su cabecera:
+
+| Recurso | Fija el parcial |
+|---|---|
+| `sofi-blink`, `sofing`, `rolling` (sin capas de efectos), `talking` y los tres gags | F0 |
+| `favoriting` | F2 con el sello |
+| `needs-context` | F3 con la interrogación |
+| `error` | F1, sin glitch |
+| `eureka` | F1 con la chispa |
+| `suspicious` | F1 con la cara 2 |
+| `uncertain` | F2 |
+| `memory-wipe` | F1 con el cartel |
+
+Todas cumplen lo que pide su ficha «Reducido» (catálogo §3 y §7.2). La de `needs-context` coincide con el F3 que propone el catálogo. **No se propone ninguna desviación.**
+
+### 37.3 Verificaciones
+
+- **Vitest:** `reducedPoses.test.ts` (7) y `ReducedPosesSpec.test.tsx` (5), más los archivos que montan Motion & Sound o el Lab entero (`DesignLab`, `MotionModes`, `MotionSync`, `ScenariosSpec`, `InspectorSpec`, `ActivitySpec`, `coverage`, `TextField`): 10 archivos, 189 pruebas en verde. `tsc -b`, ESLint y Prettier, sin errores.
+- **Playwright, guion temporal ya borrado**, en Chromium, Firefox y WebKit, con el selector del Lab:
+  - **Reducido:** los 14 pintados con su recurso (ninguno con la reserva), 0 animaciones vivas en la cuadrícula y las posiciones de §37.2 en los tres motores.
+  - **Completo con el sistema en reducir:** la cuadrícula vuelve a animarse (47 animaciones en Chromium y Firefox, 48 en WebKit).
+- **Chromium a 1280 px, claro y oscuro:** capturas de la cuadrícula y de cada recurso, todos enteros, sin recortes de sello, cartel ni chispa.
+- **Chromium a 320 px, claro y oscuro:** sin desbordamiento horizontal, y axe (WCAG 2.2 AA) limitado a 4.11 sin violaciones.
+
+### 37.4 Observaciones para la autora (no son propuestas)
+
+1. Con movimiento reducido, `rolling` (F0) y `talking` (F0, boca cerrada) se ven como el reposo de `sofi-blink`. Es lo que piden sus fichas («fotograma de reposo apropiado», «boca cerrada»), y la carga y el habla constan en texto (catálogo §7.1). Si se quisiera distinguirlos, habría que cambiar el catálogo, y antes decidirlo.
+2. Las pausas de `talking` y el paso `blink → talking` son de T070 (AV5), no de esta ficha.
+
+**Siguiente tarea:** T069 sigue abierta, a la espera de que la autora revise las poses (AV4).
+
+## 38. B1 — Cierre de T069 con AV4
+
+Fecha: 2026-11-16. La autora aprobó las 10 poses reducidas propuestas, sin cambios; la aprobación consta solo en `008-plan.md` §11.7 y aquí no se repite. Con la versión reducida de los gags (§31–§33), AV4 queda completa. Sin cambios de arte, parciales, registro ni producción: en el Lab solo cambian la marca de estado de 4.11, su descripción y los comentarios que decían «pendiente de AV4».
+
+| Criterio de T069 | Evidencia |
+|---|---|
+| Pose reducida propuesta de cada recurso | Los 14 en la ficha 4.11 (§37.1); `reducedPoses.test.ts` |
+| La del parcial (D-2) | Las 10 propuestas usan `reducedPose: 'partial'` (`reducedPoses.test.ts`) y cada parcial deja la posición de §37.2 en Chromium, Firefox y WebKit (§37.3) |
+| `memory-wipe` fijada por el catálogo | Única con estado «catálogo» (`reducedPoses.test.ts`); F1 con el cartel (§37.2) |
+| Una desviación solo con otro recurso o fotograma existente | No hay desviaciones (plan §11.7). La ficha solo ofrecía los fotogramas de la propia tira (§37.1) |
+
+- **Repetido hoy:** `ReducedPosesSpec.test.tsx` gana una prueba (la ficha dice que las 10 están aprobadas y nada queda pendiente de AV4), en rojo antes del cambio de texto y en verde después. Suite completa de Vitest: 2563 pruebas en verde. `tsc -b`, ESLint y Prettier, sin errores. No se repitió Playwright: desde §37 solo han cambiado textos.
+- **Pendiente:** fijar las poses en el registro con sus pruebas (T083) y su comprobación en navegador con los 14 recursos (T073).
+
+**Siguiente tarea:** T070, que no se ha empezado.
