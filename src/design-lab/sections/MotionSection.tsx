@@ -47,6 +47,7 @@ import { createSimulatedAudio } from '../simulatedAudio'
 import { ActivitySpec } from './ActivitySpec'
 import { InspectorSpec } from './InspectorSpec'
 import { ReducedPosesSpec } from './ReducedPosesSpec'
+import { TalkingPausesSpec } from './TalkingPausesSpec'
 import { GagsSpec } from './GagsSpec'
 import { GagsProfileSpec } from './GagsProfileSpec'
 import { GagsWideSpec } from './GagsWideSpec'
@@ -470,7 +471,7 @@ function SyncSpec({
         <>
           <LabCode>{'{ status, index, length, speaking }'}</LabCode>
           <LabCode>onSpeakingChange</LabCode>
-          <LabProv>Pausas · pendiente AV5</LabProv>
+          <LabProv>Pausas aprobadas (AV5) · producción en T084</LabProv>
         </>
       }
     >
@@ -480,9 +481,9 @@ function SyncSpec({
           <div className={styles.slotCopy}>
             <p className={styles.slotTitle}>Sprite «hablando»</p>
             <LabNote style={{ maxWidth: '30ch' }}>
-              talking mientras hay letras. En las pausas y al terminar se ve el
-              reposo actual (sofi-blink), solo provisional: si en una pausa se
-              queda la boca quieta o se vuelve a blink lo decide AV5.
+              talking mientras hay letras. Aquí, en las pausas y al terminar se
+              ve el reposo (sofi-blink), solo provisional: lo aprobado en 4.12
+              (boca quieta en las pausas, blink al terminar) llega con T084.
             </LabNote>
           </div>
         </div>
@@ -708,6 +709,7 @@ export function MotionSection() {
           },
           { href: '#m-activity', num: '4.10', label: 'Actividad' },
           { href: '#m-reduced', num: '4.11', label: 'Poses reducidas' },
+          { href: '#m-pauses', num: '4.12', label: 'Pausas de talking' },
         ]}
         aside={
           <Burst
@@ -741,6 +743,7 @@ export function MotionSection() {
       <GagsProfileSpec />
       <ActivitySpec />
       <ReducedPosesSpec />
+      <TalkingPausesSpec />
     </>
   )
 }

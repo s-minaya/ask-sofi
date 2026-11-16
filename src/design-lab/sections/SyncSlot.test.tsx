@@ -13,7 +13,7 @@ const sprite = (container: HTMLElement) =>
   container.querySelector('[data-sprite]')?.getAttribute('data-sprite')
 
 // T063: el hueco de 4.3 pinta lo que dice `selectVisual` (el contrato de plan 008 §5.1), sin
-// decidir nada propio: la pose de las pausas la aprueba AV5, no esta pieza.
+// decidir nada propio: la pausa aprobada (AV5) la lleva a producción T083–T085, no esta pieza.
 describe('SyncSlot', () => {
   it('mientras Sofi habla pinta talking', () => {
     const { container } = render(<SyncSlot speaking />)

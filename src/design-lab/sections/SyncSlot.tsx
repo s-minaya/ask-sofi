@@ -4,7 +4,7 @@ import styles from './MotionSection.module.scss'
 
 // El hueco de 4.3 (T063): pinta lo que `selectVisual` decide para «habla / no habla», el mismo
 // contrato que usará la capa visual (plan 008 §5.1). No elige recurso ni pose por su cuenta: la
-// pose de las pausas la aprueba AV5 (T070) y entrará por el registro, no por aquí.
+// pausa aprobada (AV5, plan 008 §11.8) entrará por el registro y el expediente (T083–T085), no por aquí.
 // Recibe solo el booleano de `SofiSpeech.onSpeakingChange`, que cambia en las frases y no en
 // cada letra: por eso no se repinta por carácter.
 export function SyncSlot({ speaking }: { speaking: boolean }) {

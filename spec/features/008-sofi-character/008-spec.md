@@ -31,7 +31,11 @@ Fuentes que no se repiten aquí: significado, disparadores, interrupciones, rete
 - Las pantallas emiten una intención semántica; la capa visual elige el recurso según el catálogo §5–§6. El dominio no conoce animaciones (`tech-stack.md` §45). Hay un único registro de recursos visuales (catálogo §3; `004-plan.md` §6).
 - Se extienden los componentes de Sofi existentes. Un componente nuevo solo se crea si hace falta, y entonces se muestra en el Design Lab con pruebas (`AGENTS.md`).
 - Consumidores en esta feature:
-  - expediente: `talking` se sincroniza con `SofiSpeech.speaking`, no con el estado `asking` (catálogo, ficha 004). En las pausas y al terminar se ve la representación de pausa aprobada en el Lab. `uncertain` usa el recurso 014. El resto de estados conserva sus estáticas aprobadas;
+  - expediente: `talking` se sincroniza con `SofiSpeech.speaking`, no con el estado `asking` (catálogo, ficha 004). Se distinguen dos situaciones (aprobadas por la autora el 2026-11-16, AV5):
+    - **pausa:** `speaking` pasa a falso y la intervención continúa (las pausas de puntuación). `talking` conserva su último fotograma, sin saltos ni reinicios, y al reanudarse sigue desde donde estaba;
+    - **fin de la intervención:** el texto se completa (también con «Ver todo») o la intervención se cancela, se sustituye o se desmonta. Sofi vuelve a `sofi-blink`.
+    - Al empezar a hablar desde `sofi-blink`, el sprite espera a que termine el parpadeo en curso antes de cambiar. El texto no espera nunca: solo el sprite. Detalle en `008-plan.md` §11.8.
+  - `uncertain` usa el recurso 014. El resto de estados del expediente conserva sus estáticas aprobadas;
   - consulta en reposo: `sofi-blink`;
   - pantallas de resultado del Design Lab: los recursos del catálogo §5 sustituyen a los fotogramas provisionales.
 - Para los eventos que la aplicación aún no emite (procesamiento real, resultados, errores, seguridad, salida rápida, favorito guardado y borrado total), esta feature define el contrato y lo prueba con simulaciones; conectarlo corresponde a la feature emisora.
@@ -133,7 +137,7 @@ Las observaciones de composición de la auditoría solo requieren cambios si el 
 - [ ] Al terminar la operación, etiqueta e indicador dejan de indicar actividad.
 - [ ] `safety_concern` no muestra sprites, la salida rápida no anima y `memory-wipe` solo aparece tras un borrado total efectivo.
 - [ ] `eureka` y `suspicious` no aparecen en producción.
-- [ ] En el expediente, `talking` se anima solo mientras `SofiSpeech.speaking` es verdadero y `uncertain` usa el recurso 014, sin cambiar el formulario ni su comportamiento.
+- [ ] En el expediente, `talking` se anima solo mientras `SofiSpeech.speaking` es verdadero, en las pausas conserva su último fotograma, al terminar la intervención vuelve a `sofi-blink`, y `uncertain` usa el recurso 014, sin cambiar el formulario ni su comportamiento.
 
 ### Easter eggs y controladores
 
@@ -177,7 +181,7 @@ Las observaciones de composición de la auditoría solo requieren cambios si el 
 - duración y límite del primer ciclo;
 - velocidad de producción de cada animación;
 - pose reducida de cada recurso, salvo la de `memory-wipe`, fijada en el catálogo (ficha 015);
-- pausas de `talking` y paso `blink` → `talking`;
+- pausas de `talking` y paso `blink` → `talking` (aprobado el 2026-11-16: §2);
 - composición (§11);
 - diseño de la preferencia de movimiento;
 - selección de efectos sonoros.

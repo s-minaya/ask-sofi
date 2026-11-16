@@ -48,7 +48,7 @@ describe('selectVisual: tabla del catálogo §5', () => {
 
   it('`talking` depende de `speaking`, no de que se esté preguntando', () => {
     expect(selectVisual({ speaking: true })).toEqual(animation('talking'))
-    // Una pausa del habla vuelve al reposo (la pose de pausa aprobada llega en AV5).
+    // Hoy una pausa del habla vuelve al reposo; conservar el último fotograma (AV5) es de T083–T085.
     expect(selectVisual({ speaking: false })).toEqual(animation('sofi-blink'))
   })
 

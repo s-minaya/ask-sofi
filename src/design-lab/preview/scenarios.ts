@@ -202,7 +202,7 @@ export const SCREEN_PROVISIONAL: Record<ScreenKey, ReadonlyArray<string>> = {
   consultation: ['Spritesheet de parpadeo · 008'],
   processing: ['Umbral de carga lenta', 'Límite de retención · AV2'],
   success: [
-    'Pausas de talking · AV5',
+    'Pausas de talking aprobadas · producción en T084',
     'Tono de eureka y suspicious · 006',
     'Umbrales de confianza · dominio',
   ],

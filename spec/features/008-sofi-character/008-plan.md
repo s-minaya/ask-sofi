@@ -208,7 +208,7 @@ scripts/spriteReducedMotion.ts       plugin PostCSS en línea, sin dependencias,
 
 ### 5.5 Habla y velocidad
 
-- **Habla (D-12):** `SofiSpeech` gana `onSpeakingChange`, que solo avisa cuando cambia el booleano (y avisa de que calla si el texto cambia, «Ver todo» lo completa o el diálogo se desmonta mientras suena, para que la capa visual no se quede en `talking`). El expediente lo pasa a la capa visual: `talking` mientras habla y la pose de pausa aprobada en el Lab.
+- **Habla (D-12):** `SofiSpeech` gana `onSpeakingChange`, que solo avisa cuando cambia el booleano (y avisa de que calla si el texto cambia, «Ver todo» lo completa o el diálogo se desmonta mientras suena, para que la capa visual no se quede en `talking`). El expediente lo pasa a la capa visual: `talking` mientras habla, su último fotograma en las pausas y `sofi-blink` al terminar la intervención (spec §2; AV5, §11.8).
 - **Velocidad (D-7):**
   - `visual/rates` guarda una velocidad por recurso, 1× por defecto;
   - el Lab la sobrescribe solo durante la sesión;
@@ -347,7 +347,7 @@ Cada punto se aprueba expresamente y se registra en su fuente de verdad (§8).
 2. Duración y límite del primer ciclo (§5.3).
 3. Velocidad de producción de cada recurso.
 4. Poses reducidas, salvo `memory-wipe`, y versión reducida de los gags. La versión reducida de los gags se aprobó el 2026-11-12: catálogo §7.2 y fichas 006, 008 y 009, y §6 de este plan. Las poses reducidas, el 2026-11-16 (AV4): §11.7.
-5. Pausas de `talking` y paso `blink` → `talking`.
+5. Pausas de `talking` y paso `blink` → `talking`. Aprobado el 2026-11-16 (AV5): spec §2 y §11.8.
 6. Ubicación de los gags. Aprobada el 2026-11-11 (AV6), junto con la inactividad: spec §5 y §6 de este plan.
 7. Ubicación y diseño del control de preferencia de movimiento. Cabecera y portada, junto a `ThemeSwitch`, son solo la propuesta de partida.
 8. Composición, solo para las observaciones que se reproduzcan (spec §11). El contorno de `memory-wipe` no se toca por defecto.
@@ -500,6 +500,21 @@ Aprobadas por la autora sin cambios sobre la ficha 4.11 del Lab (evidencia: `008
 - Incluye que, con movimiento reducido, `rolling` y `talking` se vean como el reposo de `sofi-blink` (§37.4): la carga y el habla constan en texto (catálogo §7.1). El catálogo no cambia.
 - `memory-wipe` conserva la pose que fija el catálogo (ficha 015; §4.4).
 - En el registro, `reducedPose: 'partial'` ya lo expresa para los 10; T083 lo fija con sus pruebas.
+
+### 11.8 Pausas de `talking` y paso `blink → talking` aprobados (AV5, 2026-11-16)
+
+Aprobado por la autora sobre la ficha 4.12 del Lab (evidencia: `008-verification.md` §39–§40). El contrato está en spec §2; aquí, lo que delega.
+
+| Situación | Aprobado | Cómo lo hace el Lab (referencia, no implementación) |
+|---|---|---|
+| Pausa (`speaking` falso, la intervención sigue) | `talking` conserva su último fotograma, cuerpo y boca, sin saltos ni reinicios; al reanudarse continúa donde estaba | Detiene todas las animaciones del sprite, pseudoelementos incluidos, con `animation-play-state`; reanudarlas sigue la línea de tiempo del parcial |
+| Fin de la intervención | Vuelta a `sofi-blink`, que empieza por su principio | Cambio de recurso en `SofiSprite` |
+| Empezar a hablar desde `sofi-blink` | El sprite espera a que termine el parpadeo en curso (la tira en F0) y entonces pasa a `talking`. Como mucho, lo que dura un parpadeo del parcial (300 ms). El texto no espera: `SofiSpeech` no cambia | Comprueba el fotograma en cada `requestAnimationFrame`; sin lectura (sin Web Animations o con movimiento reducido) cambia en el acto |
+| Movimiento reducido | No aplica: el texto sale entero, `speaking` no se activa y se ve la pose aprobada en AV4 | — |
+
+- Las alternativas descartadas: vuelta a `sofi-blink` en cada pausa (cierra la boca de golpe y repite las primeras sílabas tras cada pausa) y boca cerrada en cada pausa (la que más saltos produce). Cifras en `008-verification.md` §39.3.
+- **Producción (T083–T085):** la capa visual necesita distinguir pausa de fin. `SofiSpeech` ya expone `status` por `onStateChange` y el booleano por `onSpeakingChange` (D-12); cómo se combinan sin re-render por carácter lo decide T084. Si exigiera cambiar el contrato de `SofiSpeech`, se consulta antes.
+- El Lab conserva las tres alternativas para comparar, con la aprobada por defecto (`src/design-lab/talkingPauses.ts`).
 
 ## 12. Riesgos y pendientes
 

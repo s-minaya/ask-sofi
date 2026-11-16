@@ -3458,3 +3458,103 @@ Fecha: 2026-11-16. La autora aprobó las 10 poses reducidas propuestas, sin camb
 - **Pendiente:** fijar las poses en el registro con sus pruebas (T083) y su comprobación en navegador con los 14 recursos (T073).
 
 **Siguiente tarea:** T070, que no se ha empezado.
+
+## 39. B1 — Pausas de `talking` y paso `blink → talking` en el Lab (T070, AV5 pendiente)
+
+Fecha: 2026-11-16. Ficha nueva 4.12 «Pausas de talking» en Motion & Sound (`src/design-lab/sections/TalkingPausesSpec.tsx`, `src/design-lab/talkingPauses.ts`). No cambia `SofiSpeech`, `SofiSprite`, `selectVisual`, el registro, los parciales ni producción, y 4.3 sigue con su comportamiento provisional. No se elige alternativa ni se marca AV5. Sin commit ni push.
+
+### 39.1 Qué hay en la ficha
+
+- Un único `SofiSpeech` real, con el texto «Muchas pausas» de 4.1, y tres Sofis a 192 px que reciben el mismo `onSpeakingChange` (D-12). Cada una aplica una alternativa de pausa (catálogo, ficha 004):
+  - **Vuelta a blink:** al callar se pinta `sofi-blink`; al volver a hablar, `talking` desde su principio. Es lo que hace hoy 4.3, provisional.
+  - **Boca quieta · congelada:** `talking` se queda y todas sus capas se detienen donde estén (`animation-play-state`, como la pausa del inspector).
+  - **Boca quieta · cerrada:** `talking` se queda, detenido en el principio de su línea de tiempo (ojos abiertos y boca cerrada, según el parcial) y, al volver a hablar, sigue donde iba.
+- **Al empezar a hablar** desde `sofi-blink`: «En el acto» o «Con los ojos abiertos», que espera a que la tira de `sofi-blink` esté en F0. El texto no espera nunca: solo el sprite.
+- **Al terminar:** «Como en la pausa» (lo que pide spec §2) o «Vuelta a blink», solo para comparar. Elegir lo segundo exigiría precisar la spec antes.
+- **Pausas:** las reales de `SofiSpeech` (170 y 360 ms) o alargadas ×4, para mirarlas.
+- **Medida de saltos:** en cada cambio, el fotograma de ojos (tira del cuerpo) y de boca (capa `::after` de `talking`; `sofi-blink` la tiene cerrada) justo antes y justo después, leídos de las animaciones reales con la lógica de la línea de tiempo del inspector (T060). Un salto es un cambio de fotograma en ese instante. Cada columna cuenta los saltos de la reproducción, muestra el paso inicial (`blink → talking`) y los seis últimos cambios.
+- Los sprites siguen montados entre reproducciones: `sofi-blink` no vuelve a su principio y el paso a `talking` cae donde caiga, como en una pantalla real.
+- **Solo en el Lab:** `talking` se carga al montar la ficha y «Reproducir las tres» espera a que esté listo. Sin eso, la primera vez se comparaba la reserva estática de `SofiSprite` (sin animación) mientras cargaba, y la medida salía sin lectura. Cómo se carga en producción es de EX3.
+
+### 39.2 Verificaciones
+
+- **Vitest:** `talkingPauses.test.ts` (11) y `TalkingPausesSpec.test.tsx` (14). Suite completa: 136 archivos y 2588 pruebas en verde. `tsc -b`, ESLint y Prettier, sin errores.
+- **Playwright, guion temporal ya borrado**, en Chromium, Firefox y WebKit, con un trabajador. El clic se programó leyendo la animación real de `sofi-blink` para que la primera letra cayera en mitad de un parpadeo; pausas ×4; una reproducción por alternativa de inicio:
+  - En una pausa larga, «congelada» y «cerrada» tienen sus 2 animaciones (cuerpo y boca) en pausa, y «vuelta a blink», 1 en marcha: en los tres motores.
+  - Con movimiento reducido del sistema: 0 animaciones en 4.12 y las tres Sofis en F0 (`talking` y `sofi-blink`, la misma imagen fuera de boca y ojos). Con «Completo» y el sistema en reducir, `talking` se anima.
+  - **Chromium, 320 y 1280 px, claro y oscuro:** sin desbordamiento horizontal, y axe (WCAG 2.2 AA) limitado a 4.12 sin violaciones.
+
+### 39.3 Resultados: saltos medidos
+
+Una reproducción del texto «Muchas pausas» por motor y alternativa de inicio: seis por columna, con 17–20 cambios cada una (unos 10 silencios). Las cifras cuentan cambios con salto, sin el paso inicial (tabla siguiente):
+
+| Alternativa | Saltos de boca | Saltos de ojos | Qué se ve en la pausa |
+|---|---|---|---|
+| Vuelta a blink | 8 en las seis: al callar con la boca abierta, se cierra de golpe. Al volver, ninguno | 0–1: al callar en mitad de un parpadeo de `talking` | Boca cerrada y ojos abiertos. Al volver, `talking` empieza siempre por el principio de su línea de tiempo, y la boca repite las mismas primeras sílabas tras cada pausa |
+| Boca quieta · congelada | 0 | 0 | Lo que hubiera en ese instante: a menudo la boca abierta (en la captura de Firefox, una «o») y, a veces, los ojos entrecerrados o cerrados (Firefox, `ojos 2→2`, en la primera pasada) |
+| Boca quieta · cerrada | 11–17: al callar (se cierra) y al volver (se reabre a mitad de sílaba) | 0–4: los mismos casos, con los ojos | Boca cerrada y ojos abiertos |
+
+Paso inicial `blink → talking`:
+
+| Al empezar | Chromium | Firefox | WebKit |
+|---|---|---|---|
+| En el acto | ojos 1→0: salto de ojos | ojos 0→0: el clic no cayó en el parpadeo (no concluyente) | ojos 1→0: salto de ojos |
+| Con los ojos abiertos | sin salto; el sprite esperó 107–116 ms | sin salto; 77–97 ms | sin salto; 7–8 ms |
+
+La espera de «ojos abiertos» es como mucho lo que queda del parpadeo de `sofi-blink` (300 ms entre F1, F2 y F1, según su parcial); en ese tiempo el texto ya ha empezado.
+
+### 39.4 Límites
+
+- Una reproducción por caso y motor: son cifras orientativas, no una estadística. Con «En el acto», el salto inicial solo aparece si la voz empieza en mitad de un parpadeo (900 ms de cada 4,2 s del bucle de `sofi-blink`: tres parpadeos de 300 ms).
+- Hubo una primera pasada descartada: medía la reserva estática mientras `talking` cargaba (§39.1). Solo cuentan las cifras de la segunda, salvo la observación de `ojos 2→2`, cuya columna sí tenía `talking` cargado.
+- La medida es de fotogramas, no de percepción: si un salto molesta a la vista lo decide la autora en la ficha.
+- Con movimiento reducido no hay pausas que comparar: el texto sale entero y las tres alternativas se ven igual (pose aprobada con AV4).
+- 4.3 y la Preview siguen con la vuelta a blink provisional hasta AV5. La alternativa aprobada se lleva al registro y al expediente en T083–T085.
+
+**Siguiente tarea:** T070 sigue abierta, a la espera de que la autora elija (AV5).
+
+## 40. B1 — Cierre de T070 con AV5
+
+Fecha: 2026-11-16. La autora aprobó la combinación: `talking` conserva su último fotograma en las pausas, vuelve a `sofi-blink` al terminar la intervención y, al empezar a hablar, el sprite espera a que termine el parpadeo en curso sin retrasar el texto. La decisión consta en `008-spec.md` §2 (contrato, que ahora distingue pausa de fin de la intervención) y `008-plan.md` §11.8; aquí no se repite. Producción no cambia (T083–T085). En el Lab, 4.12 pone la combinación aprobada por defecto y conserva las otras para comparar; 4.3 sigue provisional y dice que lo aprobado llega con T084. Sin commit ni push.
+
+| Criterio de T070 / AV5 | Evidencia |
+|---|---|
+| Pausas de `talking` propuestas (boca quieta o `blink`) | Las tres alternativas en 4.12, medidas (§39.3) |
+| Paso `blink → talking` propuesto | «En el acto» y «Con los ojos abiertos», medidos (§39.3 y §40.2) |
+| Combinación aprobada comprobada en la ficha | §40.2, en Chromium, Firefox y WebKit |
+| Movimiento reducido | §40.2: 0 animaciones, texto entero en el acto, pose fija |
+| Sin retrasos funcionales | §40.2: la primera letra aparece antes de que cambie el sprite, en los tres motores; `SofiSpeech` no cambia |
+
+### 40.1 Verificaciones estáticas
+
+- **Vitest:** `talkingPauses.test.ts` (12, con la combinación aprobada) y `TalkingPausesSpec.test.tsx` (14: por defecto, blink al terminar y espera al parpadeo, y nada «pendiente de AV5»). Suite completa: 2588 de 2589 en verde; la que falla es la incidencia conocida de abajo. `tsc -b`, ESLint y Prettier, sin errores.
+- **Incidencia conocida, no de T070:** bajo carga, pruebas de `MotionSync.test.tsx` (4.3) superan los 5 s. Hoy: en la suite completa, una («habla, calla en cada pausa…»); con nueve archivos del Lab a la vez, dos (esa y «no se repinta por carácter»). Aisladas pasan (13 de 13), y la suite completa anterior de hoy (§39.2) pasó entera. Es la de §34.2–§34.3, pendiente de T063. No se han tocado los tiempos límite. Queda sin medir si 4.12 (tres sprites más y la carga de `talking` al montar) la hace más frecuente: T063 debe medirlo con y sin 4.12.
+
+### 40.2 Combinación aprobada en navegador
+
+Guion temporal, ya borrado, en Chromium, Firefox y WebKit con un trabajador. Pausas ×4; el clic programado leyendo la animación real de `sofi-blink` para que la primera letra cayera en un parpadeo. Un muestreador de 4 ms en la página registró letras escritas, fotograma de ojos de la columna aprobada y el cambio de sprite; dos observadores de mutaciones marcaron lo mismo como contraste.
+
+| Comprobación | Chromium | Firefox | WebKit |
+|---|---|---|---|
+| Pausa: animaciones del sprite (cuerpo y boca) en pausa | 2 de 2 | 2 de 2 | 2 de 2 |
+| Pausa: al reanudar sigue hacia delante, sin reinicio (tiempos de la animación, ms) | 67 → 133 | 67 → 133 | 0 → 1251 |
+| Cambios pausa ↔ habla con salto, en toda la reproducción | 0 de 18 | 0 de 18 | 0 de 16 |
+| Fin: `sofi-blink`, animado, sin retención | sí (1 animación en marcha) | sí | sí |
+| Inicio: ojos de `sofi-blink` en la primera letra → espera hasta abrirlos | F1 → 110 ms | F2 → 149 ms | F2 → 107 ms |
+| Inicio: del ojo abierto al cambio de sprite | 0 ms | 0 ms | 216 ms |
+| Inicio: salto de ojos o boca | no | no | no |
+| Primera letra antes que el sprite | sí, 110 ms antes | sí, 149 ms antes | sí, 323 ms antes |
+| Reducido (sistema): animaciones en 4.12 / texto completo tras el gesto / pose | 0 / 400 caracteres / F0 | 0 / 400 / F0 | 0 / 400 / F0 |
+| axe (WCAG 2.2 AA) y anchura, 320 y 1280 px, claro y oscuro | sin violaciones, sin desbordamiento | — (solo Chromium) | — |
+
+- Al terminar, el paso `talking → sofi-blink` sí tiene salto (la boca se cierra y, si estaba a mitad de parpadeo, los ojos): es inherente a volver a `sofi-blink` y forma parte de lo aprobado.
+- Los observadores de mutaciones dieron desfases de 166, 198 y 285 ms entre la primera letra y el cambio de sprite, del mismo orden que el muestreador (110, 149 y 323).
+- Capturas: la pausa (columna aprobada con la boca abierta, congelada) y el final (las tres en `sofi-blink`), por motor.
+
+### 40.3 Límites
+
+- **WebKit:** entre abrir los ojos y cambiar el sprite pasaron 216 ms que no explica el parpadeo. La propia ficha midió una espera de 6 ms desde su primera comprobación, así que la demora es anterior: entre la señal de `SofiSpeech` y la primera comprobación del prototipo. El muestreador también fue más lento allí (340 muestras en 6 s, frente a 700–900). Es del prototipo del Lab en WebKit de Playwright; la latencia en producción se mide con T084 y T095, y Safari real es de `015`.
+- Una reproducción por motor: cifras orientativas.
+- En el Lab, `talking` se carga al montar 4.12 (§39.1). Cómo se carga en producción es de EX3.
+
+**Siguiente tarea:** T071, que no se ha empezado.
