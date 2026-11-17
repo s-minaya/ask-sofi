@@ -122,6 +122,11 @@ const EXCEPTIONS: Record<string, { reason: string; declarations: string[] }> = {
       'Ancho de dispositivo emulado: la pantalla más pequeña que se soporta, en px de la pantalla y no del texto (con el texto al 200 % sigue siendo una pantalla de 320 px)',
     declarations: ['width: 320px'],
   },
+  '/src/design-lab/sections/MotionControlSpec.module.scss': {
+    reason:
+      'Iframes de cabecera (T071): ancho de dispositivo emulado, la pantalla más pequeña que se soporta, en px de la pantalla y no del texto',
+    declarations: ['min-width: 320px', 'width: 320px'],
+  },
   '/src/design-lab/sections/GagsWideSpec.module.scss': {
     reason:
       'Copia de las alturas de la consulta a dos columnas, medidas contra el retrato de 384 px (la excepción de ConsultationScreen); el Lab quita el solape del diálogo',

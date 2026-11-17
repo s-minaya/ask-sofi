@@ -3558,3 +3558,169 @@ Guion temporal, ya borrado, en Chromium, Firefox y WebKit con un trabajador. Pau
 - En el Lab, `talking` se carga al montar 4.12 (§39.1). Cómo se carga en producción es de EX3.
 
 **Siguiente tarea:** T071, que no se ha empezado.
+
+## 41. B1 — Control de la preferencia de movimiento en el Lab (T071, AV7 pendiente)
+
+Fecha: 2026-11-16. Ficha nueva 4.13 «Control de movimiento» en Motion & Sound (`src/design-lab/sections/MotionControlSpec.tsx`, `MotionControlMocks.tsx`, `src/design-lab/motionControl.ts`, `labMotion.ts`, `MotionHeaderFrame.tsx`). No crea ningún componente de producción ni toca `SiteHeader`, `Landing`, `ThemeSwitch` ni las preferencias. No se elige ubicación ni se marca AV7. Sin commit ni push.
+
+### 41.1 Qué hay en la ficha
+
+- **El control, en vivo:** un `SegmentedControl` de tres («Reducido · Completo · Sistema», en el orden de `ThemeSwitch`: la elección expresa primero y la predeterminada al final) conectado al selector global del Lab mediante un contexto del propio Lab (`labMotion.ts`): cambia `data-motion` del documento y nada más. Al lado, `sofi-blink` para ver el efecto, y un resumen de preferencia, sistema y resultado efectivo.
+- **Tres ubicaciones comparables**, con los controles que ya tiene el Design System y copy provisional:
+  - **A · Cabecera, junto al tema:** el mismo `SegmentedControl` que `ThemeSwitch` (iconos en estrecho, texto desde 760 px). Maqueta de la cabecera ancha en la página y, en iframes con sus media queries reales, la cabecera de hoy a 390 px (referencia) y la cabecera con el control a 390 y a 320 px (`?frame=motion-header&control=0|1`).
+  - **B · Portada, junto al sonido:** un `OptionGroup` (radios nativos con leyenda «Antes de entrar: ¿con movimiento?») al lado de `SoundChoice`, antes de «Empezar», en un escenario de 320, 390, 768 px o completo.
+  - **C · Portada y cabecera:** A y B a la vez, como hace hoy el sonido.
+  - **Descartado sin prototipo:** un botón de icono que alterne, como el del sonido: tres estados no caben en `aria-pressed`.
+- Cada ubicación lleva sus ventajas e inconvenientes. Los iconos de «Reducido» y «Completo» son provisionales del Lab (trazo de 2 px como los del Design System); «Sistema» reutiliza el del tema.
+- Las maquetas replican la cabecera real con sus propios estilos (`SiteHeader.module.scss`) y un selector de tema de apariencia con estado local, para no abrir un hueco en producción antes de AV7 ni cambiar el tema real desde una maqueta. En estrecho permiten que los controles pasen a otra fila (hoy la cabecera solo envuelve por debajo de 320 px): es lo que exige un tercer selector.
+
+### 41.2 Verificaciones
+
+- **Vitest:** `motionControl.test.ts` (8) y `MotionControlSpec.test.tsx` (6: tres ubicaciones con su maqueta, selector de botones en cabecera y radios con leyenda en portada, iframes con sus media queries, el control vivo mueve el estado del Lab y todos los ejemplares lo siguen, y **`updatePreferences` no se llama nunca**). `DesignLab.test.tsx` (T062) pasa de «un único selector» a «un único estado»: los ejemplares de 4.13 mueven el selector global y no traen otro. `MotionModes.test.tsx` apunta al selector de la cabecera del Lab por su etiqueta, no por su nombre, que ahora comparten los ejemplares. Suite completa: 2598 de 2600; los dos fallos fueron la incidencia conocida de 4.3 bajo carga (§40.1, T063) y la convención de unidades (`units.test.ts`), que exige justificar los 320 px de los iframes de cabecera: añadida la excepción, como las de 2.5 y 4.7, y en verde. `tsc -b`, ESLint y Prettier, sin errores.
+- **Playwright, guion temporal ya borrado**, en Chromium, Firefox y WebKit con un trabajador:
+  - **Tres modos desde el control vivo:** «Reducido» pone `data-motion="reduce"` en `<html>`, el selector de la cabecera del Lab lo refleja, el `sofi-blink` de la ficha queda sin animaciones y todos los ejemplares (botones y radios) marcan lo mismo; «Completo» con el sistema en reducir pone `full` y la animación vuelve; «Sistema» quita el atributo y, con el sistema en reducir, se ve «Reducido, por el sistema». Elegir desde las píldoras de la portada mueve lo mismo. **`localStorage['ask-sofi:preferences']` era `null` antes y después en los tres motores:** nada se escribe.
+  - **Teclado:** Tab recorre los botones del selector, Espacio y Enter eligen; en los radios de la portada, las flechas cambian la opción.
+  - **Cabeceras en iframes**, sin desbordamiento horizontal en ningún caso (misma medida en los tres motores, ±1 px):
+
+    | Ancho | Sin el control | Con el control |
+    |---|---|---|
+    | 320 px | Una fila, 62 px de alto | Logo arriba; tema y movimiento en una fila y el sonido en otra: 155 px |
+    | 360, 390 y 500 px | Una fila, 62 px | Logo arriba y los tres controles en una fila debajo: 105–116 px |
+    | 760 px | Una fila con texto, 82 px | Con texto, cada selector se parte en dos líneas («Sistema» debajo): 114 px |
+    | 1280 px | Una fila, 82 px | Una fila, 82 px |
+
+  - **axe (WCAG 2.2 AA):** sin violaciones en la ficha a 320, 390 y 1280 px, en claro y oscuro, y en las páginas de los marcos a 320, 360 y 390 px con y sin el control (Chromium).
+  - **Texto al 200 %** (perfil con `default_font_size` 32, como `text-size.spec.ts`), a 320 y 1280 px: ni la cabecera con el control ni la ficha desbordan; a 320 px la cabecera queda en tres filas (logo; tema y movimiento; sonido).
+  - **Observación para T076:** cada iframe arranca la app de desarrollo entera (Vite sin empaquetar y el worker de MSW); con Motion & Sound ya cargado, los tres tardan 9–24 s en pintar su cabecera (Chromium 24 s, Firefox 17 s, WebKit 9 s). No es un tiempo del producto: en 4.13 hay tres marcos (C reutiliza la cabecera de A).
+
+### 41.3 Lo que muestran las medidas (para AV7)
+
+- **A** no cabe en una fila en ninguna cabecera estrecha: con 128 px más, los controles bajan del logo desde 500 px hacia abajo y a 320 px ocupan dos filas. Y entre 760 px y unos 930 px, con el texto que `ThemeSwitch` enseña desde 760, los dos selectores se parten en dos líneas: si se eligiera A, habría que mantener los iconos hasta más ancho o acortar las etiquetas (decisión de diseño, no tomada aquí).
+- **B** no cambia la cabecera; a 390 px la tercera píldora («Sistema») ocupa su propia fila y la portada gana un grupo antes de «Empezar». Cambiar después exige volver a la portada.
+- **C** suma los dos costes y mantiene dos controles sincronizados, como el sonido.
+
+**Siguiente tarea:** T071 sigue abierta, a la espera de que la autora decida (AV7).
+
+## 42. B1 — Ficha 4.13 con las decisiones visuales de la autora (T071, AV7 pendiente)
+
+Fecha: 2026-11-17. La autora fijó para el prototipo: cabecera global; Reducido → Completo → Sistema; `PauseIcon`, `PlayIcon` y `SystemIcon`; `system` por defecto; «Completo» destacado con el acento sin confundirlo con el seleccionado; el enlace «¿Por qué Completo?» con su texto exacto, y el responsive por resolver midiendo. AV7 no se ha marcado: lo aprobado se registrará en su fuente normativa cuando la autora cierre AV7. Producción, `SiteHeader`, `ThemeSwitch` y las preferencias no cambian. Sin commit ni push.
+
+### 42.1 Qué cambia en la ficha
+
+- Desaparecen las ubicaciones B y C y los iconos provisionales; constan como descartadas. Queda el control vivo, la lista de decisiones y la cabecera con el control, ancha en la página y en iframes de 390 (hoy y con el control) y 320 px.
+- **Acento en «Completo»:** fondo `--color-accent` con texto e icono tinta y borde tinta, el mismo uso que el botón principal. Al seleccionarlo pasa al estilo de seleccionado del control (tinta sobre crema en claro, crema sobre tinta en oscuro), así que nunca se confunden. El acento como color de texto o de icono no cumpliría contraste (2,72:1 sobre crema en claro, 2,44:1 en oscuro); tinta sobre acento, 6,69:1 y 7,46:1.
+- **«¿Por qué Completo?»:** `TextLink` (botón) con `aria-expanded` y `aria-controls`; el panel, con el atributo `hidden` cuando está cerrado, contiene los dos párrafos aprobados. En la cabecera, el panel es una fila propia bajo los controles, alineada con ellos, y abrirlo no mueve nada de lo que hay encima.
+- **Responsive** (mediciones en §42.3):
+  - El selector de tema conserva su regla aprobada (iconos por debajo de 760 px, texto desde ahí) y el antetítulo, la suya (desde 1080 px).
+  - El selector de movimiento lleva iconos (con el texto oculto solo visualmente) hasta **82 em (1312 px a 16 px)**: el primer ancho en que, con texto, toda la cabecera cabe en una fila (medido, desde unos 1303 px). En em, para que el umbral se desplace con el texto agrandado como las media queries del sistema.
+  - Si los controles no caben junto al logo, bajan a otra fila **alineados a la derecha** (con `space-between` se iban a la izquierda), y el enlace va tras ellos, donde quepa.
+- Dos fallos propios corregidos durante la medición: `display: grid` anulaba `hidden` y la explicación se veía cerrada; y el panel, dentro del grupo de controles, los empujaba a otra fila al abrirse.
+
+### 42.2 Verificaciones
+
+- **Vitest:** `motionControl.test.ts` (8: orden y etiquetas aprobados, `system` por defecto y el texto de la explicación palabra por palabra) y `MotionControlSpec.test.tsx` (8: orden en el vivo y en la maqueta, empieza en «Sistema», nombres accesibles en compacto con los tres iconos, la explicación se abre y se cierra con su texto exacto, iframes, el vivo mueve el estado del Lab y la maqueta lo sigue, y `updatePreferences` nunca se llama). Suite completa: 2602 de 2603; el fallo es la incidencia conocida de 4.3 bajo carga (§40.1, T063: «habla, calla en cada pausa…» supera los 5 s). `tsc -b`, ESLint y Prettier, sin errores.
+- **Playwright, guion temporal ya borrado**, en Chromium, Firefox y WebKit con un trabajador (11 de 11):
+  - **Tres modos:** empieza en «Sistema»; «Reducido» pone `data-motion="reduce"`, el selector de la cabecera del Lab lo refleja y Sofi se queda sin animaciones; «Completo» con el sistema en reducir pone `full` y la animación vuelve; «Sistema» quita el atributo. `localStorage['ask-sofi:preferences']`: `null` antes y después en los tres motores.
+  - **Teclado:** Tab recorre Reducido → Completo → Sistema → «¿Por qué Completo?»; Espacio y Enter eligen; Enter abre la explicación y Espacio la cierra (`aria-expanded` cambia). **Tacto:** un clic (evento de puntero) en el enlace de la maqueta la abre.
+  - **axe (WCAG 2.2 AA):** sin violaciones en la ficha a 320, 390 y 1280 px en claro y oscuro (acento incluido), y en las cabeceras abiertas a 320, 360 y 390 px (Chromium).
+  - **Texto al 200 %** (perfil con `default_font_size` 32): sin desbordamiento a 320, 390, 760 y 1280 px con la explicación abierta, ni en la ficha a 320 px. A 320 px el sonido baja a su propia fila; todos los controles siguen visibles.
+
+### 42.3 Mediciones de la cabecera
+
+Alto y filas visibles (logo, controles y enlace, por su centro), cerrada y con la explicación abierta. Iguales en los tres motores (±1 px de WebKit). Ningún ancho desborda.
+
+| Ancho | Hoy (sin el control) | Con el control, cerrada | Abierta | Selector de movimiento |
+|---|---|---|---|---|
+| 320, 360 px | 1 fila · 62 px | 3 filas (logo; controles; enlace) · 155 px | 279–319 px | Iconos |
+| 390, 500 px | 1 · 62 | 3 · 168 | 271–291 | Iconos |
+| 530 px | 1 · 62 | 2 (logo; controles y enlace) · 116 | 219 | Iconos |
+| 700 px | 1 · 62 | **1 · 62** | 165 | Iconos |
+| 760, 830 px | 1 · 82 | 2 · 136 (el tema pasa a texto a 760) | 239 | Iconos |
+| 840, 930, 960 px | 1 · 82 | **1 · 82** | 185 | Iconos |
+| 1080, 1150 px | 1 · 82 | 2 · 136 (aparece el antetítulo a 1080) | 239 | Iconos |
+| 1170, 1280, 1300 px | 1 · 82 | **1 · 82** | 185 | Iconos |
+| 1312, 1440 px | 1 · 82 | **1 · 82** | 185 | **Texto** |
+
+- Abrir la explicación nunca mueve los controles: misma posición vertical cerrada y abierta en todos los anchos.
+- Las dos bandas de dos filas (760–839 y 1080–1169) las causan reglas ya aprobadas: el tema pasa a texto a 760 px y el antetítulo aparece a 1080. Con el selector de movimiento ya en iconos, el control no puede ocupar menos.
+
+### 42.4 Límites
+
+- Una pasada por motor; WebKit de Playwright no es Safari (`015`).
+- El umbral de texto se midió con las fuentes del Lab y el antetítulo «En directo · El consultorio de Sofi»; un antetítulo más largo lo movería. En producción (T089–T090) se repite la medición sobre `SiteHeader` real.
+- Los iframes de la ficha arrancan la app de desarrollo entera (§41.2): encarecen Motion & Sound.
+
+**Siguiente tarea:** T071 sigue abierta, a la espera de que la autora revise el resultado (AV7).
+
+## 43. B1 — Ficha 4.13 sin iconos (T071, AV7 pendiente)
+
+Fecha: 2026-11-17. La autora descartó los iconos: el selector muestra solo «Reducido», «Completo» y «Sistema» en todos los tamaños, sin abreviar. Las demás decisiones de §42 siguen (cabecera global junto al tema, orden y etiquetas, `system` por defecto, «Completo» con fondo rosa y texto tinta sin seleccionar y con el estilo de selección habitual al seleccionarlo, «¿Por qué Completo?» con `aria-expanded` y el texto exacto). Sustituye la distribución de §42.1 y las medidas de §42.3. AV7 sin marcar; producción, `SiteHeader`, `ThemeSwitch`, `SegmentedControl` y las preferencias no cambian. Sin commit ni push.
+
+### 43.1 Cambios
+
+- El selector usa `SegmentedControl` con `display="text"` y opciones sin icono. Desaparecen el umbral de texto en em de §42 y el cálculo de la cabecera estrecha, que suponía el selector con iconos.
+- **Distribución**, en la maqueta de cabecera:
+  - Todas las piezas fluyen en una sola secuencia que envuelve: logo (y antetítulo desde 1080 px), tema, movimiento, sonido y enlace, en el orden del DOM y del foco. El grupo de controles deja de ser una caja (`display: contents`) para que el tema pueda quedarse junto al logo aunque el resto baje.
+  - Lo que no cabe baja a otra línea **alineado a la derecha**; el logo (o el antetítulo, donde se ve) empuja lo demás, y conserva la separación de hoy con los controles (1,75 rem; 0,5 rem por debajo de 360 px).
+  - El tema conserva su regla aprobada (iconos por debajo de 760 px) y el antetítulo, la suya (desde 1080 px).
+  - Sin breakpoints nuevos: la distribución sale de cómo envuelve el contenido.
+- **La explicación abierta** ocupa una línea entera bajo los controles, alineada a la derecha; la medida de lectura (60 ch) va en sus párrafos y no en el panel. Con ella en el panel, este cabía junto a los controles y los desplazaba (medido y corregido).
+- Probada antes la distribución anterior (los controles bajan en bloque bajo el logo): 4 filas a 320–390 px, en un orden desordenado (el tema solo, el movimiento, el sonido y el enlace), y el logo solo en su fila de 760 a 1280 px. Descartada.
+
+### 43.2 Mediciones de la cabecera
+
+Filas visibles (logo, controles y enlace, por su centro) y alto en px, cerrada / abierta. Iguales en claro y oscuro y en Chromium, Firefox y WebKit (WebKit +1 px). Ningún ancho desborda, ninguna pieza sale de la cabecera, ninguna opción se recorta ni queda oculta, el selector no tiene ningún icono, y abrir la explicación no mueve ni los selectores ni el sonido (misma posición cerrada y abierta, en todos los anchos, temas y motores).
+
+| Ancho | Hoy (sin el control) | Con el control, cerrada / abierta | Distribución |
+|---|---|---|---|
+| 320 px | 1 fila · 62 | 3 filas · 170 / 334 | logo y tema · movimiento · sonido y enlace |
+| 360, 390 px | 1 · 62 | 3 · 170 / 293 | logo y tema · movimiento y sonido · enlace |
+| 530 px | 1 · 62 | 2 · 116 / 219 | logo y tema · movimiento, sonido y enlace |
+| 700 px | 1 · 62 | 2 · 116 / 219 | logo, tema, movimiento y sonido · enlace |
+| 760, 840, 930, 960 px | 1 · 82 | 2 · 136 / 239 | logo, tema y movimiento (+ sonido desde 840) · el resto |
+| 1080, 1280 px | 1 · 82 | 2 · 136 / 239 | logo, antetítulo, tema y movimiento (+ sonido a 1280) · el resto |
+| 1312 px | 1 · 82 | **1 · 82** / 185 | todo en una fila |
+
+- Por debajo de 1312 px siempre hay una línea más que hoy: el selector con texto (255 px) y el enlace (136 px) no caben en la fila del logo con el tema y el sonido. La fila de arriba conserva siempre el logo y el tema, y lo que baja queda a la derecha.
+- **Texto al 200 %** (perfil con `default_font_size` 32, Chromium), con la explicación abierta: sin desbordamiento y sin piezas fuera de la cabecera en los doce anchos; las opciones no se recortan; abrir no mueve los controles. Por debajo de 530 px el selector se parte en tres opciones apiladas (en dos a 530 px) por el ajuste propio de `SegmentedControl`, de ancho desigual y alineadas a la izquierda; todas se leen enteras. Es comportamiento del componente del Design System, que no se ha cambiado; queda como observación para AV7 y T090.
+
+### 43.3 Verificaciones
+
+- **Vitest:** `motionControl.test.ts` (7: orden y etiquetas, ninguna opción con icono, `system` por defecto, texto exacto) y `MotionControlSpec.test.tsx` (8: también que en la cabecera estrecha ningún grupo «Movimiento» tiene iconos). Suite completa: 2601 de 2602. Esta vez la incidencia de 4.3 (§40.1) no apareció; falló una prueba de 4.5, `InspectorSpec.test.tsx` «recorrerla pausa el recurso, como el botón de pausa» (esperaba una escritura de `currentTime` tras un único fotograma de `requestAnimationFrame` y no la hubo). Esa prueba solo monta el inspector, que T071 no toca, y aislada pasa 3 de 3: **incidencia intermitente nueva bajo la carga de la suite completa**, sin corregir (fuera de T071; no se han tocado tiempos límite). `tsc -b`, ESLint y Prettier, sin errores.
+- **Playwright, guion temporal ya borrado**, Chromium, Firefox y WebKit con un trabajador:
+  - **Tres modos** desde el control vivo, con el selector de la cabecera del Lab sincronizado y Sofi parada o animada según el modo; `localStorage['ask-sofi:preferences']`, `null` antes y después en los tres motores.
+  - **Teclado:** Tab recorre Reducido → Completo → Sistema → «¿Por qué Completo?»; Espacio y Enter eligen, abren y cierran.
+  - **Tacto:** contexto con `hasTouch` a 390 px (Chromium como móvil y WebKit): un toque elige «Reducido» (`data-motion="reduce"`), otro abre la explicación sin mover el selector y otro la cierra; nada en `localStorage`. Firefox de Playwright no emula pantalla táctil: allí, solo clic.
+  - **Acento:** «Completo» sin seleccionar tiene el fondo rosa (`rgb(255, 92, 141)`); al seleccionarlo, el mismo fondo que «Sistema» seleccionado (tinta): los tres motores.
+  - **axe (WCAG 2.2 AA), Chromium:** sin violaciones en la cabecera abierta a los doce anchos, en claro y oscuro, y en la ficha a 320, 390 y 1280 px en claro y oscuro.
+- Capturas por motor, tema y ancho, cerrada y abierta, y al 200 %.
+
+### 43.4 Borde de «Completo» (revisión de la autora)
+
+La autora vio en la captura de 1312 px en oscuro que el borde de «Completo» no se comportaba como el de las demás opciones. La causa era el prototipo: forzaba el borde a tinta (`--tone-ink`), que en oscuro se funde con el fondo, mientras las demás usan el del control (`--color-border`, crema en oscuro). Se quita esa línea: «Completo» conserva el fondo rosa y el texto tinta, y el borde, el hover y el foco son los del control. No cambia nada más.
+
+- **Playwright, guion temporal ya borrado**, Chromium, Firefox y WebKit a 1312 px, en claro y oscuro (6 de 6): las tres opciones tienen el mismo color y grosor de borde sin seleccionar y con «Completo» seleccionado (tinta en claro y crema en oscuro); el fondo de «Completo» cambia al seleccionarlo; axe (WCAG 2.2 AA) sin violaciones en Chromium.
+- Vitest de la ficha (`MotionControlSpec`, `motionControl`, `units`), en verde.
+
+**Siguiente tarea:** T071 sigue abierta, a la espera de que la autora revise el resultado (AV7).
+
+## 44. B1 — Cierre de T071 con AV7
+
+Fecha: 2026-11-17. La autora aprobó AV7; la decisión completa consta solo en `008-plan.md` §11.9 y aquí no se repite. Producción no cambia (T089–T090).
+
+**Versión aprobada y su evidencia.** La de §43, con la corrección de §43.4: «Completo» sin seleccionar lleva fondo rosa con texto tinta y el **borde del control, igual que las demás opciones** (antes se forzaba a tinta y en oscuro se fundía con el fondo). Las mediciones, la distribución y las verificaciones de §43.2–§43.3 son las de esta versión: el arreglo del borde no cambia tamaños ni posiciones, y se comprobó por separado en los tres motores y en ambos temas (§43.4).
+
+**Lo que queda sustituido.** §41 (tres ubicaciones e iconos provisionales) y §42 (iconos de pausa, reproducir y sistema, umbral de texto a 82 em y sus medidas) son historial de la decisión, no la versión aprobada: el control aprobado no lleva iconos en ningún tamaño.
+
+| Criterio de T071 | Evidencia |
+|---|---|
+| Propuestas de ubicación y diseño, con cabecera y portada solo como punto de partida | Tres ubicaciones y un descarte argumentado (§41); diseño final en la cabecera global (§43) |
+| Reutilizar el Design System | `SegmentedControl` (con `display="text"`), `TextLink` y los estilos reales de `SiteHeader`; sin componentes ni iconos nuevos (§43.1) |
+| Sin escribir preferencias públicas desde el Lab | `updatePreferences` nunca se llama (`MotionControlSpec.test.tsx`); `localStorage['ask-sofi:preferences']`, `null` antes y después en los tres motores (§43.3) |
+| Responsive, accesibilidad y comportamiento visual en los tres modos | §43.2–§43.4: doce anchos de 320 a 1312 px, texto al 200 %, claro y oscuro, teclado, tacto y axe, en Chromium, Firefox y WebKit |
+
+- **Cambios de este cierre:** solo la marca de estado de 4.13 («Aprobado (AV7) · producción en T089–T090») y los comentarios que decían «AV7 pendiente». `MotionControlSpec.test.tsx` comprueba la marca y que ya no queda «pendiente de AV7»: en rojo antes del cambio y en verde después. No se repitió Playwright: desde §43.4 no ha cambiado nada visual.
+- **Repetido hoy:** suite completa de Vitest, 2602 de 2602 en verde (esta vez sin las incidencias intermitentes de §40.1 y §43.3, que siguen abiertas). `tsc -b`, ESLint y Prettier, sin errores.
+- **Revisión de referencias:** en plan §11.9, tareas y ficha 4.13, «icono» solo aparece para decir que no los hay, para la regla del selector de tema (que conserva sus iconos por debajo de 760 px) y para la alternativa descartada.
+
+**Siguiente tarea:** T072, que no se ha empezado.

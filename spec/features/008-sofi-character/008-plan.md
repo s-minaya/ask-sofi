@@ -349,7 +349,7 @@ Cada punto se aprueba expresamente y se registra en su fuente de verdad (§8).
 4. Poses reducidas, salvo `memory-wipe`, y versión reducida de los gags. La versión reducida de los gags se aprobó el 2026-11-12: catálogo §7.2 y fichas 006, 008 y 009, y §6 de este plan. Las poses reducidas, el 2026-11-16 (AV4): §11.7.
 5. Pausas de `talking` y paso `blink` → `talking`. Aprobado el 2026-11-16 (AV5): spec §2 y §11.8.
 6. Ubicación de los gags. Aprobada el 2026-11-11 (AV6), junto con la inactividad: spec §5 y §6 de este plan.
-7. Ubicación y diseño del control de preferencia de movimiento. Cabecera y portada, junto a `ThemeSwitch`, son solo la propuesta de partida.
+7. Ubicación y diseño del control de preferencia de movimiento. Aprobado el 2026-11-17 (AV7): §11.9.
 8. Composición, solo para las observaciones que se reproduzcan (spec §11). El contorno de `memory-wipe` no se toca por defecto.
 9. Selección de efectos sonoros, tras verificar sus licencias.
 
@@ -515,6 +515,26 @@ Aprobado por la autora sobre la ficha 4.12 del Lab (evidencia: `008-verification
 - Las alternativas descartadas: vuelta a `sofi-blink` en cada pausa (cierra la boca de golpe y repite las primeras sílabas tras cada pausa) y boca cerrada en cada pausa (la que más saltos produce). Cifras en `008-verification.md` §39.3.
 - **Producción (T083–T085):** la capa visual necesita distinguir pausa de fin. `SofiSpeech` ya expone `status` por `onStateChange` y el booleano por `onSpeakingChange` (D-12); cómo se combinan sin re-render por carácter lo decide T084. Si exigiera cambiar el contrato de `SofiSpeech`, se consulta antes.
 - El Lab conserva las tres alternativas para comparar, con la aprobada por defecto (`src/design-lab/talkingPauses.ts`).
+
+### 11.9 Control de la preferencia de movimiento aprobado (AV7, 2026-11-17)
+
+Aprobado por la autora sobre la ficha 4.13 del Lab (evidencia: `008-verification.md` §43–§44). Lo implementan T089–T090; el valor, su persistencia con `003` y su reversibilidad son los de spec §7 y no cambian.
+
+| Aspecto | Aprobado |
+|---|---|
+| Ubicación | La cabecera global, disponible durante toda la experiencia, junto al selector de tema |
+| Control | El mismo `SegmentedControl` que el tema: botones con `aria-pressed` en un grupo con nombre «Movimiento» |
+| Orden y etiquetas | «Reducido» → «Completo» → «Sistema» (`reduce`, `full`, `system`), siempre visibles y sin abreviar |
+| Iconos | Ninguno, en ningún tamaño de pantalla |
+| Valor predeterminado | `system` |
+| «Completo» | Sin seleccionar: fondo `--color-accent` con texto tinta, y el borde, el hover y el foco del control, como las demás opciones. Seleccionado: el estilo de selección habitual del control. El acento como color de texto no cumpliría contraste (2,72:1 en claro y 2,44:1 en oscuro); tinta sobre acento, 6,69:1 y 7,46:1 |
+| «¿Por qué Completo?» | `TextLink` (botón) con `aria-expanded` y `aria-controls`, operable con teclado y táctil, que muestra u oculta un panel con este texto exacto, en dos párrafos: «La experiencia visual de Ask Sofi se disfruta mejor con todas las animaciones activadas.» y «“Completo” reproduce todas las animaciones, incluso cuando tu dispositivo tiene activada la reducción de movimiento.» |
+| Explicación abierta | Una línea entera de la cabecera bajo los controles, alineada a la derecha, con la medida de lectura en los párrafos (60 ch). Abrirla no desplaza los controles |
+| Responsive | Sin breakpoints nuevos. Las piezas de la cabecera fluyen en una sola secuencia que envuelve, en el orden del DOM y del foco: logo (y antetítulo), tema, movimiento, sonido y enlace. Lo que no cabe baja a otra línea alineado a la derecha; el logo (o el antetítulo, donde se ve) empuja lo demás y conserva la separación de hoy con los controles. El tema conserva su regla (iconos por debajo de 760 px) y el antetítulo, la suya (desde 1080 px). Medido: 3 filas a 320–390 px, 2 de 530 a 1280 px y 1 desde 1312 px (`008-verification.md` §43.2) |
+
+- **Descartado:** la portada junto al sonido, la portada y la cabecera a la vez, los iconos (de pausa, reproducir y sistema, y los provisionales) y un botón de icono que alterne, que no puede expresar tres estados con `aria-pressed`.
+- **Comportamiento conocido, aceptado:** con el texto al 200 % y por debajo de 530 px, el selector se parte en opciones apiladas de ancho desigual por el ajuste propio de `SegmentedControl`; todas se leen enteras (`008-verification.md` §43.2).
+- **Producción (T089–T090):** para que el tema pueda quedarse junto al logo, el grupo de controles de `SiteHeader` deja de ser una caja (`display: contents`) y las piezas pasan a la secuencia que envuelve. Las medidas se repiten sobre `SiteHeader` real. La maqueta del Lab está en `src/design-lab/sections/MotionControlMocks.tsx`.
 
 ## 12. Riesgos y pendientes
 

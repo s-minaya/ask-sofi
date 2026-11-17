@@ -106,8 +106,10 @@ describe('DesignLab', () => {
   })
 
   describe('selector global de movimiento (T062)', () => {
-    const motion = () =>
-      within(screen.getByRole('group', { name: 'Movimiento' }))
+    // El selector de la cabecera del Lab, no los ejemplares de 4.13 que comparten su nombre.
+    const headerGroup = () =>
+      document.querySelector('[aria-labelledby="lab-motion"]') as HTMLElement
+    const motion = () => within(headerGroup())
 
     it('ofrece los tres modos de la preferencia, en su orden', () => {
       renderLab()
@@ -152,11 +154,22 @@ describe('DesignLab', () => {
       expect(document.documentElement.dataset.motion).toBe('full')
     })
 
-    it('sigue siendo un único selector: el inspector no trae otro', () => {
+    it('sigue siendo un único estado: los ejemplares de 4.13 (T071) mueven el selector global, no traen otro', () => {
       renderLab('?s=motion')
-      expect(screen.getAllByRole('group', { name: 'Movimiento' })).toHaveLength(
-        1,
-      )
+      const groups = screen.getAllByRole('group', { name: 'Movimiento' })
+      // El de la cabecera del Lab y los prototipos del control (4.13), que son el mismo estado.
+      expect(groups.length).toBeGreaterThan(1)
+      const proto = groups.find((group) => group !== headerGroup())!
+      fireEvent.click(within(proto).getByRole('button', { name: 'Reducido' }))
+      expect(document.documentElement.dataset.motion).toBe('reduce')
+      expect(
+        motion().getByRole('button', { name: 'Reducido' }),
+      ).toHaveAttribute('aria-pressed', 'true')
+      fireEvent.click(motion().getByRole('button', { name: 'Completo' }))
+      for (const group of groups)
+        expect(
+          within(group).getByRole('button', { name: 'Completo' }),
+        ).toHaveAttribute('aria-pressed', 'true')
     })
   })
 })

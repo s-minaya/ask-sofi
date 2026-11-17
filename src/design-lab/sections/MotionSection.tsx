@@ -48,6 +48,7 @@ import { ActivitySpec } from './ActivitySpec'
 import { InspectorSpec } from './InspectorSpec'
 import { ReducedPosesSpec } from './ReducedPosesSpec'
 import { TalkingPausesSpec } from './TalkingPausesSpec'
+import { MotionControlSpec } from './MotionControlSpec'
 import { GagsSpec } from './GagsSpec'
 import { GagsProfileSpec } from './GagsProfileSpec'
 import { GagsWideSpec } from './GagsWideSpec'
@@ -710,6 +711,11 @@ export function MotionSection() {
           { href: '#m-activity', num: '4.10', label: 'Actividad' },
           { href: '#m-reduced', num: '4.11', label: 'Poses reducidas' },
           { href: '#m-pauses', num: '4.12', label: 'Pausas de talking' },
+          {
+            href: '#m-motion-control',
+            num: '4.13',
+            label: 'Control de movimiento',
+          },
         ]}
         aside={
           <Burst
@@ -744,6 +750,7 @@ export function MotionSection() {
       <ActivitySpec />
       <ReducedPosesSpec />
       <TalkingPausesSpec />
+      <MotionControlSpec />
     </>
   )
 }

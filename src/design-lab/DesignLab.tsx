@@ -1,4 +1,10 @@
-import { useEffect, useState, type MouseEvent, type ReactNode } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type MouseEvent,
+  type ReactNode,
+} from 'react'
 import {
   MotionPreferenceProvider,
   type MotionPreference,
@@ -10,6 +16,7 @@ import { SkipLink } from '../components/ui/SkipLink/SkipLink'
 import { useTheme } from '../hooks/useTheme'
 import type { ThemePreference } from '../infrastructure/storage/preferencesStorage'
 import styles from './DesignLab.module.scss'
+import { LabMotionContext } from './labMotion'
 import {
   LAB_SECTIONS,
   sectionFromSearch,
@@ -81,6 +88,8 @@ export function DesignLab() {
     sectionFromSearch(window.location.search),
   )
   const [motion, setMotion] = useState<MotionPreference>('system')
+  // Para que una ficha pueda mover el selector global (T071): mismo estado, sin almacenamiento.
+  const labMotion = useMemo(() => ({ motion, setMotion }), [motion])
   const { preference, setPreference, systemTheme } = useTheme()
 
   useEffect(() => {
@@ -108,84 +117,86 @@ export function DesignLab() {
   return (
     <SoundProvider>
       <MotionPreferenceProvider value={motion}>
-        <div className={styles.lab}>
-          <SkipLink href="#lab-main" />
-          <div className={styles.bar}>
-            <p className={styles.barLabel}>Design Lab</p>
-            <p className={styles.barText}>
-              Solo en desarrollo · No forma parte del build público
-            </p>
-            <p className={styles.barMeta}>
-              Ask Sofi · Feature 002 · Dirección C «Exclusiva»
-            </p>
+        <LabMotionContext value={labMotion}>
+          <div className={styles.lab}>
+            <SkipLink href="#lab-main" />
+            <div className={styles.bar}>
+              <p className={styles.barLabel}>Design Lab</p>
+              <p className={styles.barText}>
+                Solo en desarrollo · No forma parte del build público
+              </p>
+              <p className={styles.barMeta}>
+                Ask Sofi · Feature 002 · Dirección C «Exclusiva»
+              </p>
+            </div>
+            <header className={`${styles.head} ${styles.wrap}`}>
+              <div className={styles.brand}>
+                <Logo
+                  alt="Ask Sofi"
+                  className={styles.brandLogo}
+                  sizes="8.25em"
+                />
+                <p className={styles.brandName}>Design Lab</p>
+              </div>
+              <div className={styles.controls}>
+                <div
+                  className={styles.controls}
+                  style={{ gap: '0.5rem 0.75rem' }}
+                >
+                  <LabGroupLabel id="lab-theme">Tema</LabGroupLabel>
+                  <SegmentedControl
+                    labelledBy="lab-theme"
+                    options={THEME_OPTIONS}
+                    value={preference}
+                    onChange={setPreference}
+                  />
+                  {preference === 'system' && (
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--color-text-subtle)',
+                      }}
+                    >
+                      Tu sistema: {systemTheme === 'dark' ? 'oscuro' : 'claro'}
+                    </span>
+                  )}
+                </div>
+                <div
+                  className={styles.controls}
+                  style={{ gap: '0.5rem 0.75rem' }}
+                >
+                  <LabGroupLabel id="lab-motion">Movimiento</LabGroupLabel>
+                  <SegmentedControl
+                    labelledBy="lab-motion"
+                    options={MOTION_OPTIONS}
+                    value={motion}
+                    onChange={setMotion}
+                  />
+                </div>
+              </div>
+            </header>
+            <nav className={styles.nav} aria-label="Secciones del Design Lab">
+              {LAB_SECTIONS.map((item) => (
+                <a
+                  key={item.key}
+                  href={sectionHref(item.key)}
+                  aria-current={item.key === section ? 'page' : undefined}
+                  onClick={(event) => navigate(event, item.key)}
+                >
+                  <span className={styles.navNum}>{item.num}</span>
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+            <main id="lab-main" tabIndex={-1} aria-label={current?.label}>
+              {SECTIONS[section]({ motion })}
+            </main>
+            <footer className={`${styles.foot} ${styles.wrap}`}>
+              <p>{footA}</p>
+              <p>{footB}</p>
+            </footer>
           </div>
-          <header className={`${styles.head} ${styles.wrap}`}>
-            <div className={styles.brand}>
-              <Logo
-                alt="Ask Sofi"
-                className={styles.brandLogo}
-                sizes="8.25em"
-              />
-              <p className={styles.brandName}>Design Lab</p>
-            </div>
-            <div className={styles.controls}>
-              <div
-                className={styles.controls}
-                style={{ gap: '0.5rem 0.75rem' }}
-              >
-                <LabGroupLabel id="lab-theme">Tema</LabGroupLabel>
-                <SegmentedControl
-                  labelledBy="lab-theme"
-                  options={THEME_OPTIONS}
-                  value={preference}
-                  onChange={setPreference}
-                />
-                {preference === 'system' && (
-                  <span
-                    style={{
-                      fontSize: '0.75rem',
-                      color: 'var(--color-text-subtle)',
-                    }}
-                  >
-                    Tu sistema: {systemTheme === 'dark' ? 'oscuro' : 'claro'}
-                  </span>
-                )}
-              </div>
-              <div
-                className={styles.controls}
-                style={{ gap: '0.5rem 0.75rem' }}
-              >
-                <LabGroupLabel id="lab-motion">Movimiento</LabGroupLabel>
-                <SegmentedControl
-                  labelledBy="lab-motion"
-                  options={MOTION_OPTIONS}
-                  value={motion}
-                  onChange={setMotion}
-                />
-              </div>
-            </div>
-          </header>
-          <nav className={styles.nav} aria-label="Secciones del Design Lab">
-            {LAB_SECTIONS.map((item) => (
-              <a
-                key={item.key}
-                href={sectionHref(item.key)}
-                aria-current={item.key === section ? 'page' : undefined}
-                onClick={(event) => navigate(event, item.key)}
-              >
-                <span className={styles.navNum}>{item.num}</span>
-                {item.label}
-              </a>
-            ))}
-          </nav>
-          <main id="lab-main" tabIndex={-1} aria-label={current?.label}>
-            {SECTIONS[section]({ motion })}
-          </main>
-          <footer className={`${styles.foot} ${styles.wrap}`}>
-            <p>{footA}</p>
-            <p>{footB}</p>
-          </footer>
-        </div>
+        </LabMotionContext>
       </MotionPreferenceProvider>
     </SoundProvider>
   )

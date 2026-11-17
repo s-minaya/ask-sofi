@@ -1,0 +1,54 @@
+.live {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1.5rem 2rem;
+  align-items: start;
+}
+
+.livePanel {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+  min-width: 0;
+}
+
+.liveStage {
+  padding: 1rem;
+}
+
+.sprite {
+  width: min(100%, 8rem);
+  margin: 0 auto;
+}
+
+.frame {
+  width: 100%;
+  border: var(--stroke-structure) solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.frames {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  gap: 1.25rem 1.5rem;
+  width: 100%;
+  margin-top: 1.25rem;
+}
+
+// Un iframe estrecho: la cabecera responde a sus media queries reales. Con los controles bajo el
+// logo y la explicación abierta necesita más alto que el de 2.5.
+.narrow {
+  display: block;
+  width: min(100%, 24.375rem);
+  min-width: 320px;
+  height: 14rem;
+  border: var(--stroke-structure) solid var(--color-border);
+  background: var(--color-bg);
+}
+
+// A 320 px los controles ocupan dos filas bajo el logo.
+.tiny {
+  width: 320px;
+  min-width: 0;
+  height: 17rem;
+}

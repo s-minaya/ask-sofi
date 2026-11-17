@@ -118,11 +118,11 @@ async function openInspector(id: SofiAnimationId) {
 }
 
 async function setMotion(name: 'Sistema' | 'Reducido' | 'Completo') {
+  // El selector de la cabecera del Lab, no los ejemplares de 4.13 (T071) con el mismo nombre.
   fireEvent.click(
-    within(screen.getByRole('group', { name: 'Movimiento' })).getByRole(
-      'button',
-      { name },
-    ),
+    within(
+      document.querySelector('[aria-labelledby="lab-motion"]') as HTMLElement,
+    ).getByRole('button', { name }),
   )
   await flush()
 }

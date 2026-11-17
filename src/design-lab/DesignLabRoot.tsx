@@ -14,6 +14,9 @@ const GagsProfileFrameRoot = lazy(
   () => import('./profile/GagsProfileFrameRoot'),
 )
 
+// La cabecera con el control de movimiento aprobado (T071, AV7), en su propio iframe.
+const MotionHeaderFrame = lazy(() => import('./MotionHeaderFrame'))
+
 // Cabecera sola, para verla dentro de un iframe estrecho con sus media queries reales.
 function HeaderFrame() {
   const sound = useSound()
@@ -61,6 +64,10 @@ export function DesignLabRoot() {
         <SoundProvider>
           <HeaderFrame />
         </SoundProvider>
+      ) : frame === 'motion-header' ? (
+        <Suspense fallback={null}>
+          <MotionHeaderFrame />
+        </Suspense>
       ) : (
         <DesignLab />
       )}
